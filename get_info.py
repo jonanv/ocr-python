@@ -49,11 +49,11 @@ def show_metadata():
     for x in range(len(files)):
         print(str(x+1) + ". " + files[x])
         file = remove_extension(files[x]) # Elimina la extension
-        file = normalize_string(file) # Elimina acentos
+        file = normalize_accents(file) # Elimina acentos
         print('Caracteres: ' + str(len(file))) # Cantidad de caracteres
-        print(file.title()) # Capitalizacion
+        print('Capitalizacion: ' + str(file.title())) # Capitalizacion
         file = remove_special_characters(file.title()) # Elimina caracteres especiales
-        print(file)
+        print('Salida: ' + file)
         # path = folder() + files[x]
         # print(is_locked(path))
         # get_metadata(path)
@@ -71,7 +71,7 @@ def remove_extension(file_name):
     new_file_name = file_name.split('.pdf')
     return new_file_name[0]
 
-def normalize_string(file_name):
+def normalize_accents(file_name):
     # s = "Pingüino: Málãgà ês uñ̺ã cíudãd fantástica y èn Logroño me pica el... moñǫ̝̘̦̞̟̩̐̏̋͌́ͬ̚͡õ̪͓͍̦̓ơ̤̺̬̯͂̌͐͐͟o͎͈̳̠̼̫͂̊"
     # -> NFD y eliminar diacríticos
     file_name = re.sub(
