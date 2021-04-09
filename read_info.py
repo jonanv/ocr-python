@@ -2,7 +2,7 @@
 import PyPDF2
 	
 # creating a pdf file object
-pdfFileObj = open('texto.pdf', 'rb')
+pdfFileObj = open('files/14AutoOrdenaSeguirAdelanteEjecucion.pdf', 'rb')
 	
 # creating a pdf reader object
 pdfReader = PyPDF2.PdfFileReader(pdfFileObj)

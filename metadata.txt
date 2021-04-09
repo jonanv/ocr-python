@@ -1,0 +1,15 @@
+{'/Creator': 'PDF24 Tools', '/Producer': 'PDF24 Tools'}
+{'/Producer': 'macOS Versión 10.15.5 (Fase 19F101) Quartz PDFContext, AppendMode 1.1', '/CreationDate': "D:20200821205457Z00'00'", '/ModDate': "D:20200908163542Z00'00'", '/Title': 'joinPdf_923a11cdbce18e5d37e6438b8e019f6c.pdf', '/Creator': 'Vista Previa'}
+{'/CreationDate': "D:20201111143014-05'00'", '/ModDate': "D:20201111143014-05'00'", '/Title': 'Correo_ Juzgado 12 Civil Municipal - Caldas - Manizales - Outlook', '/Creator': 'Nitro Pro 12 (12.9.0.474)', '/Producer': 'Nitro Pro 12 (12.9.0.474)', '/Author': 'Carolina Velasquez Z'}
+{'/ModDate': "D:20210118113322-05'00'", '/Creator': 'Nitro Pro 12'}
+{'/Producer': 'macOS Versión 10.15.5 (Fase 19F101) Quartz PDFContext, AppendMode 1.1', '/CreationDate': "D:20200821205457Z00'00'", '/ModDate': "D:20200908163542Z00'00'", '/Title': 'joinPdf_923a11cdbce18e5d37e6438b8e019f6c.pdf', '/Creator': 'Vista Previa'}
+{'/Producer': 'FPDF 1.81', '/CreationDate': 'D:20201113165700', '/Author': 'Usuario', '/ModDate': "D:20201113165502-05'00'", '/Title': 'Microsoft Word - NO ACEPTACION NOMBRAMIENTO CURADOR AD LITEM JUZGADO 12CM.docx'}
+{'/Producer': 'iLovePDF', '/ModDate': 'D:20201218195836Z'}
+{'/Author': 'J12CivM_OfM2', '/Creator': 'Microsoft® Word 2016', '/CreationDate': "D:20201103174233-05'00'", '/ModDate': "D:20201103174233-05'00'", '/Producer': 'Microsoft® Word 2016'}
+{'/Author': 'J12CivM_OfM2', '/Creator': 'Microsoft® Word 2016', '/CreationDate': "D:20201204153019-05'00'", '/ModDate': "D:20201204153019-05'00'", '/Producer': 'Microsoft® Word 2016'}
+{'/Creator': 'PDF24 Tools', '/Producer': 'PDF24 Tools'}
+{'/Creator': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/87.0.4280.88 Safari/537.36', '/Producer': 'Skia/PDF m87', '/CreationDate': "D:20201216122209+00'00'", '/ModDate': "D:20201216122209+00'00'"}
+{'/Producer': 'FPDF 1.81', '/CreationDate': 'D:20201019114110', '/ModDate': "D:20201016152300-05'00'", '/Creator': 'RICOH Aficio MP 4002'}
+{'/CreationDate': "D:20210219152236-05'00'", '/Creator': 'Microsoft® Word 2016', '/ModDate': 'D:20210409194350Z', '/Producer': '3-Heights(TM) PDF Security Shell 4.8.25.2 (http://www.pdf-tools.com)'}
+{'/ModDate': 'D:20200617090400', '/CreationDate': 'D:20200617090400', '/Creator': 'Button Manager V2', '/Producer': 'Button Manager V2', '/Subject': '', '/Author': '', '/Keywords': '', '/Title': ''}
+
