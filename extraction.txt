@@ -1,0 +1,40 @@
+R1# show ipv6 route
+
+<output omitted>
+
+8 22/0: [soy
+
+via Serial0/0/0, directly connected
+
+C 2001:DB8:CAFE:1::/64 [0/0]
+
+via GigabitEthernet0/1, directly connected
+L 2001:DB8:CAFE:1::1/128 [0/0]
+
+via GigabitEthernet0/1, receive
+
+C 2001:DB8:CAFE:2::/64 [0/0]
+
+via GigabitEthernet0/0, directly connected
+L 2001:DB8:CAFE:2::1/128 [0/0]
+
+via GigabitEthernet0/0, receive
+
+C 2001:DB8:CAFE:3::/64 [0/0]
+
+via Serial0/0/0, directly connected
+
+L 2001:DB8:CAFE:3::1/128 [0/0]
+
+via Serial0/0/0, receive
+
+S 2001:DB8:CAFE:4::1/128 [1/0]
+
+via Serial0/0/0, directly connected
+
+L FFOO::/8 [0/0]
+
+via Null0O, receive
+
+ 
+
