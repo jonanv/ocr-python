@@ -7,7 +7,7 @@ import copy
 import re
 import unicodedata
 
-# Función que permite obtener la informacion de metadatos del archivo
+# Metodo que permite obtener la informacion de metadatos del archivo
 def get_metadata(path):
     with open(path, 'rb') as f:
         pdf = PdfFileReader(f)
@@ -19,49 +19,33 @@ def get_metadata(path):
     producer = info.producer
     subject = info.subject
     title = info.title
-
-    # diccionario = {'/nombre' : 'Carlos', 'edad' : 22, 'cursos': ['Python','Django','JavaScript'] }
-    # print(diccionario['/nombre'])
-    
-    # for key in diccionario:
-    #     print (key, ":", diccionario[key])
         
     for key in info:
         print (key, ":", info[key])
 
-    # info_normalize = {
-    #     '/Creator': '',
-    #     '/Producer': '',
-    #     '/CreationDate': '',
-    #     '/ModDate': '',
-    #     '/Title': '',
-    #     '/Author': '',
-    #     '/Subject': '',
-    #     '/Keywords': ''
-    # }
-    
     # print(info)
-    normalize_metadata(info)
     return info
 
-
+# Metodo que normaliza los medatatos de los pdfs para que todos los archivos tengan las mismas propiedades
 def normalize_metadata(metadata):
-
     info_normalize = {
-        'creator': '',
-        '/Producer': '',
-        '/CreationDate': '',
-        '/ModDate': '',
-        '/Title': '',
-        '/Author': '',
-        '/Subject': '',
-        '/Keywords': ''
+        'creator': exist_prop(metadata, '/Creator'),
+        'producer': exist_prop(metadata, '/Producer'),
+        'creationDate': exist_prop(metadata, '/CreationDate'),
+        'modificationDate': exist_prop(metadata, '/ModDate'),
+        'title': exist_prop(metadata, '/Title'),
+        'author': exist_prop(metadata, '/Author'),
+        'subject': exist_prop(metadata, '/Subject'),
+        'keywords': exist_prop(metadata, '/Keywords'),
     }
+    return info_normalize
 
-    print(info_normalize)
-
-def exist_prop():
-    return
+# Metodo que determina si la llave existe en el diccionario, retorna vacio en caso de no existir
+def exist_prop(metadata, key):
+    if(metadata.get(key)):
+        return metadata[key]
+    else:
+        return ''
 
 # Metodo que determina si el archivo esta protegido
 def is_locked(file):
@@ -73,16 +57,17 @@ def is_locked(file):
     else:
         return False
 
+# Metodo que renombra los nombres de los archivos
 def rename_file(file, file_rename):
     os.rename(file, file_rename)
 
-# Función que retorna la variable con el nombre de la carpeta
+# Metodo que retorna la variable con el nombre de la carpeta
 def folder():
 	carpeta = 'HERRAMIENTAS EXCEL/1220190007900 Prueba 1/CUADERNO PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS EXCEL/1220190007900 Prueba 2/CUADERNO PRINCIPAL/'
 	return carpeta
 
-# Función que retorna una lista con los archivos del folder
+# Metodo que retorna una lista con los archivos del folder
 def list_files(folder):
 	list_files = os.listdir(folder)
 	return list_files
@@ -109,10 +94,12 @@ def show_metadata():
         print('Encriptado: ' + str(is_locked(path)))
 
         metadata = get_metadata(path)
-        all_metadata += str(metadata) + '\n'
-        print(metadata)
+        metadata_normalize = normalize_metadata(metadata)
+        print(metadata_normalize)
 
-        list_metadata_dates.append(metadata)
+        all_metadata += str(metadata_normalize) + '\n'
+
+        list_metadata_dates.append(metadata_normalize)
         print()
         print()
 
@@ -162,10 +149,10 @@ if __name__ == '__main__':
 
 
 
-# TODO: Cargar archivos de pdf
-# TODO: remplazar la ñ por n
-# TODO: Obtener metadatos X
-# TODO: Hacer copia de archivos para no romper los originales
 # TODO: Archivos protegidos (unlocked - protected - unsecured)
+# TODO: Obtener metadatos X
 # TODO: Archivos sin fecha de cracion y modifiacion en metadatos
+# TODO: Cargar archivos de pdf en web
+# TODO: remplazar la ñ por n
+# TODO: Hacer copia de archivos para no romper los originales
 # TODO: Generar .txt con las fechas
