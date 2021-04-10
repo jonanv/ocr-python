@@ -93,8 +93,8 @@ def show_metadata():
         # TODO: Crear metodo que haga todo el proceso de modificar el nombre con los metodos que se utilizan aca
         file = remove_extension(files[x]) # Elimina la extension
         file = normalize_accents(file) # Elimina acentos
-        count_character_file = len(file) # Cantidad de caracteres
-        print('Caracteres: ' + str(count_character_file))
+        count_character_file = count_character(file) # Cantidad de caracteres
+        print('Valido: ' + str(count_character_file) + ', Caracteres: ' + str(len(file)))
         file = str(file.title()) # Capitalizacion
         print('Capitalizacion: ' + file)
 
@@ -199,6 +199,15 @@ def get_date(file):
         # print(date)
     return date
 
+# Metodo que cuenta la cantidad de caracteres del nombre del archivo y determina si es valido
+def count_character(file):
+    characters = len(file)
+    # FIXME: Que pasa con los archivos que son superior a 40 caracteres?
+    if(characters <= 40):
+        return True
+    else:
+        return False
+
 if __name__ == '__main__':
     # Obtener metadatos de un solo pdf
     # path = 'files/14AutoOrdenaSeguirAdelanteEjecucion-smallpdf.pdf'
@@ -206,11 +215,6 @@ if __name__ == '__main__':
 
     show_metadata()
     # rename_file('text.pdf', 'rename_text.pdf')
-
-    # text = '05. CONSTANCIA 21-03-2021'
-    # date_formated = str(find_date(text))
-    # date = set_format_date(date_formated)
-    # print(date)
 
 
     # print()
