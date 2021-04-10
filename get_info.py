@@ -8,6 +8,9 @@ import re
 import unicodedata
 import numpy as np
 import pandas as pd
+from datetime import datetime
+import datefinder
+import pdfplumber
 
 # Metodo que permite obtener la informacion de metadatos del archivo
 def get_metadata(path):
@@ -87,19 +90,18 @@ def show_metadata():
     for x in range(len(files)):
         print(str(x+1) + ". " + files[x])
 
+        # TODO: Crear metodo que haga todo el proceso de modificar el nombre con los metodos que se utilizan aca
         file = remove_extension(files[x]) # Elimina la extension
         file = normalize_accents(file) # Elimina acentos
         print('Caracteres: ' + str(len(file))) # Cantidad de caracteres
         print('Capitalizacion: ' + str(file.title())) # Capitalizacion
         file = remove_special_characters(file.title()) # Elimina caracteres especiales
-        file = remove_numbers(file) # Elimina numeros de la cadena
+        # file = remove_numbers(file) # Elimina numeros de la cadena
 
         print('Salida: ' + file)
 
         path = folder() + files[x]
         print('Encriptado: ' + str(is_locked(path)))
-
-        
 
 
         print()
@@ -150,6 +152,7 @@ def remove_numbers(file_name):
     return new_file_name
 
 def change_date():
+
     return
 
 # Metodo que genera archivo txt
@@ -169,8 +172,30 @@ if __name__ == '__main__':
     # path = 'files/14AutoOrdenaSeguirAdelanteEjecucion-smallpdf.pdf'
     # get_metadata(path)
 
-    show_metadata()
+    # show_metadata()
     # rename_file('text.pdf', 'rename_text.pdf')
+
+    text = '05. CONSTANCIA 21-03-2021'
+    match = re.search(r'\d{2}-\d{2}-\d{4}', text)
+    # date = datetime.strptime(match.group(), '%d-%m-%Y').date()
+    date = datetime.strptime(match.group(), '%d-%m-%Y').strftime('%Y%m%d')
+    print(date)
+
+    # date = datetime.strptime('Mon Feb 15 2010', '%a %b %d %Y').strftime('%d/%m/%Y')
+    # print(date)
+
+
+    print()
+
+    file = 'files/14AutoOrdenaSeguirAdelanteEjecucion-smallpdf.pdf'
+    with pdfplumber.open(file) as pdf:
+        page = pdf.pages[0]
+        text = page.extract_text()
+    print(text)
+
+    matches = datefinder.find_dates(text)
+    for match in matches:
+        print(match)
     
     
 

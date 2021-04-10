@@ -29,12 +29,14 @@ import pdfplumber
 # Cuando el archivo esta local
 invoice = 'scanned.pdf'
 
+# Lee el archivo
 with pdfplumber.open(invoice) as pdf:
     page = pdf.pages[0]
     text = page.extract_text()
     print(text)
     print(page)
 
+# Convierte la imagen a texto con ocrmypdf
 os.system(f'ocrmypdf {invoice} output.pdf')
 
 with pdfplumber.open('output.pdf') as pdf:
