@@ -6,6 +6,8 @@ import os
 import copy
 import re
 import unicodedata
+import numpy as np
+import pandas as pd
 
 # Metodo que permite obtener la informacion de metadatos del archivo
 def get_metadata(path):
@@ -20,8 +22,8 @@ def get_metadata(path):
     subject = info.subject
     title = info.title
         
-    for key in info:
-        print (key, ":", info[key])
+    # for key in info:
+    #     print (key, ":", info[key])
 
     # print(info)
     return info
@@ -45,6 +47,9 @@ def exist_prop(metadata, key):
     if(metadata.get(key)):
         return metadata[key]
     else:
+        if(key == '/CreationDate'):
+            # TODO: llamar a otro metodo que lee el pdf y recupera la info
+            print('Debe de llamar a otro metodo que lee el pdf y recupera la info')
         return ''
 
 # Metodo que determina si el archivo esta protegido
@@ -74,7 +79,6 @@ def list_files(folder):
 
 # 
 def show_metadata():
-    print()
     files = list_files(folder())
     copyFiles = copy.deepcopy(files) # Copia del arreglo original
     all_metadata = ''
@@ -99,12 +103,13 @@ def show_metadata():
 
         all_metadata += str(metadata_normalize) + '\n'
 
-        list_metadata_dates.append(metadata_normalize)
+        list_metadata_dates.append([metadata_normalize['creationDate'], files[x]])
         print()
         print()
 
-    generate_txt(all_metadata)
-    print(list_metadata_dates)
+    # generate_txt(all_metadata)
+    # generate_csv(list_metadata_dates)
+    
  
     
 def remove_special_characters(file_name):
@@ -136,6 +141,11 @@ def generate_txt(metadata):
     file = open("metadata.txt", "w")
     file.write(str(metadata) + os.linesep)
     file.close()
+
+def generate_csv(list_metadata_dates):
+    NCD = pd.DataFrame(np.array(list_metadata_dates)) # Matriz de nuevo conjunto de datos con pandas
+    print(NCD)
+    NCD.to_csv(str('metadata') + '.csv', header=True, sep=',', index=False)
 
 if __name__ == '__main__':
     # Obtener metadatos de un solo pdf
