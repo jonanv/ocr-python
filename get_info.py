@@ -68,8 +68,8 @@ def rename_file(file, file_rename):
 
 # Metodo que retorna la variable con el nombre de la carpeta
 def folder():
-	carpeta = 'HERRAMIENTAS EXCEL/1220190007900 Prueba 1/CUADERNO PRINCIPAL/'
-	# carpeta = 'HERRAMIENTAS EXCEL/1220190007900 Prueba 2/CUADERNO PRINCIPAL/'
+	# carpeta = 'HERRAMIENTAS EXCEL/1220190007900 Prueba 1/CUADERNO PRINCIPAL/'
+	carpeta = 'HERRAMIENTAS EXCEL/1220190007900 Prueba 2/CUADERNO PRINCIPAL/'
 	return carpeta
 
 # Metodo que retorna una lista con los archivos del folder
@@ -77,7 +77,7 @@ def list_files(folder):
 	list_files = os.listdir(folder)
 	return list_files
 
-# 
+# Metodo que lista los archivos en el folder y recorre cada archivo
 def show_metadata():
     files = list_files(folder())
     copyFiles = copy.deepcopy(files) # Copia del arreglo original
@@ -92,34 +92,47 @@ def show_metadata():
         print('Caracteres: ' + str(len(file))) # Cantidad de caracteres
         print('Capitalizacion: ' + str(file.title())) # Capitalizacion
         file = remove_special_characters(file.title()) # Elimina caracteres especiales
+        file = remove_numbers(file) # Elimina numeros de la cadena
+
         print('Salida: ' + file)
 
         path = folder() + files[x]
         print('Encriptado: ' + str(is_locked(path)))
 
-        metadata = get_metadata(path)
-        metadata_normalize = normalize_metadata(metadata)
-        print(metadata_normalize)
+        
 
-        all_metadata += str(metadata_normalize) + '\n'
 
-        list_metadata_dates.append([metadata_normalize['creationDate'], files[x]])
         print()
+
+        if(is_locked(path)):
+            print('EL ARCHIVO ESTA ENCRIPTADO NO SE PUDE ACCEDER A LOS METADATOS')
+        else:
+            metadata = get_metadata(path)
+            metadata_normalize = normalize_metadata(metadata)
+            print(metadata_normalize)
+
+            all_metadata += str(metadata_normalize) + '\n'
+
+            list_metadata_dates.append([metadata_normalize['creationDate'], files[x]])
+        print()
+        print('--------------------------------------------')
         print()
 
     # generate_txt(all_metadata)
     # generate_csv(list_metadata_dates)
     
  
-    
+# Metodo que elimina los caracteres especiales de la cadena
 def remove_special_characters(file_name):
     new_file_name = ''.join(filter(str.isalnum, file_name)) 
     return new_file_name
 
+# Metodo que retorna el nombre del archivo sin la extension
 def remove_extension(file_name):
     new_file_name = file_name.split('.pdf')
     return new_file_name[0]
 
+# Metodo que elimina los acentos y remplaza las letras sin acentos
 def normalize_accents(file_name):
     # s = "Pingüino: Málãgà ês uñ̺ã cíudãd fantástica y èn Logroño me pica el... moñǫ̝̘̦̞̟̩̐̏̋͌́ͬ̚͡õ̪͓͍̦̓ơ̤̺̬̯͂̌͐͐͟o͎͈̳̠̼̫͂̊"
     # -> NFD y eliminar diacríticos
@@ -131,17 +144,21 @@ def normalize_accents(file_name):
     file_name = normalize('NFC', file_name)
     return file_name
 
-def remove_numbers():
-    return
+# Metodo que elimina los numeros del nombre del archivo
+def remove_numbers(file_name):
+    new_file_name = ''.join(i for i in file_name if not i.isdigit())
+    return new_file_name
 
 def change_date():
     return
 
+# Metodo que genera archivo txt
 def generate_txt(metadata):
     file = open("metadata.txt", "w")
     file.write(str(metadata) + os.linesep)
     file.close()
 
+# Metodo que genera archivo csv
 def generate_csv(list_metadata_dates):
     NCD = pd.DataFrame(np.array(list_metadata_dates)) # Matriz de nuevo conjunto de datos con pandas
     print(NCD)
