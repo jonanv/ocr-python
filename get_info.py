@@ -93,12 +93,18 @@ def show_metadata():
         # TODO: Crear metodo que haga todo el proceso de modificar el nombre con los metodos que se utilizan aca
         file = remove_extension(files[x]) # Elimina la extension
         file = normalize_accents(file) # Elimina acentos
-        print('Caracteres: ' + str(len(file))) # Cantidad de caracteres
-        print('Capitalizacion: ' + str(file.title())) # Capitalizacion
-        file = remove_special_characters(file.title()) # Elimina caracteres especiales
-        # file = remove_numbers(file) # Elimina numeros de la cadena
+        count_character_file = len(file) # Cantidad de caracteres
+        print('Caracteres: ' + str(count_character_file))
+        file = str(file.title()) # Capitalizacion
+        print('Capitalizacion: ' + file)
 
-        print('Salida: ' + file)
+        date = get_date(file) # Retorna la fecha del archivo formateada si tiene
+
+        file = remove_special_characters(file.title()) # Elimina caracteres especiales
+        file = remove_numbers(file) # Elimina numeros de la cadena
+        file = file + date
+
+        print('SALIDA: ' + file)
 
         path = folder() + files[x]
         print('Encriptado: ' + str(is_locked(path)))
@@ -167,35 +173,57 @@ def generate_csv(list_metadata_dates):
     print(NCD)
     NCD.to_csv(str('metadata') + '.csv', header=True, sep=',', index=False)
 
+# Metodo que busca una fecha (en cualquier formato) en una cadena o texto
+def find_date(text):
+    matches = datefinder.find_dates(text)
+    for match in matches:
+        # print(match)
+        return match # 2021-10-22 18:30:00
+
+# Metodo que establece formato para una fecha en formato string
+def set_format_date(text):
+    match = re.search(r'\d{4}-\d{2}-\d{2}', text)
+    # print(match.group()) # 2021-03-21
+    date = datetime.strptime(match.group(), '%Y-%m-%d').strftime('%Y%m%d')
+    # date = datetime.strptime('Mon Feb 15 2010', '%a %b %d %Y').strftime('%d/%m/%Y')
+    # print(date)
+    return date
+
+# Metodo que recibe el nombre del archivo y determina si tiene fecha en la cadena y si la tiene la retorna con el formato correcto despues de llamar al metodo set_format_date()
+def get_date(file):
+    date = ''
+    date_formated = str(find_date(file))
+    if(date_formated != 'None'):
+        print('Formato: ' + date_formated)
+        date = set_format_date(date_formated)
+        # print(date)
+    return date
+
 if __name__ == '__main__':
     # Obtener metadatos de un solo pdf
     # path = 'files/14AutoOrdenaSeguirAdelanteEjecucion-smallpdf.pdf'
     # get_metadata(path)
 
-    # show_metadata()
+    show_metadata()
     # rename_file('text.pdf', 'rename_text.pdf')
 
-    text = '05. CONSTANCIA 21-03-2021'
-    match = re.search(r'\d{2}-\d{2}-\d{4}', text)
-    # date = datetime.strptime(match.group(), '%d-%m-%Y').date()
-    date = datetime.strptime(match.group(), '%d-%m-%Y').strftime('%Y%m%d')
-    print(date)
-
-    # date = datetime.strptime('Mon Feb 15 2010', '%a %b %d %Y').strftime('%d/%m/%Y')
+    # text = '05. CONSTANCIA 21-03-2021'
+    # date_formated = str(find_date(text))
+    # date = set_format_date(date_formated)
     # print(date)
 
 
-    print()
+    # print()
 
-    file = 'files/14AutoOrdenaSeguirAdelanteEjecucion-smallpdf.pdf'
-    with pdfplumber.open(file) as pdf:
-        page = pdf.pages[0]
-        text = page.extract_text()
-    print(text)
+    # file = 'files/14AutoOrdenaSeguirAdelanteEjecucion-smallpdf.pdf'
+    # with pdfplumber.open(file) as pdf:
+    #     page = pdf.pages[0]
+    #     text = page.extract_text()
+    # print(text)
 
-    matches = datefinder.find_dates(text)
-    for match in matches:
-        print(match)
+    # matches = datefinder.find_dates(text)
+    # for match in matches:
+    #     print(match)
     
     
 
