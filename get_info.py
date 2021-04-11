@@ -61,6 +61,7 @@ def get_content_file(path):
 
 # Metodo que lee y recupera la informacion de los metadatos con ayuda del metodo (get content file)
 def read_and_recover_information(metadata_normalized, path):
+    # TODO: Archivos sin fecha de cracion y modifiacion en metadatos
     if(metadata_normalized['creationDate'] == ''):
         print('NO TIENE FECHA DE CREACION DEBE DE LLAMAR A OTRO METODO QUE LEA EL PDF Y RECUPERE LA INFO')
         print()
@@ -125,6 +126,8 @@ def show_metadata():
         print('Capitalizacion: ' + file)
 
         date = get_date(file) # Retorna la fecha del archivo formateada si tiene
+        # TODO: Regla de los numeros al principio antecedidos por cero
+        # TODO: Regla de las preposiciones en el nombre (Diccionario)
 
         file = remove_special_characters(file.title()) # Elimina caracteres especiales
         file = remove_numbers(file) # Elimina numeros de la cadena
@@ -139,6 +142,7 @@ def show_metadata():
         print()
 
         if(is_locked(path)):
+            # TODO: Archivos protegidos (unlocked - protected - unsecured)
             print('EL ARCHIVO ESTA ENCRIPTADO NO SE PUDE ACCEDER A LOS METADATOS')
         else:
             metadata_original = get_metadata(path)
@@ -171,9 +175,14 @@ def remove_extension(file_name):
 # Metodo que elimina los acentos y remplaza las letras sin acentos
 def normalize_accents(file_name):
     # s = "Pingüino: Málãgà ês uñ̺ã cíudãd fantástica y èn Logroño me pica el... moñǫ̝̘̦̞̟̩̐̏̋͌́ͬ̚͡õ̪͓͍̦̓ơ̤̺̬̯͂̌͐͐͟o͎͈̳̠̼̫͂̊"
+    # -> NFD y eliminar diacríticos sin la ñ
+    # s = re.sub(
+    #         r"([^n\u0300-\u036f]|n(?!\u0303(?![\u0300-\u036f])))[\u0300-\u036f]+", r"\1", 
+    #         normalize( "NFD", s), 0, re.I
+    #     )
     # -> NFD y eliminar diacríticos
     file_name = re.sub(
-            r"([^n\u0300-\u036f]|n(?!\u0303(?![\u0300-\u036f])))[\u0300-\u036f]+", r"\1", 
+            r"([^\u0300-\u036f]|(?![\u0300-\u036f]))[\u0300-\u036f]+", r"\1", 
             normalize("NFD", file_name), 0, re.I
         )
     # -> NFC
@@ -244,7 +253,7 @@ if __name__ == '__main__':
     # "D:20210219152236-05'00'"
     # 'D:2021 02 19 15 22 36'
 
-    show_metadata()
+    # show_metadata()
     # rename_file('text.pdf', 'rename_text.pdf')
 
 
@@ -268,12 +277,12 @@ if __name__ == '__main__':
     # print()
     # print(pdf.metadata)
 
+    s = "Pingüino: Málãgà ês uñ̺ã cíudãd fantástica y èn Logroño me pica el... moñǫ̝̘̦̞̟̩̐̏̋͌́ͬ̚͡õ̪͓͍̦̓ơ̤̺̬̯͂̌͐͐͟o͎͈̳̠̼̫͂̊"
+    print(normalize_accents(s))
 
 
-# TODO: Archivos protegidos (unlocked - protected - unsecured)
+
 # TODO: Obtener metadatos X
-# TODO: Archivos sin fecha de cracion y modifiacion en metadatos
 # TODO: Cargar archivos de pdf en web
-# TODO: remplazar la ñ por n
 # TODO: Hacer copia de archivos para no romper los originales
 # TODO: Generar .txt con las fechas
