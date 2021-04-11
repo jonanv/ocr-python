@@ -10,6 +10,8 @@ import numpy as np
 import pandas as pd
 from datetime import datetime
 import datefinder
+import dateparser
+from dateparser.search import search_dates
 import pdfplumber
 
 # Metodo que permite obtener la informacion de metadatos del archivo
@@ -69,11 +71,14 @@ def read_and_recover_information(metadata_normalized, path):
         print(text)
 
         if(str(text) != 'None'):
-            matches = datefinder.find_dates(text, source=False)
+            # matches = datefinder.find_dates(text, source=False)
+            matches = search_dates(text, languages=['es'])
             new_matches = list()
             for match in matches:
-                new_matches.append(match)
+                new_matches.append(match[1])
                 print(match)
+            print(new_matches)
+            # TODO: Implementar algoritmo que determine la menor fecha (OJO revisar bien (08. AUTO NOMBRA CURADOR.pdf))
             date = get_creation_date_format(new_matches[0]) # D:20201113165700 formato de la fecha de los metadatos
             metadata_normalized['creationDate'] = date
         else:
@@ -257,31 +262,40 @@ if __name__ == '__main__':
     # rename_file('text.pdf', 'rename_text.pdf')
 
 
-    # print()
+    print()
 
-    # file = 'files/11. NOTIFICACION. CURADOR..pdf'
-    # with pdfplumber.open(file) as pdf:
-    #     page = pdf.pages[0]
-    #     text = page.extract_text()
-    # print(text)
-    # print()
+    file = 'files/08. AUTO NOMBRA CURADOR.pdf'
+    with pdfplumber.open(file) as pdf:
+        page = pdf.pages[0]
+        text = page.extract_text()
+    print(text)
+    print()
 
-    # matches = datefinder.find_dates(text)
-    # new_matches = list()
-    # for match in matches:
-    #     new_matches.append(match)
-    #     # print(match)
+    # matches = datefinder.find_dates(matches)
+    matches = search_dates(text, languages=['es'])
+    new_text = ''
+    new_matches = list()
+    for match in matches:
+        new_text += match[0] + ', '
+        new_matches.append(match)
+        print(match)
+    print(new_text)
+
+    matches = datefinder.find_dates(str(new_text))
+    for match in matches:
+        print(match)
 
     # print(get_creation_date_format(new_matches[0]))
     
     # print()
     # print(pdf.metadata)
 
-    s = "Pingüino: Málãgà ês uñ̺ã cíudãd fantástica y èn Logroño me pica el... moñǫ̝̘̦̞̟̩̐̏̋͌́ͬ̚͡õ̪͓͍̦̓ơ̤̺̬̯͂̌͐͐͟o͎͈̳̠̼̫͂̊"
-    print(normalize_accents(s))
+    # date = dateparser.parse('Jueves 04 de Febrero del 2021', languages=['es'])
+    # print(date)
+    # date_search = search_dates('The first artificial Earth satellite was launched on 4 October 1957.', add_detected_language=True)
+    # print(date_search)
 
-
-
+# TODO: Revisar archivo 06. notificación 19.04.2021 DEMANDADO.pdf que sale con contenido extranio
 # TODO: Obtener metadatos X
 # TODO: Cargar archivos de pdf en web
 # TODO: Hacer copia de archivos para no romper los originales
