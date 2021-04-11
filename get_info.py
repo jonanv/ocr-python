@@ -75,9 +75,10 @@ def read_and_recover_information(metadata_normalized, path):
             matches = search_dates(text, languages=['es'])
             new_matches = list()
             for match in matches:
-                new_matches.append(match[1])
-                print(match)
-            print(new_matches)
+                if(len(match[0]) > 5):
+                    new_matches.append(match[1])
+                    print(match)
+            # print(new_matches)
             # TODO: Implementar algoritmo que determine la menor fecha (OJO revisar bien (08. AUTO NOMBRA CURADOR.pdf))
             date = get_creation_date_format(new_matches[0]) # D:20201113165700 formato de la fecha de los metadatos
             metadata_normalized['creationDate'] = date
@@ -258,32 +259,27 @@ if __name__ == '__main__':
     # "D:20210219152236-05'00'"
     # 'D:2021 02 19 15 22 36'
 
-    # show_metadata()
+    show_metadata()
     # rename_file('text.pdf', 'rename_text.pdf')
 
 
-    print()
+    # print()
 
-    file = 'files/08. AUTO NOMBRA CURADOR.pdf'
-    with pdfplumber.open(file) as pdf:
-        page = pdf.pages[0]
-        text = page.extract_text()
-    print(text)
-    print()
+    # file = 'files/08. AUTO NOMBRA CURADOR.pdf'
+    # with pdfplumber.open(file) as pdf:
+    #     page = pdf.pages[0]
+    #     text = page.extract_text()
+    # print(text)
+    # print()
 
-    # matches = datefinder.find_dates(matches)
-    matches = search_dates(text, languages=['es'])
-    new_text = ''
-    new_matches = list()
-    for match in matches:
-        new_text += match[0] + ', '
-        new_matches.append(match)
-        print(match)
-    print(new_text)
-
-    matches = datefinder.find_dates(str(new_text))
-    for match in matches:
-        print(match)
+    # # matches = datefinder.find_dates(matches)
+    # matches = search_dates(text, languages=['es'])
+    # new_matches = list()
+    # for match in matches:
+    #     if(len(match[0]) > 5):
+    #         new_matches.append(match[1])
+    #         print(match)
+    # print(new_matches)
 
     # print(get_creation_date_format(new_matches[0]))
     
