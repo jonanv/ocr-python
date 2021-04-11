@@ -59,6 +59,27 @@ def get_content_file(path):
         text = page.extract_text()
     return text
 
+# Metodo que lee y recupera la informacion de los metadatos con ayuda del metodo (get content file)
+def read_and_recover_information(metadata_normalized, path):
+    if(metadata_normalized['creationDate'] == ''):
+        print('NO TIENE FECHA DE CREACION DEBE DE LLAMAR A OTRO METODO QUE LEA EL PDF Y RECUPERE LA INFO')
+        print()
+        text = get_content_file(path)
+        print(text)
+
+        if(str(text) != 'None'):
+            matches = datefinder.find_dates(text, source=False)
+            new_matches = list()
+            for match in matches:
+                new_matches.append(match)
+                print(match)
+            date = get_creation_date_format(new_matches[0]) # D:20201113165700 formato de la fecha de los metadatos
+            metadata_normalized['creationDate'] = date
+        else:
+            # TODO: Metodo que analiza la informacion de la imagen y recupera la fecha
+            print('DEBE DE LLAMAR A OTRO METETODO QUE ANALIZARA LA IMAGEN DEL PDF')
+    return metadata_normalized
+
 # Metodo que determina si el archivo esta protegido
 def is_locked(file):
     with open(file, 'rb') as f:
@@ -122,25 +143,7 @@ def show_metadata():
         else:
             metadata_original = get_metadata(path)
             metadata_normalized = normalize_metadata(metadata_original)
-            
-            if(metadata_normalized['creationDate'] == ''):
-                # TODO: llamar a otro metodo que lee el pdf y recupera la info
-                print('NO TIENE FECHA DE CREACION DEBE DE LLAMAR A OTRO METODO QUE LEA EL PDF Y RECUPERE LA INFO')
-                print()
-                text = get_content_file(path)
-                print(text)
-
-                if(str(text) != 'None'):
-                    matches = datefinder.find_dates(text)
-                    new_matches = list()
-                    for match in matches:
-                        new_matches.append(match)
-                        print(match)
-                    date = get_creation_date_format(new_matches[0]) # D:20201113165700 formato de la fecha de los metadatos
-                    metadata_normalized['creationDate'] = date
-                else:
-                    # TODO: Metodo que analiza la informacion de la imagen y recupera la fecha
-                    print('DEBE DE LLAMAR A OTRO METETODO QUE ANALIZARA LA IMAGEN DEL PDF')
+            metadata_normalized = read_and_recover_information(metadata_normalized, path)
 
             print()
             print(metadata_normalized)
