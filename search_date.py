@@ -14,7 +14,7 @@ string_with_dates = '''
         entries are du 19.04.2021
     '''
 
-# matches = datefinder.find_dates(string_with_dates)
-matches = datefinder.find_dates(string_with_dates, source=True)
+# matches = datefinder.find_dates(string_with_dates) # Format: 2021-10-22 18:30:00
+matches = datefinder.find_dates(string_with_dates, source=True) # Format: (datetime.datetime(2021, 9, 19, 0, 0), '9/19')
 for match in matches:
     print(match)

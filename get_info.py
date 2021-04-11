@@ -32,28 +32,48 @@ def get_metadata(path):
     return info
 
 # Metodo que normaliza los medatatos de los pdfs para que todos los archivos tengan las mismas propiedades
-def normalize_metadata(metadata):
+def normalize_metadata(metadata, file):
     info_normalize = {
-        'creator': exist_prop(metadata, '/Creator'),
-        'producer': exist_prop(metadata, '/Producer'),
-        'creationDate': exist_prop(metadata, '/CreationDate'),
-        'modificationDate': exist_prop(metadata, '/ModDate'),
-        'title': exist_prop(metadata, '/Title'),
-        'author': exist_prop(metadata, '/Author'),
-        'subject': exist_prop(metadata, '/Subject'),
-        'keywords': exist_prop(metadata, '/Keywords'),
+        'creator': exist_prop(metadata, '/Creator', file),
+        'producer': exist_prop(metadata, '/Producer', file),
+        'creationDate': exist_prop(metadata, '/CreationDate', file),
+        'modificationDate': exist_prop(metadata, '/ModDate', file),
+        'title': exist_prop(metadata, '/Title', file),
+        'author': exist_prop(metadata, '/Author', file),
+        'subject': exist_prop(metadata, '/Subject', file),
+        'keywords': exist_prop(metadata, '/Keywords', file)
     }
     return info_normalize
 
 # Metodo que determina si la llave existe en el diccionario, retorna vacio en caso de no existir
-def exist_prop(metadata, key):
+def exist_prop(metadata, key, file):
     if(metadata.get(key)):
         return metadata[key]
     else:
         if(key == '/CreationDate'):
             # TODO: llamar a otro metodo que lee el pdf y recupera la info
-            print('Debe de llamar a otro metodo que lee el pdf y recupera la info')
+            print('NO TIENE FECHA DE CREACION DEBE DE LLAMAR A OTRO METODO QUE LEE EL PDF Y RECUPERA LA INFO')
+            print()
+            text = get_content_file(folder() + file)
+            print(text)
+
+            # D:20201113165700 formato de la fecha de los metadatos
+            if(str(text) != 'None'):
+                matches = datefinder.find_dates(text)
+                for match in matches:
+                    print(match)
+            else:
+                # TODO: Metodo que analiza la informacion de la imagen y recupera la fecha
+                print('DEBE DE LLAMAR A OTRO METETODO QUE ANALIZARA LA IMAGEN DEL PDF')
+
         return ''
+
+# Metodo que obtiene el contenido de la primera pagina del archivo
+def get_content_file(path):
+    with pdfplumber.open(path) as pdf:
+        page = pdf.pages[0]
+        text = page.extract_text()
+    return text
 
 # Metodo que determina si el archivo esta protegido
 def is_locked(file):
@@ -90,6 +110,7 @@ def show_metadata():
     for x in range(len(files)):
         print(str(x+1) + ". " + files[x])
 
+        # NOMBRE DEL ARCHIVO
         # TODO: Crear metodo que haga todo el proceso de modificar el nombre con los metodos que se utilizan aca
         file = remove_extension(files[x]) # Elimina la extension
         file = normalize_accents(file) # Elimina acentos
@@ -106,30 +127,30 @@ def show_metadata():
 
         print('SALIDA: ' + file)
 
+        # CONTENIDO DEL ARCHIVO
         path = folder() + files[x]
         print('Encriptado: ' + str(is_locked(path)))
-
 
         print()
 
         if(is_locked(path)):
             print('EL ARCHIVO ESTA ENCRIPTADO NO SE PUDE ACCEDER A LOS METADATOS')
         else:
-            metadata = get_metadata(path)
-            metadata_normalize = normalize_metadata(metadata)
-            print(metadata_normalize)
+            metadata_original = get_metadata(path)
+            metadata_normalized = normalize_metadata(metadata_original, files[x])
+            print()
+            print(metadata_normalized)
 
-            all_metadata += str(metadata_normalize) + '\n'
+            all_metadata += str(metadata_normalized) + '\n'
 
-            list_metadata_dates.append([metadata_normalize['creationDate'], files[x]])
+            list_metadata_dates.append([metadata_normalized['creationDate'], files[x]])
         print()
         print('--------------------------------------------')
         print()
 
     # generate_txt(all_metadata)
     # generate_csv(list_metadata_dates)
-    
- 
+
 # Metodo que elimina los caracteres especiales de la cadena
 def remove_special_characters(file_name):
     new_file_name = ''.join(filter(str.isalnum, file_name)) 
@@ -157,10 +178,6 @@ def remove_numbers(file_name):
     new_file_name = ''.join(i for i in file_name if not i.isdigit())
     return new_file_name
 
-def change_date():
-
-    return
-
 # Metodo que genera archivo txt
 def generate_txt(metadata):
     file = open("metadata.txt", "w")
@@ -182,14 +199,14 @@ def find_date(text):
 
 # Metodo que establece formato para una fecha en formato string
 def set_format_date(text):
-    match = re.search(r'\d{4}-\d{2}-\d{2}', text)
+    match = re.search(r'\d{4}-\d{2}-\d{2}', str(text))
     # print(match.group()) # 2021-03-21
     date = datetime.strptime(match.group(), '%Y-%m-%d').strftime('%Y%m%d')
     # date = datetime.strptime('Mon Feb 15 2010', '%a %b %d %Y').strftime('%d/%m/%Y')
     # print(date)
     return date
 
-# Metodo que recibe el nombre del archivo y determina si tiene fecha en la cadena y si la tiene la retorna con el formato correcto despues de llamar al metodo set_format_date()
+# Metodo que recibe el nombre del archivo y determina si tiene fecha en la cadena y si la tiene la retorna con el formato correcto despues de llamar al metodo (set format date)
 def get_date(file):
     date = ''
     date_formated = str(find_date(file))
@@ -208,28 +225,41 @@ def count_character(file):
     else:
         return False
 
+# Metodo que formatea la fecha de creacion de los metadatos del pdf, se apolla en el metodo de (set format date)
+def get_creation_date_format(date):
+    date_format = 'D:' + set_format_date(date) + '000000'
+    return date_format
+
 if __name__ == '__main__':
     # Obtener metadatos de un solo pdf
     # path = 'files/14AutoOrdenaSeguirAdelanteEjecucion-smallpdf.pdf'
-    # get_metadata(path)
+    # print(get_metadata(path))
+    # "D:20210219152236-05'00'"
+    # 'D:2021 02 19 15 22 36'
 
-    show_metadata()
+    # show_metadata()
     # rename_file('text.pdf', 'rename_text.pdf')
 
 
-    # print()
+    print()
 
-    # file = 'files/14AutoOrdenaSeguirAdelanteEjecucion-smallpdf.pdf'
-    # with pdfplumber.open(file) as pdf:
-    #     page = pdf.pages[0]
-    #     text = page.extract_text()
-    # print(text)
+    file = 'files/11. NOTIFICACION. CURADOR..pdf'
+    with pdfplumber.open(file) as pdf:
+        page = pdf.pages[0]
+        text = page.extract_text()
+    print(text)
+    print()
 
-    # matches = datefinder.find_dates(text)
-    # for match in matches:
-    #     print(match)
+    matches = datefinder.find_dates(text)
+    new_matches = list()
+    for match in matches:
+        new_matches.append(match)
+        # print(match)
+
+    print(get_creation_date_format(new_matches[0]))
     
-    
+    print()
+    print(pdf.metadata)
 
 
 
