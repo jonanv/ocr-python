@@ -11,6 +11,7 @@ import os
 
 # import requests
 import pdfplumber
+from os import remove
 
 # def download_file(url):
 #     local_filename = url.split('/')[-1]
@@ -26,8 +27,27 @@ import pdfplumber
 # invoice = 'https://bit.ly/2UJgUpO'
 # invoice_pdf = download_file(invoice)
 
+# ###################################################
 # Cuando el archivo esta local
 # invoice = 'scanned.pdf'
+
+# # Lee el archivo
+# with pdfplumber.open(invoice) as pdf:
+#     page = pdf.pages[0]
+#     text = page.extract_text()
+#     print(text)
+#     print(page)
+
+# # Convierte la imagen a texto con ocrmypdf
+# os.system(f'ocrmypdf {invoice} output.pdf')
+
+# with pdfplumber.open('output.pdf') as pdf:
+#     page = pdf.pages[0]
+#     text = page.extract_text(x_tolerance=2)
+#     print()
+#     print(text)
+
+
 invoice = 'files/10AceptaDesignacion.pdf'
 
 # Lee el archivo
@@ -38,9 +58,11 @@ with pdfplumber.open(invoice) as pdf:
     print(page)
 
 # Convierte la imagen a texto con ocrmypdf
-os.system(f'ocrmypdf {invoice} output.pdf')
+os.system(f'ocrmypdf {invoice} files/output.pdf')
 
-with pdfplumber.open('output.pdf') as pdf:
+with pdfplumber.open('files/output.pdf') as pdf:
     page = pdf.pages[0]
     text = page.extract_text(x_tolerance=2)
+    remove('files/output.pdf')
+    print()
     print(text)

@@ -13,6 +13,7 @@ import datefinder
 import dateparser
 from dateparser.search import search_dates
 import pdfplumber
+from os import remove
 
 # Metodo que permite obtener la informacion de metadatos del archivo
 def get_metadata(path):
@@ -61,6 +62,17 @@ def get_content_file(path):
         text = page.extract_text()
     return text
 
+# Metodo que obtiene la informacion de la primera pagina del pdf escaneado, recibe el path
+def get_content_file_scanned(path):
+    # Convierte la imagen a texto con ocrmypdf
+    os.system(f'ocrmypdf {path} output.pdf')
+
+    with pdfplumber.open('output.pdf') as pdf:
+        page = pdf.pages[0]
+        text = page.extract_text(x_tolerance=2)
+        remove('output.pdf')
+    return text
+        
 # Metodo que lee y recupera la informacion de los metadatos con ayuda del metodo (get content file)
 def read_and_recover_information(metadata_normalized, path):
     # TODO: Archivos sin fecha de cracion y modifiacion en metadatos
@@ -87,6 +99,20 @@ def read_and_recover_information(metadata_normalized, path):
             # TODO: Metodo que analiza la informacion de la imagen y recupera la fecha
             print('DEBE DE LLAMAR A OTRO METETODO QUE ANALIZARA LA IMAGEN DEL PDF')
             # TODO: Debe de cambiar el nombre y asignarselo antes de scanned el pdf para que permita su observacion porque no permite caracteres extranios en su nombre
+            text = get_content_file_scanned(path)
+            print(text)
+
+            # TODO: Crear metodo para codigo repetido
+            matches = search_dates(text, languages=['es'])
+            new_matches = list()
+            for match in matches:
+                if(len(match[0]) > 5): # Mayor que 5 para eliminar la fechas basura que trae en matches
+                    new_matches.append(match[1])
+                    print(match)
+            # print(new_matches)
+            # TODO: Implementar algoritmo que determine la menor fecha (OJO revisar bien (08. AUTO NOMBRA CURADOR.pdf))
+            date = get_creation_date_format(new_matches[0]) # D:20201113165700 formato de la fecha de los metadatos
+            metadata_normalized['creationDate'] = date
             
     return metadata_normalized
 
@@ -106,8 +132,8 @@ def rename_file(file, file_rename):
 
 # Metodo que retorna la variable con el nombre de la carpeta
 def folder():
-	# carpeta = 'HERRAMIENTAS EXCEL/1220190007900 Prueba 1/CUADERNO PRINCIPAL/'
-	carpeta = 'HERRAMIENTAS EXCEL/1220190007900 Prueba 2/CUADERNO PRINCIPAL/'
+	carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1/CUADERNO_PRINCIPAL/'
+	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2/CUADERNO_PRINCIPAL/'
 	return carpeta
 
 # Metodo que retorna una lista con los archivos del folder

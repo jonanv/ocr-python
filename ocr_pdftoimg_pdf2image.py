@@ -100,7 +100,7 @@ print('Terminado')
 # https://tesseract-ocr.github.io/tessdoc/Installation.html
 # https://www.geeksforgeeks.org/python-reading-contents-of-pdf-using-ocr-optical-character-recognition/
 
-# pdf_file = 'texto.pdf'
+# pdf_file = 'text.pdf'
 # pages = convert_from_path(pdf_file, 500)
 # image_counter = 1
 
