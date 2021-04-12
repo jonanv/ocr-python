@@ -70,12 +70,13 @@ def read_and_recover_information(metadata_normalized, path):
         text = get_content_file(path)
         print(text)
 
+        # Recupera la informacion si es un pdf escrito y es diferente de None
         if(str(text) != 'None'):
             # matches = datefinder.find_dates(text, source=False)
             matches = search_dates(text, languages=['es'])
             new_matches = list()
             for match in matches:
-                if(len(match[0]) > 5):
+                if(len(match[0]) > 5): # Mayor que 5 para eliminar la fechas basura que trae en matches
                     new_matches.append(match[1])
                     print(match)
             # print(new_matches)
@@ -256,8 +257,6 @@ if __name__ == '__main__':
     # Obtener metadatos de un solo pdf
     # path = 'files/14AutoOrdenaSeguirAdelanteEjecucion-smallpdf.pdf'
     # print(get_metadata(path))
-    # "D:20210219152236-05'00'"
-    # 'D:2021 02 19 15 22 36'
 
     show_metadata()
     # rename_file('text.pdf', 'rename_text.pdf')
@@ -283,13 +282,6 @@ if __name__ == '__main__':
 
     # print(get_creation_date_format(new_matches[0]))
     
-    # print()
-    # print(pdf.metadata)
-
-    # date = dateparser.parse('Jueves 04 de Febrero del 2021', languages=['es'])
-    # print(date)
-    # date_search = search_dates('The first artificial Earth satellite was launched on 4 October 1957.', add_detected_language=True)
-    # print(date_search)
 
 # TODO: Revisar archivo 06. notificación 19.04.2021 DEMANDADO.pdf que sale con contenido extranio
 # TODO: Obtener metadatos X
