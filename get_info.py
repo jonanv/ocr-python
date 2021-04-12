@@ -71,49 +71,38 @@ def get_content_file_scanned(path):
         page = pdf.pages[0]
         text = page.extract_text(x_tolerance=2)
         remove('output.pdf')
+        print()
     return text
+
+# Metodo que recupera la primera fecha de un texto en espaniol y discrimina las fechas basura
+def get_recover_date(text):
+    # TODO: Crear metodo para codigo repetido
+    # matches = datefinder.find_dates(text, source=False)
+    matches = search_dates(text, languages=['es'])
+    new_matches = list()
+    for match in matches:
+        if(len(match[0]) > 5): # Mayor que 5 para eliminar la fechas basura que trae en matches
+            new_matches.append(match[1])
+            print(match)
+    # print(new_matches)
+    date = get_creation_date_format(new_matches[0]) # D:20201113165700 formato de la fecha de los metadatos
+    return date
         
 # Metodo que lee y recupera la informacion de los metadatos con ayuda del metodo (get content file)
 def read_and_recover_information(metadata_normalized, path):
-    # TODO: Archivos sin fecha de cracion y modifiacion en metadatos
     if(metadata_normalized['creationDate'] == ''):
-        print('NO TIENE FECHA DE CREACION DEBE DE LLAMAR A OTRO METODO QUE LEA EL PDF Y RECUPERE LA INFO')
-        print()
-        text = get_content_file(path)
+        # NO TIENE FECHA DE CREACION
+        text = get_content_file(path) # Llama al metodo para que recupere la info
         print(text)
 
         # Recupera la informacion si es un pdf escrito y es diferente de None
         if(str(text) != 'None'):
-            # matches = datefinder.find_dates(text, source=False)
-            matches = search_dates(text, languages=['es'])
-            new_matches = list()
-            for match in matches:
-                if(len(match[0]) > 5): # Mayor que 5 para eliminar la fechas basura que trae en matches
-                    new_matches.append(match[1])
-                    print(match)
-            # print(new_matches)
-            # TODO: Implementar algoritmo que determine la menor fecha (OJO revisar bien (08. AUTO NOMBRA CURADOR.pdf))
-            date = get_creation_date_format(new_matches[0]) # D:20201113165700 formato de la fecha de los metadatos
-            metadata_normalized['creationDate'] = date
+            metadata_normalized['creationDate'] = get_recover_date(text)
         else:
-            # TODO: Metodo que analiza la informacion de la imagen y recupera la fecha
-            print('DEBE DE LLAMAR A OTRO METETODO QUE ANALIZARA LA IMAGEN DEL PDF')
             # TODO: Debe de cambiar el nombre y asignarselo antes de scanned el pdf para que permita su observacion porque no permite caracteres extranios en su nombre
-            text = get_content_file_scanned(path)
+            text = get_content_file_scanned(path) # Llama al metodo para que recupere la info pdf imagen
             print(text)
-
-            # TODO: Crear metodo para codigo repetido
-            matches = search_dates(text, languages=['es'])
-            new_matches = list()
-            for match in matches:
-                if(len(match[0]) > 5): # Mayor que 5 para eliminar la fechas basura que trae en matches
-                    new_matches.append(match[1])
-                    print(match)
-            # print(new_matches)
-            # TODO: Implementar algoritmo que determine la menor fecha (OJO revisar bien (08. AUTO NOMBRA CURADOR.pdf))
-            date = get_creation_date_format(new_matches[0]) # D:20201113165700 formato de la fecha de los metadatos
-            metadata_normalized['creationDate'] = date
-            
+            metadata_normalized['creationDate'] = get_recover_date(text)
     return metadata_normalized
 
 # Metodo que determina si el archivo esta protegido
