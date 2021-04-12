@@ -27,7 +27,8 @@ import pdfplumber
 # invoice_pdf = download_file(invoice)
 
 # Cuando el archivo esta local
-invoice = 'scanned.pdf'
+# invoice = 'scanned.pdf'
+invoice = 'files/10AceptaDesignacion.pdf'
 
 # Lee el archivo
 with pdfplumber.open(invoice) as pdf:

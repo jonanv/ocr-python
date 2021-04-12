@@ -86,6 +86,8 @@ def read_and_recover_information(metadata_normalized, path):
         else:
             # TODO: Metodo que analiza la informacion de la imagen y recupera la fecha
             print('DEBE DE LLAMAR A OTRO METETODO QUE ANALIZARA LA IMAGEN DEL PDF')
+            # TODO: Debe de cambiar el nombre y asignarselo antes de scanned el pdf para que permita su observacion porque no permite caracteres extranios en su nombre
+            
     return metadata_normalized
 
 # Metodo que determina si el archivo esta protegido
