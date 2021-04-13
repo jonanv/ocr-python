@@ -14,6 +14,7 @@ import dateparser
 from dateparser.search import search_dates
 import pdfplumber
 from os import remove
+import pikepdf
 
 # Metodo que permite obtener la informacion de metadatos del archivo
 def get_metadata(path):
@@ -65,7 +66,7 @@ def get_content_file(path):
 # Metodo que obtiene la informacion de la primera pagina del pdf escaneado, recibe el path
 def get_content_file_scanned(path):
     # Convierte la imagen a texto con ocrmypdf
-    os.system(f'ocrmypdf {path} output.pdf')
+    os.system(f'ocrmypdf --pages 1-2 {path} output.pdf')
 
     with pdfplumber.open('output.pdf') as pdf:
         page = pdf.pages[0]
@@ -80,7 +81,7 @@ def get_recover_date(text):
     matches = search_dates(text, languages=['es'])
     new_matches = list()
     for match in matches:
-        if(len(match[0]) > 5): # Mayor que 5 para eliminar la fechas basura que trae en matches
+        if(len(match[0]) > 7): # Mayor que 7(25/1/19) para eliminar la fechas basura que trae en matches
             new_matches.append(match[1])
             print(match)
     # print(new_matches)
@@ -89,8 +90,8 @@ def get_recover_date(text):
         
 # Metodo que lee y recupera la informacion de los metadatos con ayuda del metodo (get content file)
 def read_and_recover_information(metadata_normalized, path):
+    # NO TIENE FECHA DE CREACION
     if(metadata_normalized['creationDate'] == ''):
-        # NO TIENE FECHA DE CREACION
         text = get_content_file(path) # Llama al metodo para que recupere la info
         # print(text)
 
@@ -103,6 +104,21 @@ def read_and_recover_information(metadata_normalized, path):
             print(text)
             metadata_normalized['creationDate'] = get_recover_date(text)
     return metadata_normalized
+
+# 
+def get_metadata_complete(path, all_metadata, list_metadata_dates, file):
+    metadata_original = get_metadata(path)
+    metadata_normalized = normalize_metadata(metadata_original)
+    metadata_normalized = read_and_recover_information(metadata_normalized, path)
+
+    print()
+    print(metadata_normalized)
+
+    all_metadata += str(metadata_normalized) + '\n'
+
+    list_metadata_dates.append([metadata_normalized['creationDate'], file])
+
+    return (all_metadata, list_metadata_dates)
 
 # Metodo que determina si el archivo esta protegido
 def is_locked(file):
@@ -122,6 +138,7 @@ def rename_file(file, file_rename):
 def folder():
 	carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1/CUADERNO_PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2/CUADERNO_PRINCIPAL/'
+	# carpeta = 'CUADERNO_PRINCIPAL/'
 	return carpeta
 
 # Metodo que retorna una lista con los archivos del folder
@@ -166,19 +183,17 @@ def show_metadata():
 
         if(is_locked(path)):
             # TODO: Archivos protegidos (unlocked - protected - unsecured)
-            print('EL ARCHIVO ESTA ENCRIPTADO NO SE PUDE ACCEDER A LOS METADATOS')
+            path_file_decrypted = files[x] + '_decrypted.pdf'
+            with pikepdf.open(path) as pdf:
+                num_pages = len(pdf.pages)
+                del pdf.pages[-1]
+                pdf.save(path_file_decrypted)
+
+            (all_metadata, list_metadata_dates) = get_metadata_complete(path_file_decrypted, all_metadata, list_metadata_dates, files[x])
+            remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
         else:
             # Archivos que son pdf sin proteccion con texto o con imagen
-            metadata_original = get_metadata(path)
-            metadata_normalized = normalize_metadata(metadata_original)
-            metadata_normalized = read_and_recover_information(metadata_normalized, path)
-
-            print()
-            print(metadata_normalized)
-
-            all_metadata += str(metadata_normalized) + '\n'
-
-            list_metadata_dates.append([metadata_normalized['creationDate'], files[x]])
+            (all_metadata, list_metadata_dates) = get_metadata_complete(path, all_metadata, list_metadata_dates, files[x])
         print()
         print('--------------------------------------------')
         print()
