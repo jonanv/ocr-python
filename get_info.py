@@ -116,7 +116,7 @@ def get_metadata_complete(path, all_metadata, list_metadata_dates, file):
 
     all_metadata += str(metadata_normalized) + '\n'
 
-    list_metadata_dates.append([metadata_normalized['creationDate'], file])
+    list_metadata_dates.append([convert_string_to_datatime(metadata_normalized['creationDate']), file])
 
     return (all_metadata, list_metadata_dates)
 
@@ -145,9 +145,9 @@ def rename_file(file, file_rename):
 
 # Metodo que retorna la variable con el nombre de la carpeta
 def folder():
-	carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1/CUADERNO_PRINCIPAL/'
+	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1/CUADERNO_PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2/CUADERNO_PRINCIPAL/'
-	# carpeta = 'CUADERNO_PRINCIPAL/'
+	carpeta = 'CUADERNO_PRINCIPAL/'
 	return carpeta
 
 # Metodo que retorna una lista con los archivos del folder
@@ -245,9 +245,36 @@ def generate_txt(metadata):
 
 # Metodo que genera archivo csv
 def generate_csv(list_metadata_dates):
-    NCD = pd.DataFrame(np.array(list_metadata_dates)) # Matriz de nuevo conjunto de datos con pandas
-    print(NCD)
-    NCD.to_csv(str('metadata') + '.csv', header=True, sep=',', index=False)
+    data_set = pd.DataFrame(np.array(list_metadata_dates)) # Matriz de nuevo conjunto de datos con pandas
+    data_set = data_set.sort_values(by=0) # Ordena la columna 0 que contiene las fechas
+    print(data_set)
+    data_set.to_csv(str('metadata') + '.csv', header=True, sep=',', index=False)
+
+def convert_string_to_datatime(text_date):
+    # D:20200821205457Z00'00' --> D:2020 08 21 20 54 57 Z00'00'
+    # D:20201111143014-05'00' --> D:2020 11 11 14 30 14 -05'00'
+    # D:20201216122209+00'00' --> D:2020 12 16 12 22 09 +00'00'
+    # D:20201113165700 --> D:2020 11 13 16 57 00
+    text_list = text_date.split(':') # 'Z', '-', '+'
+
+    date_with_z = text_list[1].find('Z')
+    date_with_underscore = text_list[1].find('-')
+    date_with_plus = text_list[1].find('+')
+
+    if(date_with_z != -1):
+        text_list = text_list[1].split('Z')
+        string_date = text_list[0]
+    elif(date_with_underscore != -1):
+        text_list = text_list[1].split('-')
+        string_date = text_list[0]
+    elif(date_with_plus != -1):
+        text_list = text_list[1].split('+')
+        string_date = text_list[0]
+    else:
+        string_date = text_list[1]
+
+    date = datetime.strptime(str(string_date), '%Y%m%d%H%M%S')
+    return date
 
 # Metodo que busca una fecha (en cualquier formato) en una cadena o texto
 def find_date(text):
@@ -296,31 +323,11 @@ if __name__ == '__main__':
 
     show_metadata()
     # rename_file('text.pdf', 'rename_text.pdf')
+    
 
 
-    # print()
-
-    # file = 'files/08. AUTO NOMBRA CURADOR.pdf'
-    # with pdfplumber.open(file) as pdf:
-    #     page = pdf.pages[0]
-    #     text = page.extract_text()
-    # print(text)
-    # print()
-
-    # # matches = datefinder.find_dates(matches)
-    # matches = search_dates(text, languages=['es'])
-    # new_matches = list()
-    # for match in matches:
-    #     if(len(match[0]) > 5):
-    #         new_matches.append(match[1])
-    #         print(match)
-    # print(new_matches)
-
-    # print(get_creation_date_format(new_matches[0]))
     
 
 # TODO: Revisar archivo 06. notificación 19.04.2021 DEMANDADO.pdf que sale con contenido extranio
-# TODO: Obtener metadatos X
-# TODO: Cargar archivos de pdf en web
+# TODO: Cargar archivos de pdf en web (Django and Drag and Drop)
 # TODO: Hacer copia de archivos para no romper los originales
-# TODO: Generar .txt con las fechas
