@@ -70,13 +70,12 @@ def get_content_file_scanned(path):
     with pdfplumber.open('output.pdf') as pdf:
         page = pdf.pages[0]
         text = page.extract_text(x_tolerance=2)
-        remove('output.pdf')
+        remove('output.pdf') # Elimina el archivo que es generado porque no es necesario
         print()
     return text
 
 # Metodo que recupera la primera fecha de un texto en espaniol y discrimina las fechas basura
 def get_recover_date(text):
-    # TODO: Crear metodo para codigo repetido
     # matches = datefinder.find_dates(text, source=False)
     matches = search_dates(text, languages=['es'])
     new_matches = list()
@@ -93,7 +92,7 @@ def read_and_recover_information(metadata_normalized, path):
     if(metadata_normalized['creationDate'] == ''):
         # NO TIENE FECHA DE CREACION
         text = get_content_file(path) # Llama al metodo para que recupere la info
-        print(text)
+        # print(text)
 
         # Recupera la informacion si es un pdf escrito y es diferente de None
         if(str(text) != 'None'):
@@ -169,6 +168,7 @@ def show_metadata():
             # TODO: Archivos protegidos (unlocked - protected - unsecured)
             print('EL ARCHIVO ESTA ENCRIPTADO NO SE PUDE ACCEDER A LOS METADATOS')
         else:
+            # Archivos que son pdf sin proteccion con texto o con imagen
             metadata_original = get_metadata(path)
             metadata_normalized = normalize_metadata(metadata_original)
             metadata_normalized = read_and_recover_information(metadata_normalized, path)
