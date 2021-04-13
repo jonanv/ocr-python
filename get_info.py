@@ -105,7 +105,7 @@ def read_and_recover_information(metadata_normalized, path):
             metadata_normalized['creationDate'] = get_recover_date(text)
     return metadata_normalized
 
-# 
+# Metodo que obtiene la metadata completa (arreglo), recibe el path, nombre de archivo, toda la metadata y lista de metadata
 def get_metadata_complete(path, all_metadata, list_metadata_dates, file):
     metadata_original = get_metadata(path)
     metadata_normalized = normalize_metadata(metadata_original)
@@ -119,6 +119,15 @@ def get_metadata_complete(path, all_metadata, list_metadata_dates, file):
     list_metadata_dates.append([metadata_normalized['creationDate'], file])
 
     return (all_metadata, list_metadata_dates)
+
+# Metodo que desencripta archivos protegidos (unlocked - protected - unsecured) y retorna la ruta del archivo desencriptado
+def decrypted_file(file, path):
+    path_file_decrypted = file + '_decrypted.pdf'
+    with pikepdf.open(path) as pdf:
+        num_pages = len(pdf.pages)
+        del pdf.pages[-1]
+        pdf.save(path_file_decrypted)
+    return path_file_decrypted
 
 # Metodo que determina si el archivo esta protegido
 def is_locked(file):
@@ -182,13 +191,8 @@ def show_metadata():
         print()
 
         if(is_locked(path)):
-            # TODO: Archivos protegidos (unlocked - protected - unsecured)
-            path_file_decrypted = files[x] + '_decrypted.pdf'
-            with pikepdf.open(path) as pdf:
-                num_pages = len(pdf.pages)
-                del pdf.pages[-1]
-                pdf.save(path_file_decrypted)
-
+            # Archivos que son pdf y tiene proteccion con texto o con imagen
+            path_file_decrypted = decrypted_file(file[x], path) # Desencrita y retorna la ruta del archivo desencriptado
             (all_metadata, list_metadata_dates) = get_metadata_complete(path_file_decrypted, all_metadata, list_metadata_dates, files[x])
             remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
         else:
@@ -198,8 +202,8 @@ def show_metadata():
         print('--------------------------------------------')
         print()
 
-    # generate_txt(all_metadata)
-    # generate_csv(list_metadata_dates)
+    generate_txt(all_metadata)
+    generate_csv(list_metadata_dates)
 
 # Metodo que elimina los caracteres especiales de la cadena
 def remove_special_characters(file_name):
