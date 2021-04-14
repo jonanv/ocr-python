@@ -206,6 +206,7 @@ def show_metadata():
 
     generate_txt(list_metadata)
     generate_csv(list_metadata_dates)
+    generate_xlsx(list_metadata_dates)
 
 # Metodo que elimina los caracteres especiales de la cadena
 def remove_special_characters(file_name):
