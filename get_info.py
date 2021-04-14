@@ -33,10 +33,10 @@ def get_metadata(path):
     #     print (key, ":", info[key])
 
     # print(info)
-    return info
+    return (info, number_of_pages)
 
 # Metodo que normaliza los medatatos de los pdfs para que todos los archivos tengan las mismas propiedades
-def normalize_metadata(metadata):
+def normalize_metadata(metadata, number_of_pages):
     info_normalize = {
         'creator': exist_prop(metadata, '/Creator'),
         'producer': exist_prop(metadata, '/Producer'),
@@ -45,7 +45,8 @@ def normalize_metadata(metadata):
         'title': exist_prop(metadata, '/Title'),
         'author': exist_prop(metadata, '/Author'),
         'subject': exist_prop(metadata, '/Subject'),
-        'keywords': exist_prop(metadata, '/Keywords')
+        'keywords': exist_prop(metadata, '/Keywords'),
+        'pages': number_of_pages
     }
     return info_normalize
 
@@ -107,8 +108,8 @@ def read_and_recover_information(metadata_normalized, path):
 
 # Metodo que obtiene la metadata completa (arreglo), recibe el path, nombre de archivo, toda la metadata y lista de metadata
 def get_metadata_list_files(path, list_metadata, list_metadata_dates, file):
-    metadata_original = get_metadata(path)
-    metadata_normalized = normalize_metadata(metadata_original)
+    (metadata_original, number_of_pages) = get_metadata(path)
+    metadata_normalized = normalize_metadata(metadata_original, number_of_pages)
     metadata_normalized = read_and_recover_information(metadata_normalized, path)
 
     print()
@@ -116,7 +117,7 @@ def get_metadata_list_files(path, list_metadata, list_metadata_dates, file):
 
     list_metadata += str(metadata_normalized) + '\n'
 
-    list_metadata_dates.append([convert_string_to_datatime(metadata_normalized['creationDate']), file])
+    list_metadata_dates.append([convert_string_to_datatime(metadata_normalized['creationDate']), metadata_normalized['pages'], file])
 
     return (list_metadata, list_metadata_dates)
 
@@ -193,7 +194,7 @@ def show_metadata():
 
         if(is_locked(path)):
             # Archivos que son pdf y tiene proteccion con texto o con imagen
-            path_file_decrypted = decrypted_file(file[x], path) # Desencrita y retorna la ruta del archivo desencriptado
+            path_file_decrypted = decrypted_file(file[x], path) # Desencripta y retorna la ruta del archivo desencriptado
             (list_metadata, list_metadata_dates) = get_metadata_list_files(path_file_decrypted, list_metadata, list_metadata_dates, files[x])
             remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
         else:
@@ -250,6 +251,13 @@ def generate_csv(list_metadata_dates):
     data_set = data_set.sort_values(by=0) # Ordena la columna 0 que contiene las fechas
     print(data_set)
     data_set.to_csv(str('metadata') + '.csv', header=True, sep=',', index=False)
+
+# Metodo que genera archivo csv
+def generate_xlsx(list_metadata_dates):
+    data_set = pd.DataFrame(np.array(list_metadata_dates)) # Matriz de nuevo conjunto de datos con pandas
+    writer = pd.ExcelWriter(str('metadata') + '.xlsx', engine='xlsxwriter')
+    data_set.to_excel(writer, header=False, index=False)
+    writer.save()
 
 def convert_string_to_datatime(text_date):
     # D:20200821205457Z00'00' --> D:2020 08 21 20 54 57 Z00'00'
