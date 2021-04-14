@@ -15,6 +15,7 @@ from dateparser.search import search_dates
 import pdfplumber
 from os import remove
 import pikepdf
+import shutil
 
 # Metodo que permite obtener la informacion de metadatos del archivo
 def get_metadata(path):
@@ -107,7 +108,7 @@ def read_and_recover_information(metadata_normalized, path):
     return metadata_normalized
 
 # Metodo que obtiene la metadata completa (arreglo), recibe el path, nombre de archivo, toda la metadata y lista de metadata
-def get_metadata_list_files(path, list_metadata, list_metadata_dates, file):
+def get_metadata_files_list(path, list_metadata, list_metadata_dates, file):
     (metadata_original, number_of_pages) = get_metadata(path)
     metadata_normalized = normalize_metadata(metadata_original, number_of_pages)
     metadata_normalized = read_and_recover_information(metadata_normalized, path)
@@ -126,7 +127,7 @@ def decrypted_file(file, path):
     path_file_decrypted = file + '_decrypted.pdf'
     with pikepdf.open(path) as pdf:
         num_pages = len(pdf.pages)
-        del pdf.pages[-1]
+        # del pdf.pages[-1] # Elimina la ultima pagina
         pdf.save(path_file_decrypted)
     return path_file_decrypted
 
@@ -146,19 +147,20 @@ def rename_file(file, file_rename):
 
 # Metodo que retorna la variable con el nombre de la carpeta
 def get_folder():
-	carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1/CUADERNO_PRINCIPAL/'
+	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1/CUADERNO_PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2/CUADERNO_PRINCIPAL/'
-	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL/'
+	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_JUAN/'
+	carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
 	return carpeta
 
 # Metodo que retorna una lista con los archivos del folder
-def list_files(folder):
-	list_files = os.listdir(folder)
-	return list_files
+def files_list(folder):
+	files_list = os.listdir(folder)
+	return files_list
 
 # Metodo que lista los archivos en el folder y recorre cada archivo
 def show_metadata():
-    files = list_files(get_folder())
+    files = files_list(get_folder())
     copyFiles = copy.deepcopy(files) # Copia del arreglo original
     list_metadata = ''
     list_metadata_dates = list()
@@ -168,6 +170,10 @@ def show_metadata():
 
         # NOMBRE DEL ARCHIVO
         # TODO: Crear metodo que haga todo el proceso de modificar el nombre con los metodos que se utilizan aca
+        file = files[x].replace(' ', '_')
+        print(file)
+
+
         file = remove_extension(files[x]) # Elimina la extension
         file = normalize_accents(file) # Elimina acentos
         count_character_file = count_character(file) # Cantidad de caracteres
@@ -195,11 +201,14 @@ def show_metadata():
         if(is_locked(path)):
             # Archivos que son pdf y tiene proteccion con texto o con imagen
             path_file_decrypted = decrypted_file(file[x], path) # Desencripta y retorna la ruta del archivo desencriptado
-            (list_metadata, list_metadata_dates) = get_metadata_list_files(path_file_decrypted, list_metadata, list_metadata_dates, files[x])
+
+            # TODO: Aca se debe de leer el archivo primero para cambiar el nombre provisional y despues de obtener toda la metadata, asignar nombre de acuerdo al orden de fechas
+
+            (list_metadata, list_metadata_dates) = get_metadata_files_list(path_file_decrypted, list_metadata, list_metadata_dates, files[x])
             remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
         else:
             # Archivos que son pdf sin proteccion con texto o con imagen
-            (list_metadata, list_metadata_dates) = get_metadata_list_files(path, list_metadata, list_metadata_dates, files[x])
+            (list_metadata, list_metadata_dates) = get_metadata_files_list(path, list_metadata, list_metadata_dates, files[x])
         print()
         print('--------------------------------------------')
         print()
@@ -242,7 +251,7 @@ def remove_numbers(file_name):
 
 # Metodo que genera archivo txt
 def generate_txt(metadata):
-    file = open("metadata.txt", "w")
+    file = open("generated_files/metadata.txt", "w")
     file.write(str(metadata) + os.linesep)
     file.close()
 
@@ -251,12 +260,13 @@ def generate_csv(list_metadata_dates):
     data_set = pd.DataFrame(np.array(list_metadata_dates)) # Matriz de nuevo conjunto de datos con pandas
     data_set = data_set.sort_values(by=0) # Ordena la columna 0 que contiene las fechas
     print(data_set)
-    data_set.to_csv(str('metadata') + '.csv', header=True, sep=',', index=False)
+    data_set.to_csv(str('generated_files/metadata') + '.csv', header=True, sep=',', index=False)
 
 # Metodo que genera archivo csv
 def generate_xlsx(list_metadata_dates):
     data_set = pd.DataFrame(np.array(list_metadata_dates)) # Matriz de nuevo conjunto de datos con pandas
-    writer = pd.ExcelWriter(str('metadata') + '.xlsx', engine='xlsxwriter')
+    data_set = data_set.sort_values(by=0) # Ordena la columna 0 que contiene las fechas
+    writer = pd.ExcelWriter(str('generated_files/0_0ReadData') + '.xlsx', engine='xlsxwriter')
     data_set.to_excel(writer, header=False, index=False)
     writer.save()
 
@@ -329,12 +339,29 @@ def get_creation_date_format(date):
 if __name__ == '__main__':
     # Obtener metadatos de un solo pdf
     # path = 'files/14AutoOrdenaSeguirAdelanteEjecucion-smallpdf.pdf'
-    # print(get_metadata(path))
+    # (metadata, number_of_pages) = get_metadata(path)
+    # print(metadata)
+    # print(number_of_pages)
 
-    show_metadata()
-    # rename_file('text.pdf', 'rename_text.pdf')
+    # show_metadata()
+    # file = '10. AcEpTa dEsIgNaCióN_name_with_spaces.pdf'
+    # file = file.replace(' ', '_')
+    # print(file)
+    # os.mkdir('numero_proceso')
+    # shutil.copy('text.pdf', 'numero_proceso/text.pdf')
+    # rename_file('numero_proceso/text.pdf', 'numero_proceso/rename_text.pdf')
     
 
+
+    with pikepdf.open('files/14AutoOrdenaSeguirAdelanteEjecucion_protected.pdf') as pdf:
+        num_pages = len(pdf.pages)
+        pdf.save('files/decrypted.pdf')
+
+    # Obtener metadatos de un solo pdf
+    path = 'files/decrypted.pdf'
+    (metadata, number_of_pages) = get_metadata(path)
+    print(metadata)
+    print(number_of_pages)
 
     
 
