@@ -106,7 +106,7 @@ def read_and_recover_information(metadata_normalized, path):
     return metadata_normalized
 
 # Metodo que obtiene la metadata completa (arreglo), recibe el path, nombre de archivo, toda la metadata y lista de metadata
-def get_metadata_complete(path, all_metadata, list_metadata_dates, file):
+def get_metadata_list_files(path, list_metadata, list_metadata_dates, file):
     metadata_original = get_metadata(path)
     metadata_normalized = normalize_metadata(metadata_original)
     metadata_normalized = read_and_recover_information(metadata_normalized, path)
@@ -114,11 +114,11 @@ def get_metadata_complete(path, all_metadata, list_metadata_dates, file):
     print()
     print(metadata_normalized)
 
-    all_metadata += str(metadata_normalized) + '\n'
+    list_metadata += str(metadata_normalized) + '\n'
 
     list_metadata_dates.append([convert_string_to_datatime(metadata_normalized['creationDate']), file])
 
-    return (all_metadata, list_metadata_dates)
+    return (list_metadata, list_metadata_dates)
 
 # Metodo que desencripta archivos protegidos (unlocked - protected - unsecured) y retorna la ruta del archivo desencriptado
 def decrypted_file(file, path):
@@ -144,10 +144,10 @@ def rename_file(file, file_rename):
     os.rename(file, file_rename)
 
 # Metodo que retorna la variable con el nombre de la carpeta
-def folder():
-	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1/CUADERNO_PRINCIPAL/'
+def get_folder():
+	carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1/CUADERNO_PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2/CUADERNO_PRINCIPAL/'
-	carpeta = 'CUADERNO_PRINCIPAL/'
+	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL/'
 	return carpeta
 
 # Metodo que retorna una lista con los archivos del folder
@@ -157,9 +157,9 @@ def list_files(folder):
 
 # Metodo que lista los archivos en el folder y recorre cada archivo
 def show_metadata():
-    files = list_files(folder())
+    files = list_files(get_folder())
     copyFiles = copy.deepcopy(files) # Copia del arreglo original
-    all_metadata = ''
+    list_metadata = ''
     list_metadata_dates = list()
 
     for x in range(len(files)):
@@ -184,8 +184,9 @@ def show_metadata():
 
         print('SALIDA: ' + file)
 
+        # ------------------------------------------------------------
         # CONTENIDO DEL ARCHIVO
-        path = folder() + files[x]
+        path = get_folder() + files[x]
         print('Encriptado: ' + str(is_locked(path)))
 
         print()
@@ -193,16 +194,16 @@ def show_metadata():
         if(is_locked(path)):
             # Archivos que son pdf y tiene proteccion con texto o con imagen
             path_file_decrypted = decrypted_file(file[x], path) # Desencrita y retorna la ruta del archivo desencriptado
-            (all_metadata, list_metadata_dates) = get_metadata_complete(path_file_decrypted, all_metadata, list_metadata_dates, files[x])
+            (list_metadata, list_metadata_dates) = get_metadata_list_files(path_file_decrypted, list_metadata, list_metadata_dates, files[x])
             remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
         else:
             # Archivos que son pdf sin proteccion con texto o con imagen
-            (all_metadata, list_metadata_dates) = get_metadata_complete(path, all_metadata, list_metadata_dates, files[x])
+            (list_metadata, list_metadata_dates) = get_metadata_list_files(path, list_metadata, list_metadata_dates, files[x])
         print()
         print('--------------------------------------------')
         print()
 
-    generate_txt(all_metadata)
+    generate_txt(list_metadata)
     generate_csv(list_metadata_dates)
 
 # Metodo que elimina los caracteres especiales de la cadena
