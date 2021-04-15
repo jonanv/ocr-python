@@ -106,7 +106,7 @@ def read_and_recover_information(metadata_normalized, path):
         if(str(text) != 'None'):
             metadata_normalized['creationDate'] = get_recover_date(text)
         else:
-            # TODO: Debe de cambiar el nombre y asignarselo antes de scanned el pdf para que permita su observacion porque no permite caracteres extranios en su nombre
+            # TODO: Debe de cambiar el nombre y asignarselo antes de scanned el pdf para que permita su observacion porque no permite espacios en su nombre
             text = get_content_file_scanned(path) # Llama al metodo para que recupere la info pdf imagen
             print(text)
             metadata_normalized['creationDate'] = get_recover_date(text)
@@ -206,10 +206,10 @@ def show_metadata():
         if(is_locked(path)):
             # Archivos que son pdf y tiene proteccion con texto o con imagen
             path_file_decrypted = decrypted_file(files[x], path) # Desencripta y retorna la ruta del archivo desencriptado
-            # TODO: Aca se debe de leer el archivo primero para cambiar el nombre provisional y despues de obtener toda la metadata, asignar nombre de acuerdo al orden de fechas
-
             (list_metadata, list_metadata_dates) = get_metadata_files_list(path_file_decrypted, list_metadata, list_metadata_dates, files[x])
             remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
+
+            # TODO: Aca se debe de leer el archivo primero, para cambiar el nombre provisional al real, despues de obtener toda la metadata asignar nombre de acuerdo al orden de fechas
         else:
             # Archivos que son pdf sin proteccion con texto o con imagen
             (list_metadata, list_metadata_dates) = get_metadata_files_list(path, list_metadata, list_metadata_dates, files[x])
@@ -347,40 +347,19 @@ if __name__ == '__main__':
     # print(metadata)
     # print(number_of_pages)
 
-    # with open(path, 'rb') as f:
-    #     pdf = PdfFileReader(f)
-    #     info = pdf.getDocumentInfo()
-    #     number_of_pages = pdf.getNumPages()
-    # print(info)
-    # print(number_of_pages)
-
-    show_metadata()
-    # file = '10. AcEpTa dEsIgNaCióN_name_file_with_spaces.pdf'
-    # file = file.replace(' ', '_')
-    # print(file)
-    # os.mkdir('numero_proceso')
-    # shutil.copy('text.pdf', 'numero_proceso/text.pdf')
-    # rename_file('numero_proceso/text.pdf', 'numero_proceso/rename_text.pdf')
-    
+    # show_metadata()
+    file = '10. AcEpTa dEsIgNaCióN_name_file_with_spaces.pdf'
+    file = file.replace(' ', '_')
+    print(file)
+    os.mkdir('numero_proceso')
+    shutil.copy('text.pdf', 'numero_proceso/text.pdf')
+    rename_file('numero_proceso/text.pdf', 'numero_proceso/rename_text.pdf')
 
 
-    # with pikepdf.open('files/14AutoOrdenaSeguirAdelanteEjecucion_protected.pdf') as pdf:
-    #     num_pages = len(pdf.pages)
-    #     pdf.save('files/decrypted.pdf')
-
-    # # Obtener metadatos de un solo pdf
-    # path = 'files/decrypted.pdf'
-    # (metadata, number_of_pages) = get_metadata(path)
-    # print(metadata)
-    # print(number_of_pages)
-
-    # file = '009 2020 - 133 OFICIO EPS (Fl. 40).pdf'
-    # path = 'files/009 2020 - 133 OFICIO EPS (Fl. 40).pdf'
-    # path_file_decrypted = decrypted_file(file, path)
-    # print(path_file_decrypted)
 
     
 
 # TODO: Revisar archivo 06. notificación 19.04.2021 DEMANDADO.pdf que sale con contenido extranio
+# TODO: Revisar el archivo 003_ESCRITO_DEMANDA_FLS._1-73.pdf el cual no esta recuperando la fecha correcta (intentar aplicarle los dos metodos de busqueda de fechas, en ingles y espaniol y obtener las que son iguales)
 # TODO: Cargar archivos de pdf en web (Django and Drag and Drop)
 # TODO: Hacer copia de archivos para no romper los originales
