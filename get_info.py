@@ -147,8 +147,23 @@ def is_locked(file):
         return False
 
 # Metodo que renombra los nombres de los archivos
-def rename_file(file, file_rename):
-    os.rename(file, file_rename)
+def temporality_rename_file_and_place_folder(path, file, folder_of_files_renames):
+    file_rename = file.replace(' ', '_')
+    print(file_rename)
+
+    # TODO: Aplicar esta logica de abajo para el renombramiento final del archivo
+    is_exist_file_trash = os.path.isfile(get_folder() + '.DS_Store') # Comprueba si el archivo existe
+    print('is_exist_file_trash:', is_exist_file_trash)
+    if (is_exist_file_trash):
+        remove(get_folder() + '.DS_Store') # Elimina el archivo basura
+
+    is_exist_folder = os.path.isdir(get_folder() + folder_of_files_renames) # comprueba si el folder existe
+    print('is_exist_folder:', is_exist_folder)
+    if (not is_exist_folder):
+        os.mkdir(get_folder() + folder_of_files_renames) # Genera una nueva carpeta
+
+    shutil.copy(path, (get_folder() + str(folder_of_files_renames) + file)) # Copia el archivo a la nueva carpeta
+    os.rename((get_folder() + str(folder_of_files_renames) + file), (get_folder() + str(folder_of_files_renames) + file_rename)) # Renombrar el archivo ubicado en la nueva carpeta
 
 # Metodo que retorna la variable con el nombre de la carpeta
 def get_folder():
@@ -167,35 +182,20 @@ def files_list(folder):
 def show_metadata():
     files = files_list(get_folder())
     copyFiles = copy.deepcopy(files) # Copia del arreglo original
+
+    count = 0
+    folder_of_files_renames = 'numero_proceso/'
     list_metadata = ''
     list_metadata_dates = list()
-    count = 0
 
     for x in range(len(files)):
         if ((files[x] != 'numero_proceso') and (files[x] != '.DS_Store')):
             print(str(count+1) + ". " + files[x])
 
+            path = get_folder() + files[x]
             # NOMBRE DEL ARCHIVO
             # TODO: Implementar metodo para renombrar temporalmente el archivo desde el inicio
-            path = get_folder() + files[x]
-            file = files[x]
-            folder_of_files_renames = 'numero_proceso/'
-
-            file_rename = file.replace(' ', '_')
-            print(file_rename)
-
-            is_exist_file_trash = os.path.isfile(get_folder() + '.DS_Store') # Comprueba si el archivo existe
-            print('is_exist_file_trash:', is_exist_file_trash)
-            if (is_exist_file_trash):
-                remove(get_folder() + '.DS_Store') # Elimina el archivo basura
-
-            is_exist_folder = os.path.isdir(get_folder() + folder_of_files_renames) # comprueba si el folder existe
-            print('is_exist_folder:', is_exist_folder)
-            if (not is_exist_folder):
-                os.mkdir(get_folder() + folder_of_files_renames) # Genera una nueva carpeta
-
-            shutil.copy(path, (get_folder() + str(folder_of_files_renames) + file)) # Copia el archivo a la nueva carpeta
-            rename_file((get_folder() + str(folder_of_files_renames) + file), (get_folder() + str(folder_of_files_renames) + file_rename)) # Renombrar el archivo ubicado en la nueva carpeta
+            temporality_rename_file_and_place_folder(path, files[x], folder_of_files_renames)
             print()
 
 
