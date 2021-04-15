@@ -146,24 +146,43 @@ def is_locked(file):
     else:
         return False
 
-# Metodo que renombra los nombres de los archivos
+# Metodo que comprueba si el archivo basura existe, si exite lo elimina
+def is_exist_file_trash():
+    is_exist_file_trash = os.path.isfile(get_folder() + '.DS_Store') # Comprueba si el archivo existe
+    if (is_exist_file_trash):
+        remove(get_folder() + '.DS_Store') # Elimina el archivo basura
+
+# Metodo que comprueba si la carpeta existe, si no exite la crea, si exite no la crea
+def is_exist_folder(folder_of_files_renames):
+    is_exist_folder = os.path.isdir(get_folder() + folder_of_files_renames) # comprueba si el folder existe
+    if (not is_exist_folder):
+        os.mkdir(get_folder() + folder_of_files_renames) # Genera una nueva carpeta
+
+# Metodo que renombra los nombres de los archivos y los ubica en el nuevo folder
 def temporality_rename_file_and_place_folder(path, file, folder_of_files_renames):
     file_rename = file.replace(' ', '_')
     print(file_rename)
 
     # TODO: Aplicar esta logica de abajo para el renombramiento final del archivo
-    is_exist_file_trash = os.path.isfile(get_folder() + '.DS_Store') # Comprueba si el archivo existe
-    print('is_exist_file_trash:', is_exist_file_trash)
-    if (is_exist_file_trash):
-        remove(get_folder() + '.DS_Store') # Elimina el archivo basura
-
-    is_exist_folder = os.path.isdir(get_folder() + folder_of_files_renames) # comprueba si el folder existe
-    print('is_exist_folder:', is_exist_folder)
-    if (not is_exist_folder):
-        os.mkdir(get_folder() + folder_of_files_renames) # Genera una nueva carpeta
-
+    is_exist_file_trash()
+    is_exist_folder(folder_of_files_renames)
+    
     shutil.copy(path, (get_folder() + str(folder_of_files_renames) + file)) # Copia el archivo a la nueva carpeta
     os.rename((get_folder() + str(folder_of_files_renames) + file), (get_folder() + str(folder_of_files_renames) + file_rename)) # Renombrar el archivo ubicado en la nueva carpeta
+
+# Metodo que recorre el folder actual y renombra todos los archivos en el
+def temporality_rename_all_files(folder_of_files_renames):
+    files = files_list(get_folder())
+    count = 0
+
+    for x in range(len(files)):
+        if ((files[x] != 'numero_proceso') and (files[x] != '.DS_Store')):
+            print(str(count+1) + ". " + files[x])
+
+            path_original = get_folder() + files[x]
+            temporality_rename_file_and_place_folder(path_original, files[x], folder_of_files_renames)
+            print()
+        count += 1
 
 # Metodo que retorna la variable con el nombre de la carpeta
 def get_folder():
@@ -180,67 +199,72 @@ def files_list(folder):
 
 # Metodo que lista los archivos en el folder y recorre cada archivo
 def show_metadata():
-    files = files_list(get_folder())
-    copyFiles = copy.deepcopy(files) # Copia del arreglo original
-
-    count = 0
+    print('RENONBRAMIENTO DE ARCHIVO Y COPIA A LA NUEVA UBICACION')
+    print('----------------------------------------------------------')
     folder_of_files_renames = 'numero_proceso/'
+    temporality_rename_all_files(folder_of_files_renames)
+    
+    print()
+    print('LECTURA DEL ARCHIVO PARA OBTENER METADATOS DESDE LA NUEVA UBICACION')
+    print('----------------------------------------------------------')
+    files_news = files_list(get_folder() + folder_of_files_renames)
     list_metadata = ''
     list_metadata_dates = list()
 
-    for x in range(len(files)):
-        if ((files[x] != 'numero_proceso') and (files[x] != '.DS_Store')):
-            print(str(count+1) + ". " + files[x])
+    for x in range(len(files_news)):
+        print(str(x+1) + ". " + files_news[x])
 
-            path = get_folder() + files[x]
-            # NOMBRE DEL ARCHIVO
-            # TODO: Implementar metodo para renombrar temporalmente el archivo desde el inicio
-            temporality_rename_file_and_place_folder(path, files[x], folder_of_files_renames)
-            print()
+        # ------------------------------------------------------------
+        # CONTENIDO DEL ARCHIVO
+        path = get_folder() + folder_of_files_renames + files_news[x]
+        print('Encriptado: ' + str(is_locked(path)))
 
+        print()
 
-        #     # TODO: Crear metodo que haga todo el proceso de modificar el nombre con los metodos que se utilizan aca
-        #     file = remove_extension(files[x]) # Elimina la extension
-        #     file = normalize_accents(file) # Elimina acentos
-        #     count_character_file = count_character(file) # Cantidad de caracteres
-        #     print('Valido: ' + str(count_character_file) + ', Caracteres: ' + str(len(file)))
-        #     file = str(file.title()) # Capitalizacion
-        #     print('Capitalizacion: ' + file)
+        if(is_locked(path)):
+            # Archivos que son pdf y tiene proteccion con texto o con imagen
+            path_file_decrypted = decrypted_file(files_news[x], path) # Desencripta y retorna la ruta del archivo desencriptado
 
-        #     date = get_date(file) # Retorna la fecha del archivo formateada si tiene
-        #     # TODO: Regla de los numeros al principio antecedidos por cero
-        #     # TODO: Regla de las preposiciones en el nombre (Diccionario)
+            # TODO: Aca se debe de leer el archivo primero, para cambiar el nombre original al provisional, despues de obtener toda la metadata asignar nombre de acuerdo al orden de fechas(Mirar si se puede asignar nombre temporal de entrada)
+            # TODO: Agregar el nombre correcto que debe de llevar sin el numero al principio (01, 02, ...) a la list_metadata_dates (tambien se pude recorrer el arreglo (list_metadata_dates) y extraer el nombre del archivo y que despues pase por un metodo para su transformacion y asignacion, debe ser al final del bucle for, despues llamar al metodo de renombrar)
 
-        #     file = remove_special_characters(file.title()) # Elimina caracteres especiales
-        #     file = remove_numbers(file) # Elimina numeros de la cadena
-        #     file = file + date
+            (list_metadata, list_metadata_dates) = get_metadata_files_list(path_file_decrypted, list_metadata, list_metadata_dates, files_news[x])
+            remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
+            # TODO: Eliminar .DS_Store dentro de la carpeta del proceso cuando es agregado algun archivo, para este caso el folder
+        else:
+            # Archivos que son pdf sin proteccion con texto o con imagen
+            (list_metadata, list_metadata_dates) = get_metadata_files_list(path, list_metadata, list_metadata_dates, files_news[x])
+        print()
+        print('--------------------------------------------')
+        print()
 
-        #     print('SALIDA: ' + file)
+    print()
+    print('ORDENAMIENTO DE LOS DATOS DE ACUERDO A LA FECHA Y ESCRITURA DE NOMBRE FINAL')
+    print('----------------------------------------------------------')
+    # list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
+    print(list_metadata_dates)
+    for x in range(len(list_metadata_dates)):
+        print('NOMBRE: ' + list_metadata_dates[x][2])
+        print()
 
-        #     # ------------------------------------------------------------
-        #     # CONTENIDO DEL ARCHIVO
-        #     path = get_folder() + files[x]
-        #     print('Encriptado: ' + str(is_locked(path)))
+    #     # NOMBRE DEL ARCHIVO
+    #     # TODO: Crear metodo que haga todo el proceso de modificar el nombre con los metodos que se utilizan aca
+    #     file = remove_extension(files_news[x]) # Elimina la extension
+    #     file = normalize_accents(file) # Elimina acentos
+    #     count_character_file = count_character(file) # Cantidad de caracteres
+    #     print('Valido: ' + str(count_character_file) + ', Caracteres: ' + str(len(file)))
+    #     file = str(file.title()) # Capitalizacion
+    #     print('Capitalizacion: ' + file)
 
-        #     print()
+    #     date = get_date(file) # Retorna la fecha del archivo formateada si tiene
+    #     # TODO: Regla de los numeros al principio antecedidos por cero
+    #     # TODO: Regla de las preposiciones en el nombre (Diccionario)
 
-        #     if(is_locked(path)):
-        #         # Archivos que son pdf y tiene proteccion con texto o con imagen
-        #         path_file_decrypted = decrypted_file(files[x], path) # Desencripta y retorna la ruta del archivo desencriptado
+    #     file = remove_special_characters(file.title()) # Elimina caracteres especiales
+    #     file = remove_numbers(file) # Elimina numeros de la cadena
+    #     file = file + date
 
-        #         # TODO: Aca se debe de leer el archivo primero, para cambiar el nombre original al provisional, despues de obtener toda la metadata asignar nombre de acuerdo al orden de fechas(Mirear si se puede asignar nombre temporal de entrada)
-        #         # TODO: Agregar el nombre correcto que debe de llevar sin el numero al principio (01, 02, ...) a la list_metadata_dates (tambien se pude recorrer el arreglo (list_metadata_dates) y extraer el nombre del archivo y que despues pase por un metodo para su transformacion y asignacion, debe ser al final del bucle for, despues llamar al metodo de renombrar)
-
-        #         (list_metadata, list_metadata_dates) = get_metadata_files_list(path_file_decrypted, list_metadata, list_metadata_dates, files[x])
-        #         remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
-        #         # TODO: Eliminar .DS_Store dentro de la carpeta del proceso cuando es agregado algun archivo, para este caso el folder
-        #     else:
-        #         # Archivos que son pdf sin proteccion con texto o con imagen
-        #         (list_metadata, list_metadata_dates) = get_metadata_files_list(path, list_metadata, list_metadata_dates, files[x])
-        #     print()
-        #     print('--------------------------------------------')
-        #     print()
-            count += 1
+    #     print('SALIDA: ' + file)
 
     # generate_txt(list_metadata)
     # generate_csv(list_metadata_dates)
@@ -278,6 +302,12 @@ def remove_numbers(file_name):
     new_file_name = ''.join(i for i in file_name if not i.isdigit())
     return new_file_name
 
+# Metodo que ordena la lista de metadatos de fechas
+def sort_list_metadata_dates(list_metadata_dates):
+    data_set = pd.DataFrame(np.array(list_metadata_dates)) # Matriz de nuevo conjunto de datos con pandas
+    data_set = data_set.sort_values(by=0) # Ordena la columna 0 que contiene las fechas
+    return data_set
+
 # Metodo que genera archivo txt
 def generate_txt(metadata):
     # TODO: Crear metodo para la carpeta list_metadata_dates, aplicar validacion si existe o crearla
@@ -287,15 +317,13 @@ def generate_txt(metadata):
 
 # Metodo que genera archivo csv
 def generate_csv(list_metadata_dates):
-    data_set = pd.DataFrame(np.array(list_metadata_dates)) # Matriz de nuevo conjunto de datos con pandas
-    data_set = data_set.sort_values(by=0) # Ordena la columna 0 que contiene las fechas
+    data_set = sort_list_metadata_dates(list_metadata_dates)
     print(data_set)
     data_set.to_csv(str('generated_files/metadata') + '.csv', header=True, sep=',', index=False)
 
 # Metodo que genera archivo csv
 def generate_xlsx(list_metadata_dates):
-    data_set = pd.DataFrame(np.array(list_metadata_dates)) # Matriz de nuevo conjunto de datos con pandas
-    data_set = data_set.sort_values(by=0) # Ordena la columna 0 que contiene las fechas
+    data_set = sort_list_metadata_dates(list_metadata_dates)
     writer = pd.ExcelWriter(str('generated_files/0_0ReadData') + '.xlsx', engine='xlsxwriter')
     data_set.to_excel(writer, header=False, index=False)
     writer.save()
