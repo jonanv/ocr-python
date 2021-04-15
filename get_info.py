@@ -241,8 +241,14 @@ def show_metadata():
     print()
     print('ORDENAMIENTO DE LOS DATOS DE ACUERDO A LA FECHA Y ESCRITURA DE NOMBRE FINAL')
     print('----------------------------------------------------------')
-    # list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
+
     print(list_metadata_dates)
+    print()
+    list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
+    list_metadata_dates = list_metadata_dates.values.tolist()
+    print()
+    print(list_metadata_dates)
+
     for x in range(len(list_metadata_dates)):
         print('NOMBRE: ' + list_metadata_dates[x][2])
         print()
