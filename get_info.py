@@ -174,11 +174,12 @@ def show_metadata():
         print(str(x+1) + ". " + files[x])
 
         # NOMBRE DEL ARCHIVO
-        # TODO: Crear metodo que haga todo el proceso de modificar el nombre con los metodos que se utilizan aca
+        # TODO: Implementar metodo para renombrar temporalmente el archivo desde el inicio
         file = files[x].replace(' ', '_')
         print(file)
 
 
+        # TODO: Crear metodo que haga todo el proceso de modificar el nombre con los metodos que se utilizan aca
         file = remove_extension(files[x]) # Elimina la extension
         file = normalize_accents(file) # Elimina acentos
         count_character_file = count_character(file) # Cantidad de caracteres
@@ -206,10 +207,13 @@ def show_metadata():
         if(is_locked(path)):
             # Archivos que son pdf y tiene proteccion con texto o con imagen
             path_file_decrypted = decrypted_file(files[x], path) # Desencripta y retorna la ruta del archivo desencriptado
+
+            # TODO: Aca se debe de leer el archivo primero, para cambiar el nombre original al provisional, despues de obtener toda la metadata asignar nombre de acuerdo al orden de fechas(Mirear si se puede asignar nombre temporal de entrada)
+            # TODO: Agregar el nombre correcto que debe de llevar sin el numero al principio (01, 02, ...) a la list_metadata_dates (tambien se pude recorrer el arreglo (list_metadata_dates) y extraer el nombre del archivo y que despues pase por un metodo para su transformacion y asignacion, debe ser al final del bucle for, despues llamar al metodo de renombrar)
+
             (list_metadata, list_metadata_dates) = get_metadata_files_list(path_file_decrypted, list_metadata, list_metadata_dates, files[x])
             remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
-
-            # TODO: Aca se debe de leer el archivo primero, para cambiar el nombre provisional al real, despues de obtener toda la metadata asignar nombre de acuerdo al orden de fechas
+            # TODO: Eliminar .DS_Store dentro de la carpeta del proceso cuando es agregado algun archivo, para este caso el folder
         else:
             # Archivos que son pdf sin proteccion con texto o con imagen
             (list_metadata, list_metadata_dates) = get_metadata_files_list(path, list_metadata, list_metadata_dates, files[x])
@@ -255,6 +259,7 @@ def remove_numbers(file_name):
 
 # Metodo que genera archivo txt
 def generate_txt(metadata):
+    # TODO: Crear metodo para la carpeta list_metadata_dates, aplicar validacion si existe o crearla
     file = open("generated_files/metadata.txt", "w")
     file.write(str(metadata) + os.linesep)
     file.close()
@@ -348,12 +353,19 @@ if __name__ == '__main__':
     # print(number_of_pages)
 
     # show_metadata()
+    path = 'files/10. AcEpTa dEsIgNaCióN_name_file_with_spaces.pdf'
     file = '10. AcEpTa dEsIgNaCióN_name_file_with_spaces.pdf'
-    file = file.replace(' ', '_')
+    folder_of_files_renames = 'numero_proceso/'
+
+    file_rename = file.replace(' ', '_')
     print(file)
-    os.mkdir('numero_proceso')
-    shutil.copy('text.pdf', 'numero_proceso/text.pdf')
-    rename_file('numero_proceso/text.pdf', 'numero_proceso/rename_text.pdf')
+
+    is_exit_folder = os.path.isdir(folder_of_files_renames) # comprueba si el archivo existe
+    print(is_exit_folder)
+    if (not is_exit_folder):
+        os.mkdir(folder_of_files_renames) # Genera una nueva carpeta
+    shutil.copy(path, str(folder_of_files_renames) + file) # Copia el archivo a la nueva carpeta
+    rename_file(str(folder_of_files_renames) + file, str(folder_of_files_renames) + file_rename) # Renombrar el archivo ubicado en la nueva carpeta
 
 
 
