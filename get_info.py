@@ -199,9 +199,15 @@ def files_list(folder):
 
 # Metodo que lista los archivos en el folder y recorre cada archivo
 def show_metadata():
+    # TODO: Eliminar folder de copia para evitar doble copia
+    folder_of_files_renames = 'numero_proceso/'
+
+    is_exist_folder = os.path.isdir(get_folder() + folder_of_files_renames) # comprueba si el folder existe
+    if (is_exist_folder):
+        os.rmdir(get_folder() + folder_of_files_renames) # Elimina la una nueva carpeta
+
     print('RENONBRAMIENTO DE ARCHIVO Y COPIA A LA NUEVA UBICACION')
     print('----------------------------------------------------------')
-    folder_of_files_renames = 'numero_proceso/'
     temporality_rename_all_files(folder_of_files_renames)
     
     print()
@@ -242,39 +248,45 @@ def show_metadata():
     print('ORDENAMIENTO DE LOS DATOS DE ACUERDO A LA FECHA Y ESCRITURA DE NOMBRE FINAL')
     print('----------------------------------------------------------')
 
-    print(list_metadata_dates)
-    print()
     list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
-    list_metadata_dates = list_metadata_dates.values.tolist()
-    print()
-    print(list_metadata_dates)
 
     for x in range(len(list_metadata_dates)):
-        print('NOMBRE: ' + list_metadata_dates[x][2])
+        file_name = list_metadata_dates[x][2]
         print()
 
-    #     # NOMBRE DEL ARCHIVO
-    #     # TODO: Crear metodo que haga todo el proceso de modificar el nombre con los metodos que se utilizan aca
-    #     file = remove_extension(files_news[x]) # Elimina la extension
-    #     file = normalize_accents(file) # Elimina acentos
-    #     count_character_file = count_character(file) # Cantidad de caracteres
-    #     print('Valido: ' + str(count_character_file) + ', Caracteres: ' + str(len(file)))
-    #     file = str(file.title()) # Capitalizacion
-    #     print('Capitalizacion: ' + file)
+        # NOMBRE DEL ARCHIVO
+        # TODO: Crear metodo que haga todo el proceso de modificar el nombre con los metodos que se utilizan aca
+        file = remove_extension(file_name) # Elimina la extension
+        file = normalize_accents(file) # Elimina acentos
+        count_character_file = count_character(file) # Cantidad de caracteres
+        print('Valido: ' + str(count_character_file) + ', Caracteres: ' + str(len(file)))
+        file = str(file.title()) # Capitalizacion
+        print('Capitalizacion: ' + file)
 
-    #     date = get_date(file) # Retorna la fecha del archivo formateada si tiene
-    #     # TODO: Regla de los numeros al principio antecedidos por cero
-    #     # TODO: Regla de las preposiciones en el nombre (Diccionario)
+        date = get_date(file) # Retorna la fecha del archivo formateada si tiene
+        # TODO: Regla de los numeros al principio antecedidos por cero
+        # TODO: Regla de las preposiciones en el nombre (Diccionario)
 
-    #     file = remove_special_characters(file.title()) # Elimina caracteres especiales
-    #     file = remove_numbers(file) # Elimina numeros de la cadena
-    #     file = file + date
+        file = remove_special_characters(file.title()) # Elimina caracteres especiales
+        file = remove_numbers(file) # Elimina numeros de la cadena
+        file = file + date
 
-    #     print('SALIDA: ' + file)
+        index = x + 1
+        if (index < 10):
+            file_out = '0' + str(index) + file + '.pdf'
+        else:
+            file_out = str(index) + file + '.pdf'
+        print('SALIDA: ' + file_out)
 
-    # generate_txt(list_metadata)
-    # generate_csv(list_metadata_dates)
-    # generate_xlsx(list_metadata_dates)
+        list_metadata_dates[x][2] = file_out
+        os.rename((get_folder() + str(folder_of_files_renames) + file_name), (get_folder() + str(folder_of_files_renames) + file_out)) # Renombrar el archivo ubicado en la nueva carpeta
+
+    print()
+    print('GENERADOR DE ARCHIVOS TXT, CSV Y XMLS')
+    print('----------------------------------------------------------')
+    generate_txt(list_metadata)
+    generate_csv(list_metadata_dates)
+    generate_xlsx(list_metadata_dates)
 
 # Metodo que elimina los caracteres especiales de la cadena
 def remove_special_characters(file_name):
@@ -308,11 +320,16 @@ def remove_numbers(file_name):
     new_file_name = ''.join(i for i in file_name if not i.isdigit())
     return new_file_name
 
-# Metodo que ordena la lista de metadatos de fechas
-def sort_list_metadata_dates(list_metadata_dates):
+# Metodo que retorna la lista en formato DataFrame de pandas
+def get_dataframe_of_list_metadata_dates(list_metadata_dates):
     data_set = pd.DataFrame(np.array(list_metadata_dates)) # Matriz de nuevo conjunto de datos con pandas
     data_set = data_set.sort_values(by=0) # Ordena la columna 0 que contiene las fechas
     return data_set
+
+# Metodo que ordena la lista de metadatos de fechas
+def sort_list_metadata_dates(list_metadata_dates):
+    data_set = get_dataframe_of_list_metadata_dates(list_metadata_dates)
+    return data_set.values.tolist() # Devuelve la lista ordenada en formato list() de python
 
 # Metodo que genera archivo txt
 def generate_txt(metadata):
@@ -323,13 +340,13 @@ def generate_txt(metadata):
 
 # Metodo que genera archivo csv
 def generate_csv(list_metadata_dates):
-    data_set = sort_list_metadata_dates(list_metadata_dates)
+    data_set = get_dataframe_of_list_metadata_dates(list_metadata_dates)
     print(data_set)
     data_set.to_csv(str('generated_files/metadata') + '.csv', header=True, sep=',', index=False)
 
 # Metodo que genera archivo csv
 def generate_xlsx(list_metadata_dates):
-    data_set = sort_list_metadata_dates(list_metadata_dates)
+    data_set = get_dataframe_of_list_metadata_dates(list_metadata_dates)
     writer = pd.ExcelWriter(str('generated_files/0_0ReadData') + '.xlsx', engine='xlsxwriter')
     data_set.to_excel(writer, header=False, index=False)
     writer.save()
