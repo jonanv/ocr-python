@@ -1,22 +1,24 @@
 # get_doc_info.py
 
-from PyPDF2 import PdfFileReader
-from unicodedata import normalize
 import os
+from os import remove
 import copy
 import re
 import unicodedata
+from datetime import datetime
+import shutil
+from unicodedata import normalize
+from time import time
+
+# Dependences
+from PyPDF2 import PdfFileReader
 import numpy as np
 import pandas as pd
-from datetime import datetime
 import datefinder
 import dateparser
 from dateparser.search import search_dates
 import pdfplumber
-from os import remove
 import pikepdf
-import shutil
-from time import time
 
 # Metodo que permite obtener la informacion de metadatos del archivo
 def get_metadata(path):
