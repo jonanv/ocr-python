@@ -192,10 +192,10 @@ def temporality_rename_all_files(folder_of_files_renames):
 
 # Metodo que retorna la variable con el nombre de la carpeta
 def get_folder():
-	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1/CUADERNO_PRINCIPAL/'
-	carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2/CUADERNO_PRINCIPAL/'
+	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1_correcto/CUADERNO_PRINCIPAL/'
+	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_JUAN/'
-	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
+	carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
 	return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
@@ -453,14 +453,22 @@ def process_files_all():
     print('---------------------------------------------------------------------------')
     generate_files(list_metadata, list_metadata_dates)
 
+# Metodo que calcula el tiempo de ejecucion
+def calculate_time(start_time):
+    elapsed_time = time() - start_time # Calculo de tiempo final
+    if (elapsed_time < 60):
+        print("Tiempo transcurrido: %0.10f segundos." % elapsed_time)
+    else:
+        elapsed_time /= 60
+        print("Tiempo transcurrido: %0.10f minutos." % elapsed_time)
+
 # Metodo principal
 if __name__ == '__main__':
     start_time = time() # Timpo inicial
 
     process_files_all()
 
-    elapsed_time = time() - start_time # Calculo de tiempo final
-    print("Tiempo transcurrido: %0.10f segundos." % elapsed_time)
+    calculate_time(start_time)
     
 
 # TODO: Revisar archivo 06. notificación 19.04.2021 DEMANDADO.pdf que sale con contenido extranio
