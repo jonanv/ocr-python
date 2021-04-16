@@ -76,7 +76,7 @@ def get_content_file(path):
 # Metodo que obtiene la informacion de la primera pagina del pdf escaneado, recibe el path
 def get_content_file_scanned(path):
     # Convierte la imagen a texto con ocrmypdf
-    os.system(f'ocrmypdf --pages 1-2 {path} output.pdf')
+    os.system(f'ocrmypdf --pages 1 {path} output.pdf') # --pages 1-2
 
     with pdfplumber.open('output.pdf') as pdf:
         page = pdf.pages[0]
@@ -477,3 +477,4 @@ if __name__ == '__main__':
 # TODO: Revisar el archivo 003_ESCRITO_DEMANDA_FLS._1-73.pdf el cual no esta recuperando la fecha correcta (intentar aplicarle los dos metodos de busqueda de fechas, en ingles y espaniol y obtener las que son iguales)
 # TODO: Cargar archivos de pdf en web (Django and Drag and Drop)
 # TODO: Identificar si un proceso ya esta bien renombrado y no aplicar programa a menos de que tenga un archivo nuevo
+# TODO: Capturar la fecha de modificacion del folder del proceso para ser procesada (Si la fecha de modificacion coincide con la fecha actual debe ser procesada)
