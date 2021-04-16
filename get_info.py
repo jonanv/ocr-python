@@ -16,6 +16,7 @@ import pdfplumber
 from os import remove
 import pikepdf
 import shutil
+from time import time
 
 # Metodo que permite obtener la informacion de metadatos del archivo
 def get_metadata(path):
@@ -280,31 +281,6 @@ def assign_index(x, file):
         file_out = str(index) + file + '.pdf'
     return file_out
 
-# Metodo que lista los archivos en el folder y recorre cada archivo
-def show_metadata():
-    folder_of_files_renames = get_folder_of_files_renames()
-    is_exist_folder_files_renames_remove(folder_of_files_renames)
-    
-    print('RENONBRAMIENTO DE ARCHIVO Y COPIA A LA NUEVA UBICACION')
-    print('----------------------------------------------------------')
-    temporality_rename_all_files(folder_of_files_renames)
-    
-    print()
-    print('LECTURA DEL ARCHIVO PARA OBTENER METADATOS DESDE LA NUEVA UBICACION')
-    print('----------------------------------------------------------')
-    (list_metadata, list_metadata_dates) = get_metadata_files_list_news(folder_of_files_renames)
-
-    print()
-    print('ORDENAMIENTO DE LOS DATOS DE ACUERDO A LA FECHA Y ESCRITURA DE NOMBRE FINAL')
-    print('----------------------------------------------------------')
-    list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
-    final_name_renaming(list_metadata_dates, folder_of_files_renames)
-    
-    print()
-    print('GENERADOR DE ARCHIVOS TXT, CSV Y XLSX')
-    print('----------------------------------------------------------')
-    generate_files(list_metadata, list_metadata_dates)
-
 # Metodo que elimina los caracteres especiales de la cadena
 def remove_special_characters(file_name):
     new_file_name = ''.join(filter(str.isalnum, file_name)) 
@@ -451,31 +427,40 @@ def get_creation_date_format(date):
     date_format = 'D:' + set_format_date(date) + '000000'
     return date_format
 
-if __name__ == '__main__':
-    # Obtener metadatos de un solo pdf
-    # path = 'files/002 ACTA DE REPARTO_prop_author.pdf'
-    # (metadata, number_of_pages) = get_metadata(path)
-    # print(metadata)
-    # print(number_of_pages)
-
-    show_metadata()
+# Metodo que se encarga de hacer todo el prosamiento de archivos llamando a otros metodos para tareas especificas
+def process_files_all():
+    # Elimina de entrada los archivos renombrados si existen
+    folder_of_files_renames = get_folder_of_files_renames()
+    is_exist_folder_files_renames_remove(folder_of_files_renames)
     
-    # path = 'files/10. AcEpTa dEsIgNaCióN_name_file_with_spaces.pdf'
-    # file = '10. AcEpTa dEsIgNaCióN_name_file_with_spaces.pdf'
-    # folder_of_files_renames = 'numero_proceso/'
+    print('RENONBRAMIENTO DE ARCHIVO Y COPIA A LA NUEVA UBICACION')
+    print('---------------------------------------------------------------------------')
+    temporality_rename_all_files(folder_of_files_renames)
+    
+    print()
+    print('LECTURA DEL ARCHIVO PARA OBTENER METADATOS DESDE LA NUEVA UBICACION')
+    print('---------------------------------------------------------------------------')
+    (list_metadata, list_metadata_dates) = get_metadata_files_list_news(folder_of_files_renames)
 
-    # file_rename = file.replace(' ', '_')
-    # print(file)
+    print()
+    print('ORDENAMIENTO DE LOS DATOS DE ACUERDO A LA FECHA Y ESCRITURA DE NOMBRE FINAL')
+    print('---------------------------------------------------------------------------')
+    list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
+    final_name_renaming(list_metadata_dates, folder_of_files_renames)
+    
+    print()
+    print('GENERADOR DE ARCHIVOS TXT, CSV Y XLSX')
+    print('---------------------------------------------------------------------------')
+    generate_files(list_metadata, list_metadata_dates)
 
-    # is_exit_folder = os.path.isdir(folder_of_files_renames) # comprueba si el archivo existe
-    # print(is_exit_folder)
-    # if (not is_exit_folder):
-    #     os.mkdir(folder_of_files_renames) # Genera una nueva carpeta
-    # shutil.copy(path, str(folder_of_files_renames) + file) # Copia el archivo a la nueva carpeta
-    # rename_file(str(folder_of_files_renames) + file, str(folder_of_files_renames) + file_rename) # Renombrar el archivo ubicado en la nueva carpeta
+# Metodo principal
+if __name__ == '__main__':
+    start_time = time() # Timpo inicial
 
+    process_files_all()
 
-
+    elapsed_time = time() - start_time # Calculo de tiempo final
+    print("Tiempo transcurrido: %0.10f segundos." % elapsed_time)
     
 
 # TODO: Revisar archivo 06. notificación 19.04.2021 DEMANDADO.pdf que sale con contenido extranio
