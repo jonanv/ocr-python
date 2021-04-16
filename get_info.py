@@ -158,7 +158,7 @@ def is_exist_folder_created(folder_of_files_renames):
         os.mkdir(get_folder() + folder_of_files_renames) # Genera una nueva carpeta
 
 # Metodo que comprueba si la carpeta existe, si no exite la elimina con su contenido
-def is_exist_folder_removed(folder_of_files_renames):
+def is_exist_folder_files_renames_remove(folder_of_files_renames):
     is_exist_folder = os.path.isdir(get_folder() + folder_of_files_renames) # comprueba si el folder existe
     if (is_exist_folder):
         shutil.rmtree(get_folder() + folder_of_files_renames) # Elimina el folder con su contenido
@@ -179,14 +179,15 @@ def temporality_rename_all_files(folder_of_files_renames):
     files = files_list(get_folder())
     count = 0
 
+    folder_generate_files = get_folder_generate_files().split('/')[0]
     for x in range(len(files)):
-        if ((files[x] != 'numero_proceso') and (files[x] != '.DS_Store')):
+        if ((files[x] != folder_of_files_renames) and (files[x] != '.DS_Store') and (files[x] != folder_generate_files)):
             print(str(count+1) + ". " + files[x])
 
             path_original = get_folder() + files[x]
             temporality_rename_file_and_place_folder(path_original, files[x], folder_of_files_renames)
             print()
-        count += 1
+            count += 1
 
 # Metodo que retorna la variable con el nombre de la carpeta
 def get_folder():
@@ -195,6 +196,18 @@ def get_folder():
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_JUAN/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
 	return carpeta
+
+# Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
+def get_folder_of_files_renames():
+    folders = get_folder().split('/')
+    count_folders = len(folders)
+    folder_of_files_renames = folders[count_folders - 2]
+    return folder_of_files_renames + '/'
+
+# Metodo que retorna la capera de los archivos que se van a generar
+def get_folder_generate_files():
+    folder_generate_files = 'generated_files/'
+    return folder_generate_files
 
 # Metodo que retorna una lista con los archivos del folder
 def files_list(folder):
@@ -269,8 +282,8 @@ def assign_index(x, file):
 
 # Metodo que lista los archivos en el folder y recorre cada archivo
 def show_metadata():
-    folder_of_files_renames = 'numero_proceso/'
-    is_exist_folder_removed(folder_of_files_renames)
+    folder_of_files_renames = get_folder_of_files_renames()
+    is_exist_folder_files_renames_remove(folder_of_files_renames)
     
     print('RENONBRAMIENTO DE ARCHIVO Y COPIA A LA NUEVA UBICACION')
     print('----------------------------------------------------------')
@@ -284,7 +297,6 @@ def show_metadata():
     print()
     print('ORDENAMIENTO DE LOS DATOS DE ACUERDO A LA FECHA Y ESCRITURA DE NOMBRE FINAL')
     print('----------------------------------------------------------')
-
     list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
     final_name_renaming(list_metadata_dates, folder_of_files_renames)
     
@@ -349,22 +361,27 @@ def generate_files(list_metadata, list_metadata_dates):
     generate_xlsx(list_metadata_dates)
 
 # Metodo que genera archivo txt
-def generate_txt(metadata):
-    # TODO: Crear metodo para la carpeta generated_files, aplicar validacion si existe o crearla
-    file = open("generated_files/metadata.txt", "w")
-    file.write(str(metadata) + os.linesep)
+def generate_txt(list_metadata):
+    folder_generate_files = get_folder_generate_files()
+    is_exist_folder_generate_files(folder_generate_files)
+    file = open(get_folder() + folder_generate_files + 'metadata.txt', 'w')
+    file.write(str(list_metadata) + os.linesep)
     file.close()
 
 # Metodo que genera archivo csv
 def generate_csv(list_metadata_dates):
+    folder_generate_files = get_folder_generate_files()
+    is_exist_folder_generate_files(folder_generate_files)
     data_set = get_dataframe_of_list_metadata_dates(list_metadata_dates)
     print(data_set)
-    data_set.to_csv(str('generated_files/metadata') + '.csv', header=True, sep=',', index=False)
+    data_set.to_csv(str(get_folder() + folder_generate_files + 'metadata') + '.csv', header=True, sep=',', index=False)
 
 # Metodo que genera archivo csv
 def generate_xlsx(list_metadata_dates):
+    folder_generate_files = get_folder_generate_files()
+    is_exist_folder_generate_files(folder_generate_files)
     data_set = get_dataframe_of_list_metadata_dates(list_metadata_dates)
-    writer = pd.ExcelWriter(str('generated_files/0_0ReadData') + '.xlsx', engine='xlsxwriter')
+    writer = pd.ExcelWriter(str(get_folder() + folder_generate_files + '0_0ReadData') + '.xlsx', engine='xlsxwriter')
     data_set.to_excel(writer, header=False, index=False)
     writer.save()
 
@@ -464,5 +481,4 @@ if __name__ == '__main__':
 # TODO: Revisar archivo 06. notificación 19.04.2021 DEMANDADO.pdf que sale con contenido extranio
 # TODO: Revisar el archivo 003_ESCRITO_DEMANDA_FLS._1-73.pdf el cual no esta recuperando la fecha correcta (intentar aplicarle los dos metodos de busqueda de fechas, en ingles y espaniol y obtener las que son iguales)
 # TODO: Cargar archivos de pdf en web (Django and Drag and Drop)
-# TODO: Hacer copia de archivos para no romper los originales
 # TODO: Identificar si un proceso ya esta bien renombrado y no aplicar programa a menos de que tenga un archivo nuevo
