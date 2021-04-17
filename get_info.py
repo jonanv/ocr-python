@@ -1,5 +1,3 @@
-# get_doc_info.py
-
 import os
 from os import remove
 import copy
@@ -104,6 +102,7 @@ def read_and_recover_information(metadata_normalized, path):
     if(metadata_normalized['creationDate'] == ''):
         text = get_content_file(path) # Llama al metodo para que recupere la info
         # print(text)
+        # TODO: Pasar la variable text por un metodo que reemplace los espacios dobles por uno solo
 
         # Recupera la informacion si es un pdf escrito y es diferente de None
         if(str(text) != 'None'):
@@ -392,8 +391,9 @@ def convert_string_to_datatime(text_date):
 # Metodo que busca una fecha (en cualquier formato) en una cadena o texto
 def find_date(text):
     matches = datefinder.find_dates(text)
+    print('MATCHES: ')
     for match in matches:
-        # print(match)
+        print(match)
         return match # 2021-10-22 18:30:00
 
 # Metodo que establece formato para una fecha en formato string
@@ -477,4 +477,5 @@ if __name__ == '__main__':
 # TODO: Revisar el archivo 003_ESCRITO_DEMANDA_FLS._1-73.pdf el cual no esta recuperando la fecha correcta (intentar aplicarle los dos metodos de busqueda de fechas, en ingles y espaniol y obtener las que son iguales)
 # TODO: Cargar archivos de pdf en web (Django and Drag and Drop)
 # TODO: Identificar si un proceso ya esta bien renombrado y no aplicar programa a menos de que tenga un archivo nuevo
+# TODO: Identificador de capital case para los archivos que viene bien
 # TODO: Capturar la fecha de modificacion del folder del proceso para ser procesada (Si la fecha de modificacion coincide con la fecha actual debe ser procesada)
