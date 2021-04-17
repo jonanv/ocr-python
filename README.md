@@ -72,7 +72,6 @@ pip3 install -r requirements.txt
 - pdfplumber==0.5.27
 - pikepdf==2.11.0
 - ocrmypdf==11.7.3 (Optional for Mac OS)
-<!-- TODO: Comprobar el versionamiento de las dependencias aca y en requeriments.txt -->
 
 # Optical Character Recognition: [ocrmypdf][ocrmypdf-url]
 

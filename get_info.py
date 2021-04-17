@@ -194,9 +194,9 @@ def temporality_rename_all_files(folder_of_files_renames):
 # Metodo que retorna la variable con el nombre de la carpeta
 def get_folder():
 	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1_correcto/CUADERNO_PRINCIPAL/'
-	carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
+	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_JUAN/'
-	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
+	carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
 	return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
@@ -254,7 +254,7 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
         # NOMBRE DEL ARCHIVO
         file = remove_extension(file_name) # Elimina la extension
 
-        date = get_date(file) # Retorna la fecha del archivo formateada si tiene
+        date = get_date(file.lower()) # Retorna la fecha del archivo formateada si tiene
         
         file = normalize_accents(file) # Elimina acentos
         count_character_file = count_character(file) # Cantidad de caracteres
@@ -392,13 +392,13 @@ def convert_string_to_datatime(text_date):
 
 # Metodo que busca una fecha (en cualquier formato) en una cadena o texto
 def find_date(text):
-    matches = datefinder.find_dates(text)
-    # TODO: Controlar el retorno de matches, identificar que valores trae para controlarlo
-    if (matches):
+    matches = datefinder.find_dates(text, strict=False, source=True)
+    try:
         for match in matches:
-            # print(match)
-            return match # 2021-10-22 18:30:00
-    else:
+            if(len(match[1]) > 7): # Mayor que 7(25/1/19) para eliminar la fechas basura que trae en matches
+                # print(match)
+                return match[0] # 2021-10-22 18:30:00
+    except:
         return 'None'
 
 # Metodo que establece formato para una fecha en formato string
