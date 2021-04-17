@@ -71,8 +71,8 @@ pip3 install -r requirements.txt
 - dateparser==1.0.0
 - pdfplumber==0.5.27
 - pikepdf==2.11.0
-- ocrmypdf==11.7.3 (Optional)
-<!-- TODO: COmprobar el versionamiento de las dependencias aca y en requeriments.txt -->
+- ocrmypdf==11.7.3 (Optional for Mac OS)
+<!-- TODO: Comprobar el versionamiento de las dependencias aca y en requeriments.txt -->
 
 # Optical Character Recognition: [ocrmypdf][ocrmypdf-url]
 
@@ -82,6 +82,7 @@ brew install ocrmypdf
 ```
 
 ### Windows
+Using the [Chocolatey][chocolatey-url] package manager, install the following when running in an Administrator command prompt:
 ```
 1. choco install --pre tesseract
 ```
@@ -91,7 +92,7 @@ brew install ocrmypdf
 ```
 
 ```
-3. choco install pngquant
+3. choco install pngquant (Opcional)
 ```
 
 ```
@@ -117,3 +118,4 @@ pip3 freeze > requeriments.txt
 [license-badge]: https://img.shields.io/badge/license-MIT-green.svg
 [license-url]: https://opensource.org/licenses/MIT
 [ocrmypdf-url]: https://ocrmypdf.readthedocs.io/en/latest/installation.html
+[chocolatey-url]: https://chocolatey.org/install
