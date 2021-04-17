@@ -13,11 +13,6 @@
 - For Mac OS use: ```pip3```
 - For Windows use ```pip```
 
-## Install dependences
-```python
-pip3 install -r requirements.txt
-```
-
 # Create virtual environment (Mac OS)
 ## 1. Install virtualenv
 ```python
@@ -62,6 +57,11 @@ source name_project/Scripts/activate
 deactivate
 ```
 
+## Install dependences
+```python
+pip3 install -r requirements.txt
+```
+
 # Dependences:
 
 - PyPDF2==1.26.0
@@ -71,7 +71,7 @@ deactivate
 - dateparser==1.0.0
 - pdfplumber==0.5.27
 - pikepdf==2.11.0
-- ocrmypdf==11.7.3
+- ocrmypdf==11.7.3 (Optional)
 <!-- TODO: COmprobar el versionamiento de las dependencias aca y en requeriments.txt -->
 
 # Optical Character Recognition: [ocrmypdf][ocrmypdf-url]

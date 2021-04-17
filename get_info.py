@@ -390,10 +390,9 @@ def convert_string_to_datatime(text_date):
 
 # Metodo que busca una fecha (en cualquier formato) en una cadena o texto
 def find_date(text):
-    matches = datefinder.find_dates(text)
-    print('MATCHES: ')
+    matches = datefinder.find_dates(text, strict=True)
     for match in matches:
-        print(match)
+        # print(match)
         return match # 2021-10-22 18:30:00
 
 # Metodo que establece formato para una fecha en formato string
