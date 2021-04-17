@@ -101,16 +101,19 @@ def read_and_recover_information(metadata_normalized, path):
     # NO TIENE FECHA DE CREACION
     if(metadata_normalized['creationDate'] == ''):
         text = get_content_file(path) # Llama al metodo para que recupere la info
-        # print(text)
-        # TODO: Pasar la variable text por un metodo que reemplace los espacios dobles por uno solo
+        text = str(text).replace('  ', ' ')
+        print(text)
+        # TODO: Revisar archivo 06. notificación 19.04.2021 DEMANDADO.pdf que sale con contenido extranio
 
         # Recupera la informacion si es un pdf escrito y es diferente de None
         if(str(text) != 'None'):
             metadata_normalized['creationDate'] = get_recover_date(text)
         else:
             text = get_content_file_scanned(path) # Llama al metodo para que recupere la info pdf imagen
+            text = str(text).replace('  ', ' ')
             print(text)
             metadata_normalized['creationDate'] = get_recover_date(text)
+            # TODO: Revisar el archivo 003_ESCRITO_DEMANDA_FLS._1-73.pdf el cual no esta recuperando la fecha correcta (Los archivos que son demanda deben de llevar la fecha de )
     return metadata_normalized
 
 # Metodo que obtiene la metadata completa (arreglo), recibe el path, nombre de archivo, toda la metadata y lista de metadata
@@ -262,7 +265,6 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
         file = str(file.title()) # Capitalizacion
         print('Capitalizacion: ' + file)
 
-        # TODO: Regla de los numeros al principio antecedidos por cero
         # TODO: Regla de las preposiciones en el nombre (Diccionario)
 
         file = remove_special_characters(file.title()) # Elimina caracteres especiales
@@ -478,8 +480,6 @@ if __name__ == '__main__':
     calculate_time(start_time)
     
 
-# TODO: Revisar archivo 06. notificación 19.04.2021 DEMANDADO.pdf que sale con contenido extranio
-# TODO: Revisar el archivo 003_ESCRITO_DEMANDA_FLS._1-73.pdf el cual no esta recuperando la fecha correcta (intentar aplicarle los dos metodos de busqueda de fechas, en ingles y espaniol y obtener las que son iguales)
 # TODO: Cargar archivos de pdf en web (Django and Drag and Drop)
 # TODO: Identificar si un proceso ya esta bien renombrado y no aplicar programa a menos de que tenga un archivo nuevo
 # TODO: Identificador de capital case para los archivos que viene bien
