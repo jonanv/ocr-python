@@ -532,31 +532,59 @@ if __name__ == '__main__':
     # print(text)
 
 
-    text = '06Notificacion19042021Demandado'
-    text_list = list()
+    # text = '06Notificacion19042021Demandado'
+    text = '07MemorialNoAceptaDesignacion321323PruebaHoy'
+    # text_list = list()
 
-    number_temporality = ''
-    word_temporality = ''
-    for x in text:
-        if(x.isdigit()):
-            if (word_temporality != ''):
-                text_list.append(word_temporality)
-            word_temporality = ''
-            number_temporality += x
-        elif(x.islower() or x.isupper()):
-            if (number_temporality != ''):
-                text_list.append(number_temporality)
-            number_temporality = ''
-            word_temporality += x
+    # number_temporality = ''
+    # word_temporality = ''
+    # for x in text:
+    #     if(x.isdigit()):
+    #         if (word_temporality != ''):
+    #             word_temporality = camel_case_split(word_temporality)
+    #             text_list.append(word_temporality)
+    #         word_temporality = ''
+    #         number_temporality += x
+    #     elif(x.islower() or x.isupper()):
+    #         if (number_temporality != ''):
+    #             text_list.append(number_temporality)
+    #         number_temporality = ''
+    #         word_temporality += x
             
-    if(number_temporality != ''):
-        text_list.append(number_temporality)
-    elif (word_temporality != ''):
-        text_list.append(word_temporality)
-            
+    # if(number_temporality != ''):
+    #     text_list.append(number_temporality)
+    # elif (word_temporality != ''):
+    #     word_temporality = camel_case_split(word_temporality)
+    #     text_list.append(word_temporality)
+    # print(text_list)
+
+    text_list = re.findall('(\d+|[A-Za-z]+)', text) # Divide la cadena entre letras y numeros
     print(text_list)
 
-    print(camel_case_split(text))
+    # Recorre la lista que se genero e identifica camelcase title
+    list_temporality = list()
+    for x in range(len(text_list)):
+        list_temporality = camel_case_split(str(text_list[x]))
+        if (len(list_temporality) > 1):
+            text_list[x] = list_temporality
+    print(text_list)
+
+    print()
+    # Unifica la lista con sus sublista en una sola lista
+    list_final = list()
+    for x in range(len(text_list)):
+        # print(text_list[x])
+        if (isinstance(text_list[x], list)):
+            for text in (text_list[x]):
+                list_final.append(text)
+        else:
+            list_final.append(text_list[x])
+    print(list_final)
+
+    # Unifica la lista
+    text = camel_case_join(list_final)
+    print(text)
+            
 
     calculate_time(start_time)
     
