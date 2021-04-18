@@ -19,7 +19,7 @@
 pip3 install virtualenv
 ```
 
-## 2. Create virtual environment (Example: env, .env, environment)
+## 2. Create virtual environment (`cd name_project`)
 ```python
 virtualenv name_project
 ```
@@ -42,7 +42,7 @@ deactivate
 pip install virtualenv
 ```
 
-## 2. Create virtual environment (Example: env, .env, environment)
+## 2. Create virtual environment (`cd name_project`)
 ```python
 virtualenv name_project
 ```
