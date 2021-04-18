@@ -102,7 +102,7 @@ def read_and_recover_information(metadata_normalized, path):
     if(metadata_normalized['creationDate'] == ''):
         text = get_content_file(path) # Llama al metodo para que recupere la info
         text = str(text).replace('  ', ' ')
-        print(text)
+        # print(text)
         # TODO: Revisar archivo 06. notificación 19.04.2021 DEMANDADO.pdf que sale con contenido extranio
 
         # Recupera la informacion si es un pdf escrito y es diferente de None
@@ -170,6 +170,11 @@ def is_exist_folder_files_renames_remove(folder_of_files_renames):
 
 # Metodo que renombra los nombres de los archivos y los ubica en el nuevo folder
 def temporality_rename_file_and_place_folder(path, file, folder_of_files_renames):
+    list_words_file_name_split = camel_case_split(file)
+    print(list_words_file_name_split)
+    list_words_file_name_join = camel_case_join(list_words_file_name_split)
+    print(list_words_file_name_join)
+
     file_rename = file.replace(' ', '_')
     print(file_rename)
 
@@ -196,10 +201,10 @@ def temporality_rename_all_files(folder_of_files_renames):
 
 # Metodo que retorna la variable con el nombre de la carpeta
 def get_folder():
-	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1_correcto/CUADERNO_PRINCIPAL/'
+	carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1_correcto/CUADERNO_PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_JUAN/'
-	carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
+	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
 	return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
@@ -471,26 +476,37 @@ def calculate_time(start_time):
         elapsed_time /= 60
         print("Tiempo transcurrido: %0.10f minutos." % elapsed_time)
 
-def camel_case_split(str):
-    words = [[str[0]]]
-  
-    for c in str[1:]:
-        if words[-1][-1].islower() and c.isupper():
-            words.append(list(c))
+def camel_case_split(file_name):
+    words = [[file_name[0]]]
+
+    for x in file_name[1:]:
+        if (words[-1][-1].islower() and x.isupper()):
+            words.append(list(x))
         else:
-            words[-1].append(c)
+            words[-1].append(x)
   
     return [''.join(word) for word in words]
 
-def camel_case_join(text_list):
-    text = ''.join(x for x in text_list)
-    return text
+def camel_case_join(word_list):
+    # text = ''.join(x for x in text_list)
+    # return text
+
+    file_name = ''
+    count = 0
+    for word in word_list:
+        if (count < (len(word_list) - 1)):
+            file_name += word + '_'
+        else:
+            file_name += word
+        count += 1
+    return file_name
     
 # Metodo principal
 if __name__ == '__main__':
     start_time = time() # Timpo inicial
 
     # process_files_all()
+
     # text = '12_Auto_Osa_Hipotecario_Decreto_Fls' # True
     # text = '12 Auto Osa Hipotecario Decreto Fls' # True
     # text = '12AutoOsaHipotecarioDecretoFls' # False
@@ -500,20 +516,47 @@ if __name__ == '__main__':
     # text = '01 eSCRITO dEMANDA fLS' # False
     # text = '01 Escrito Demanda Fls' # True
     # text = '01Escritodemandafls' # True
-    text = '01EscritoDemandaFls' # False
-    print(text.istitle())
-    print(''.join(x for x in text.title() if not x.isspace()))
+    # text = '01EscritoDemandaFls' # False
+    # print(text.istitle())
+    # print(''.join(x for x in text.title() if not x.isspace()))
+
+    # print(camel_case_split(text))
+    # text_list = camel_case_split(text)
+    # # xx = ''
+    # # for x in text_list:
+    # #     xx += ''.join(x)
+    # #     print(x)
+    # # print(xx)
+    # # print(''.join(x for x in text_list))
+    # text = camel_case_join(text_list)
+    # print(text)
+
+
+    text = '06Notificacion19042021Demandado'
+    text_list = list()
+
+    number_temporality = ''
+    word_temporality = ''
+    for x in text:
+        if(x.isdigit()):
+            if (word_temporality != ''):
+                text_list.append(word_temporality)
+            word_temporality = ''
+            number_temporality += x
+        elif(x.islower() or x.isupper()):
+            if (number_temporality != ''):
+                text_list.append(number_temporality)
+            number_temporality = ''
+            word_temporality += x
+            
+    if(number_temporality != ''):
+        text_list.append(number_temporality)
+    elif (word_temporality != ''):
+        text_list.append(word_temporality)
+            
+    print(text_list)
 
     print(camel_case_split(text))
-    text_list = camel_case_split(text)
-    # xx = ''
-    # for x in text_list:
-    #     xx += ''.join(x)
-    #     print(x)
-    # print(xx)
-    # print(''.join(x for x in text_list))
-    text = camel_case_join(text_list)
-    print(text)
 
     calculate_time(start_time)
     
