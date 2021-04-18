@@ -471,11 +471,49 @@ def calculate_time(start_time):
         elapsed_time /= 60
         print("Tiempo transcurrido: %0.10f minutos." % elapsed_time)
 
+def camel_case_split(str):
+    words = [[str[0]]]
+  
+    for c in str[1:]:
+        if words[-1][-1].islower() and c.isupper():
+            words.append(list(c))
+        else:
+            words[-1].append(c)
+  
+    return [''.join(word) for word in words]
+
+def camel_case_join(text_list):
+    text = ''.join(x for x in text_list)
+    return text
+    
 # Metodo principal
 if __name__ == '__main__':
     start_time = time() # Timpo inicial
 
-    process_files_all()
+    # process_files_all()
+    # text = '12_Auto_Osa_Hipotecario_Decreto_Fls' # True
+    # text = '12 Auto Osa Hipotecario Decreto Fls' # True
+    # text = '12AutoOsaHipotecarioDecretoFls' # False
+    # text = '008_2020-566_CONSTANCIA_DE_ENTREGA_(17_DE_FEBRERO)' # False
+    # text = '008_2020-566_constancia_de_entrega_(17_de_febrero)' # False
+    # text = '008_2020-566_Constancia_De_Entrega_(17_De_Febrero)' # True
+    # text = '01 eSCRITO dEMANDA fLS' # False
+    # text = '01 Escrito Demanda Fls' # True
+    # text = '01Escritodemandafls' # True
+    text = '01EscritoDemandaFls' # False
+    print(text.istitle())
+    print(''.join(x for x in text.title() if not x.isspace()))
+
+    print(camel_case_split(text))
+    text_list = camel_case_split(text)
+    # xx = ''
+    # for x in text_list:
+    #     xx += ''.join(x)
+    #     print(x)
+    # print(xx)
+    # print(''.join(x for x in text_list))
+    text = camel_case_join(text_list)
+    print(text)
 
     calculate_time(start_time)
     
