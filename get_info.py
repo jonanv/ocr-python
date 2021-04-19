@@ -170,12 +170,6 @@ def is_exist_folder_files_renames_remove(folder_of_files_renames):
 
 # Metodo que renombra los nombres de los archivos y los ubica en el nuevo folder
 def temporality_rename_file_and_place_folder(path, file, folder_of_files_renames):
-    # TODO: Identificador de capital case para los archivos que viene bien
-    list_words_file_name_split = camel_case_split(file)
-    print(list_words_file_name_split)
-    list_words_file_name_join = camel_case_join(list_words_file_name_split)
-    print(list_words_file_name_join)
-
     file_rename = file.replace(' ', '_')
     print(file_rename)
 
@@ -261,15 +255,20 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
         print()
 
         # NOMBRE DEL ARCHIVO
+        print('Nombre real: ', file_name)
         file = remove_extension(file_name) # Elimina la extension
 
         date = get_date(file.lower()) # Retorna la fecha del archivo formateada si tiene
-        
         file = normalize_accents(file) # Elimina acentos
+
+        if (file.find('_') != -1):
+            file = str(file.title()) # Capitalizacion
+        print('Capitalizacion: ' + file)
+
+        file = indetify_file_name(file) # Identificador de capital case para los archivos que viene bien
+        
         count_character_file = count_character(file) # Cantidad de caracteres
         print('Valido: ' + str(count_character_file) + ', Caracteres: ' + str(len(file)))
-        file = str(file.title()) # Capitalizacion
-        print('Capitalizacion: ' + file)
 
         # TODO: Regla de las preposiciones en el nombre (Diccionario)
 
@@ -489,56 +488,57 @@ def camel_case_split(file_name):
     return [''.join(word) for word in words]
 
 # Metodo que divide la cadena entre letras y numeros
-def split_between_words_numbers(text):
-    text_list = re.findall('(\d+|[A-Za-z]+)', text) # Divide la cadena entre letras y numeros
-    return text_list
+def split_between_words_numbers(file_name):
+    file_name_list = re.findall('(\d+|[A-Za-z]+)', file_name) # Divide la cadena entre letras y numeros
+    return file_name_list
 
 # Recorre la lista que se genero e identifica camel case title
-def identify_camel_case_title_in_list(text_list):
-    for x in range(len(text_list)):
-        list_temporality = camel_case_split(str(text_list[x]))
+def identify_camel_case_title_in_list(file_name_list):
+    for x in range(len(file_name_list)):
+        list_temporality = camel_case_split(str(file_name_list[x]))
         if (len(list_temporality) > 1):
-            text_list[x] = list_temporality
-    return text_list
+            file_name_list[x] = list_temporality
+    return file_name_list
 
 # Unifica la lista con sus sublista en una sola lista
-def unify_list_with_sublist(text_list):
-    list_final = list()
-    for x in range(len(text_list)):
-        # print(text_list[x])
-        if (isinstance(text_list[x], list)):
-            for text in (text_list[x]):
-                list_final.append(text)
+def unify_list_with_sublist(file_name_list):
+    file_name_list_final = list()
+    for x in range(len(file_name_list)):
+        # print(file_name_list[x])
+        if (isinstance(file_name_list[x], list)):
+            for text in (file_name_list[x]):
+                file_name_list_final.append(text)
         else:
-            list_final.append(text_list[x])
-    return list_final
+            file_name_list_final.append(file_name_list[x])
+    return file_name_list_final
 
-def camel_case_join(word_list):
+def camel_case_join(file_name_list_final):
     # text = ''.join(x for x in text_list)
     # return text
 
     file_name = ''
     count = 0
-    for word in word_list:
-        if (count < (len(word_list) - 1)):
+    for word in file_name_list_final:
+        if (count < (len(file_name_list_final) - 1)):
             file_name += word + '_'
         else:
             file_name += word
         count += 1
     return file_name
 
-def indetify_file_name(text):
-    text_list = split_between_words_numbers(text)
-    text_list = identify_camel_case_title_in_list(text_list)
-    text_list_final = unify_list_with_sublist(text_list)
-    file_name = camel_case_join(text_list_final)
+# Metodo que identifica si la cadena vine de forma correcta y devuelve el nombre separado por guin bajo (_)
+def indetify_file_name(file_name):
+    file_name_list = split_between_words_numbers(file_name)
+    file_name_list = identify_camel_case_title_in_list(file_name_list)
+    file_name_list_final = unify_list_with_sublist(file_name_list)
+    file_name = camel_case_join(file_name_list_final)
     return file_name
     
 # Metodo principal
 if __name__ == '__main__':
     start_time = time() # Timpo inicial
 
-    # process_files_all()
+    process_files_all()
 
     # text = '12_Auto_Osa_Hipotecario_Decreto_Fls' # True
     # text = '12 Auto Osa Hipotecario Decreto Fls' # True
@@ -556,36 +556,10 @@ if __name__ == '__main__':
     # print(''.join(x for x in text.title() if not x.isspace()))
 
     # text = '06Notificacion19042021Demandado'
-    text = '07MemorialNoAceptaDesignacion321323PruebaHoy'
+    # text = '07MemorialNoAceptaDesignacion321323PruebaHoy.pdf'
 
 
-    # text_list = re.findall('(\d+|[A-Za-z]+)', text) # Divide la cadena entre letras y numeros
-    # print(text_list)
-
-    # # Recorre la lista que se genero e identifica camel case title
-    # for x in range(len(text_list)):
-    #     list_temporality = camel_case_split(str(text_list[x]))
-    #     if (len(list_temporality) > 1):
-    #         text_list[x] = list_temporality
-    # print(text_list)
-
-    # print()
-    # # Unifica la lista con sus sublista en una sola lista
-    # list_final = list()
-    # for x in range(len(text_list)):
-    #     # print(text_list[x])
-    #     if (isinstance(text_list[x], list)):
-    #         for text in (text_list[x]):
-    #             list_final.append(text)
-    #     else:
-    #         list_final.append(text_list[x])
-    # print(list_final)
-
-    # # Unifica la lista
-    # text = camel_case_join(list_final)
-    # print(text)
-
-    print(indetify_file_name(text))
+    # print(indetify_file_name(text))
 
     calculate_time(start_time)
     
