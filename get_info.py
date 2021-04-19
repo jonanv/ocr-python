@@ -530,7 +530,7 @@ if __name__ == '__main__':
     text_list = re.findall('(\d+|[A-Za-z]+)', text) # Divide la cadena entre letras y numeros
     print(text_list)
 
-    # Recorre la lista que se genero e identifica camelcase title
+    # Recorre la lista que se genero e identifica camel case title
     for x in range(len(text_list)):
         list_temporality = camel_case_split(str(text_list[x]))
         if (len(list_temporality) > 1):
