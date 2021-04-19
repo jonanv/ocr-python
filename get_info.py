@@ -562,7 +562,6 @@ if __name__ == '__main__':
     print(text_list)
 
     # Recorre la lista que se genero e identifica camelcase title
-    list_temporality = list()
     for x in range(len(text_list)):
         list_temporality = camel_case_split(str(text_list[x]))
         if (len(list_temporality) > 1):
