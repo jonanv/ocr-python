@@ -488,6 +488,31 @@ def camel_case_split(file_name):
   
     return [''.join(word) for word in words]
 
+# Metodo que divide la cadena entre letras y numeros
+def split_between_words_numbers(text):
+    text_list = re.findall('(\d+|[A-Za-z]+)', text) # Divide la cadena entre letras y numeros
+    return text_list
+
+# Recorre la lista que se genero e identifica camel case title
+def identify_camel_case_title_in_list(text_list):
+    for x in range(len(text_list)):
+        list_temporality = camel_case_split(str(text_list[x]))
+        if (len(list_temporality) > 1):
+            text_list[x] = list_temporality
+    return text_list
+
+# Unifica la lista con sus sublista en una sola lista
+def unify_list_with_sublist(text_list):
+    list_final = list()
+    for x in range(len(text_list)):
+        # print(text_list[x])
+        if (isinstance(text_list[x], list)):
+            for text in (text_list[x]):
+                list_final.append(text)
+        else:
+            list_final.append(text_list[x])
+    return list_final
+
 def camel_case_join(word_list):
     # text = ''.join(x for x in text_list)
     # return text
@@ -500,6 +525,13 @@ def camel_case_join(word_list):
         else:
             file_name += word
         count += 1
+    return file_name
+
+def indetify_file_name(text):
+    text_list = split_between_words_numbers(text)
+    text_list = identify_camel_case_title_in_list(text_list)
+    text_list_final = unify_list_with_sublist(text_list)
+    file_name = camel_case_join(text_list_final)
     return file_name
     
 # Metodo principal
@@ -524,35 +556,36 @@ if __name__ == '__main__':
     # print(''.join(x for x in text.title() if not x.isspace()))
 
     # text = '06Notificacion19042021Demandado'
-    # text = '07MemorialNoAceptaDesignacion321323PruebaHoy'
+    text = '07MemorialNoAceptaDesignacion321323PruebaHoy'
 
 
-    text_list = re.findall('(\d+|[A-Za-z]+)', text) # Divide la cadena entre letras y numeros
-    print(text_list)
+    # text_list = re.findall('(\d+|[A-Za-z]+)', text) # Divide la cadena entre letras y numeros
+    # print(text_list)
 
-    # Recorre la lista que se genero e identifica camel case title
-    for x in range(len(text_list)):
-        list_temporality = camel_case_split(str(text_list[x]))
-        if (len(list_temporality) > 1):
-            text_list[x] = list_temporality
-    print(text_list)
+    # # Recorre la lista que se genero e identifica camel case title
+    # for x in range(len(text_list)):
+    #     list_temporality = camel_case_split(str(text_list[x]))
+    #     if (len(list_temporality) > 1):
+    #         text_list[x] = list_temporality
+    # print(text_list)
 
-    print()
-    # Unifica la lista con sus sublista en una sola lista
-    list_final = list()
-    for x in range(len(text_list)):
-        # print(text_list[x])
-        if (isinstance(text_list[x], list)):
-            for text in (text_list[x]):
-                list_final.append(text)
-        else:
-            list_final.append(text_list[x])
-    print(list_final)
+    # print()
+    # # Unifica la lista con sus sublista en una sola lista
+    # list_final = list()
+    # for x in range(len(text_list)):
+    #     # print(text_list[x])
+    #     if (isinstance(text_list[x], list)):
+    #         for text in (text_list[x]):
+    #             list_final.append(text)
+    #     else:
+    #         list_final.append(text_list[x])
+    # print(list_final)
 
-    # Unifica la lista
-    text = camel_case_join(list_final)
-    print(text)
-            
+    # # Unifica la lista
+    # text = camel_case_join(list_final)
+    # print(text)
+
+    print(indetify_file_name(text))
 
     calculate_time(start_time)
     
