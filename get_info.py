@@ -170,6 +170,7 @@ def is_exist_folder_files_renames_remove(folder_of_files_renames):
 
 # Metodo que renombra los nombres de los archivos y los ubica en el nuevo folder
 def temporality_rename_file_and_place_folder(path, file, folder_of_files_renames):
+    # TODO: Identificador de capital case para los archivos que viene bien
     list_words_file_name_split = camel_case_split(file)
     print(list_words_file_name_split)
     list_words_file_name_join = camel_case_join(list_words_file_name_split)
@@ -447,7 +448,7 @@ def process_files_all():
     folder_of_files_renames = get_folder_of_files_renames()
     is_exist_folder_files_renames_remove(folder_of_files_renames)
     
-    print('RENONBRAMIENTO DE ARCHIVO Y COPIA A LA NUEVA UBICACION')
+    print('RENONBRAMIENTO TEMPORAL DEL ARCHIVO Y COPIA A LA NUEVA UBICACION')
     print('---------------------------------------------------------------------------')
     temporality_rename_all_files(folder_of_files_renames)
     
@@ -513,50 +514,18 @@ if __name__ == '__main__':
     # text = '008_2020-566_CONSTANCIA_DE_ENTREGA_(17_DE_FEBRERO)' # False
     # text = '008_2020-566_constancia_de_entrega_(17_de_febrero)' # False
     # text = '008_2020-566_Constancia_De_Entrega_(17_De_Febrero)' # True
-    # text = '01 eSCRITO dEMANDA fLS' # False
+    # text = '01 eSCRITO dEMANDA fLS' # False # TODO: Evaluar caso atonito por ser poco comun
+    # text = '01_eSCRITO_dEMANDA_fLS' # False
+    # text = '01eSCRITOdEMANDAfLS' # False
     # text = '01 Escrito Demanda Fls' # True
     # text = '01Escritodemandafls' # True
     # text = '01EscritoDemandaFls' # False
     # print(text.istitle())
     # print(''.join(x for x in text.title() if not x.isspace()))
 
-    # print(camel_case_split(text))
-    # text_list = camel_case_split(text)
-    # # xx = ''
-    # # for x in text_list:
-    # #     xx += ''.join(x)
-    # #     print(x)
-    # # print(xx)
-    # # print(''.join(x for x in text_list))
-    # text = camel_case_join(text_list)
-    # print(text)
-
-
     # text = '06Notificacion19042021Demandado'
-    text = '07MemorialNoAceptaDesignacion321323PruebaHoy'
-    # text_list = list()
+    # text = '07MemorialNoAceptaDesignacion321323PruebaHoy'
 
-    # number_temporality = ''
-    # word_temporality = ''
-    # for x in text:
-    #     if(x.isdigit()):
-    #         if (word_temporality != ''):
-    #             word_temporality = camel_case_split(word_temporality)
-    #             text_list.append(word_temporality)
-    #         word_temporality = ''
-    #         number_temporality += x
-    #     elif(x.islower() or x.isupper()):
-    #         if (number_temporality != ''):
-    #             text_list.append(number_temporality)
-    #         number_temporality = ''
-    #         word_temporality += x
-            
-    # if(number_temporality != ''):
-    #     text_list.append(number_temporality)
-    # elif (word_temporality != ''):
-    #     word_temporality = camel_case_split(word_temporality)
-    #     text_list.append(word_temporality)
-    # print(text_list)
 
     text_list = re.findall('(\d+|[A-Za-z]+)', text) # Divide la cadena entre letras y numeros
     print(text_list)
@@ -590,5 +559,4 @@ if __name__ == '__main__':
 
 # TODO: Cargar archivos de pdf en web (Django and Drag and Drop)
 # TODO: Identificar si un proceso ya esta bien renombrado y no aplicar programa a menos de que tenga un archivo nuevo
-# TODO: Identificador de capital case para los archivos que viene bien
 # TODO: Capturar la fecha de modificacion del folder del proceso para ser procesada (Si la fecha de modificacion coincide con la fecha actual debe ser procesada)
