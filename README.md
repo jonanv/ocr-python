@@ -47,9 +47,15 @@ pip install virtualenv
 virtualenv name_project
 ```
 
-## 3. Activate virtual environment (cd 'name_project\Scripts\')
+## 3. Activate virtual environment
+With cmd: `cd name_project\Scripts\`
 ```python
 activate
+```
+
+With bash:
+```python
+source name_project/Scripts/activate
 ```
 
 ## 4. Desactivate virtual environment
