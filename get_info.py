@@ -6,7 +6,7 @@ import unicodedata
 from datetime import datetime
 import shutil
 from unicodedata import normalize
-from time import time
+from time import time, ctime
 
 # Dependences
 from PyPDF2 import PdfFileReader
@@ -177,7 +177,7 @@ def temporality_rename_file_and_place_folder(path, file, folder_of_files_renames
     is_exist_file_trash()
     is_exist_folder_created(folder_of_files_renames)
     
-    shutil.copy(path, (get_folder() + str(folder_of_files_renames) + file)) # Copia el archivo a la nueva carpeta
+    shutil.copy2(path, (get_folder() + str(folder_of_files_renames) + file)) # Copia el archivo a la nueva carpeta
     os.rename((get_folder() + str(folder_of_files_renames) + file), (get_folder() + str(folder_of_files_renames) + file_rename)) # Renombrar el archivo ubicado en la nueva carpeta
 
 # Metodo que recorre el folder actual y renombra todos los archivos en el
@@ -233,27 +233,47 @@ def get_metadata_files_list_news(folder_of_files_renames):
         # ------------------------------------------------------------
         # CONTENIDO DEL ARCHIVO
         path = get_folder() + folder_of_files_renames + files_news[x]
-        print('Encriptado: ' + str(is_locked(path)))
+
+        is_pdf = path.endswith('.pdf')
+        if (is_pdf):
+            print('Es un archivo de texto')
+            print()
+        elif (path.endswith('.mp4')):
+            print('Es un archivo multimedia de video')
+            print('FECHA:  {}'.format(ctime(os.path.getmtime(path))))
+            print()
+        elif (path.endswith('.mp3')):
+            print('Es un archivo multimedia de audio')
+            print()
+        elif (path.endswith('.jpeg')):
+            print('Es un archivo multimedia de imagen')
+            print()
+        else:
+            print('No se ha identificado el archivo')
+            print()
+
+
         # TODO: revisar tipos de archivos diferentes a pdf para crear logica (Si no se puede acceder a ellos que orden llevan dentro del ordenamiento por fechas)
         # TODO: Logica y condicional (Se puede hacer con un switch y con el metodo endwiths())
         # TODO: text: pdf
         # TODO: imagen: jpg, jpeg, jpeg2000, tiff
         # TODO: audio: mp3, wave
         # TODO: video: mpeg-1, mpeg-2, mpeg-3, mpg, mp1, mp2, mp3, m1v, m1a, m2a, mpa, mpv, mp4, mpeg, m4v
-        print()
+        # print('Encriptado: ' + str(is_locked(path)))
+        # print()
 
-        if(is_locked(path)):
-            # Archivos que son pdf y tiene proteccion con texto o con imagen
-            path_file_decrypted = decrypted_file(files_news[x], path) # Desencripta y retorna la ruta del archivo desencriptado
-            (list_metadata, list_metadata_dates) = get_metadata_files_list(path_file_decrypted, list_metadata, list_metadata_dates, files_news[x])
-            remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
-        else:
-            # Archivos que son pdf sin proteccion con texto o con imagen
-            (list_metadata, list_metadata_dates) = get_metadata_files_list(path, list_metadata, list_metadata_dates, files_news[x])
-        print()
-        print('--------------------------------------------')
-        print()
-    return (list_metadata, list_metadata_dates)
+        # if(is_locked(path)):
+        #     # Archivos que son pdf y tiene proteccion con texto o con imagen
+        #     path_file_decrypted = decrypted_file(files_news[x], path) # Desencripta y retorna la ruta del archivo desencriptado
+        #     (list_metadata, list_metadata_dates) = get_metadata_files_list(path_file_decrypted, list_metadata, list_metadata_dates, files_news[x])
+        #     remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
+        # else:
+        #     # Archivos que son pdf sin proteccion con texto o con imagen
+        #     (list_metadata, list_metadata_dates) = get_metadata_files_list(path, list_metadata, list_metadata_dates, files_news[x])
+        # print()
+        # print('--------------------------------------------')
+        # print()
+    # return (list_metadata, list_metadata_dates)
 
 # Metodo que hace el renombramiento final a la lista de datos ordenada por fecha
 def final_name_renaming(list_metadata_dates, folder_of_files_renames):
@@ -467,18 +487,19 @@ def process_files_all():
     print()
     print('LECTURA DEL ARCHIVO PARA OBTENER METADATOS DESDE LA NUEVA UBICACION')
     print('---------------------------------------------------------------------------')
-    (list_metadata, list_metadata_dates) = get_metadata_files_list_news(folder_of_files_renames)
+    # (list_metadata, list_metadata_dates) = get_metadata_files_list_news(folder_of_files_renames)
+    get_metadata_files_list_news(folder_of_files_renames)
 
-    print()
-    print('ORDENAMIENTO DE LOS DATOS DE ACUERDO A LA FECHA Y ESCRITURA DE NOMBRE FINAL')
-    print('---------------------------------------------------------------------------')
-    list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
-    final_name_renaming(list_metadata_dates, folder_of_files_renames)
+    # print()
+    # print('ORDENAMIENTO DE LOS DATOS DE ACUERDO A LA FECHA Y ESCRITURA DE NOMBRE FINAL')
+    # print('---------------------------------------------------------------------------')
+    # list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
+    # final_name_renaming(list_metadata_dates, folder_of_files_renames)
     
-    print()
-    print('GENERADOR DE ARCHIVOS TXT, CSV Y XLSX')
-    print('---------------------------------------------------------------------------')
-    generate_files(list_metadata, list_metadata_dates)
+    # print()
+    # print('GENERADOR DE ARCHIVOS TXT, CSV Y XLSX')
+    # print('---------------------------------------------------------------------------')
+    # generate_files(list_metadata, list_metadata_dates)
 
 # Metodo que calcula el tiempo de ejecucion
 def calculate_time(start_time):
