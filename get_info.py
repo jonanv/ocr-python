@@ -266,6 +266,10 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
         print('Capitalizacion: ' + file)
 
         file = indetify_file_name(file) # Identificador de capital case para los archivos que viene bien
+        if (identify_date_file_name(file) != ''): # Identificador de fecha para los archivos que viene bien
+            date = identify_date_file_name(file)
+        # TODO: Identificar la fecha cuando el archivo viene bien porque al final es eliminada
+        # TODO: Identificar si un proceso ya esta bien renombrado y no aplicar programa a menos de que tenga un archivo nuevo
         
         count_character_file = count_character(file) # Cantidad de caracteres
         print('Valido: ' + str(count_character_file) + ', Caracteres: ' + str(len(file)))
@@ -533,7 +537,22 @@ def indetify_file_name(file_name):
     file_name_list_final = unify_list_with_sublist(file_name_list)
     file_name = camel_case_join(file_name_list_final)
     return file_name
-    
+
+# Metodo que identifica la fecha y la guarda
+def identify_date_file_name(file_name):
+    file_list = split_between_words_numbers(file_name)
+
+    date = ''
+    for word in file_list:
+        if (len(word) == 8 and word.isdigit()):
+            date = word
+
+    if (date in file_list):
+        file_list.remove(date)
+        file_list.append(date)
+    # print(file_list)
+    return date
+
 # Metodo principal
 if __name__ == '__main__':
     start_time = time() # Timpo inicial
@@ -556,14 +575,15 @@ if __name__ == '__main__':
     # print(''.join(x for x in text.title() if not x.isspace()))
 
     # text = '06Notificacion19042021Demandado'
-    # text = '07MemorialNoAceptaDesignacion321323PruebaHoy.pdf'
+    # text = '05Constancia21032021'
+    # file = '05ConstanciaPrueba'
+    # file = '07MemorialNoAceptaDesignacion19042021PruebaHoy'
 
 
-    # print(indetify_file_name(text))
+    
 
     calculate_time(start_time)
     
 
 # TODO: Cargar archivos de pdf en web (Django and Drag and Drop)
-# TODO: Identificar si un proceso ya esta bien renombrado y no aplicar programa a menos de que tenga un archivo nuevo
 # TODO: Capturar la fecha de modificacion del folder del proceso para ser procesada (Si la fecha de modificacion coincide con la fecha actual debe ser procesada)
