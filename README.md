@@ -114,6 +114,11 @@ python3 get_info.py
 pip3 freeze > requeriments.txt
 ```
 
+## Install requirements.txt (Mac OS or Windows)
+```python
+pip3 install -r requirements.txt
+```
+
 [python-badge]: https://img.shields.io/badge/python-v3.6.5-brightgreen
 [python-url]: https://www.python.org/downloads/release/python-365/
 [pip-badge]: https://img.shields.io/badge/pip-v21.0.1-brightgreen

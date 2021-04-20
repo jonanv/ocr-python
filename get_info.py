@@ -80,6 +80,7 @@ def get_content_file_scanned(path):
         page = pdf.pages[0]
         text = page.extract_text(x_tolerance=2)
         remove('output.pdf') # Elimina el archivo que es generado porque no es necesario
+        # TODO: Revisar la eliminacion del archivo en Windows (Revisar permisos de archivo)
         print()
     return text
 
