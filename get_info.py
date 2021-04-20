@@ -196,10 +196,11 @@ def temporality_rename_all_files(folder_of_files_renames):
 
 # Metodo que retorna la variable con el nombre de la carpeta
 def get_folder():
-	carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1_correcto/CUADERNO_PRINCIPAL/'
+	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1_correcto/CUADERNO_PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_JUAN/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
+	carpeta = 'HERRAMIENTAS_EXCEL/PROCESO_MULTIMEDIA/'
 	return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
@@ -232,7 +233,12 @@ def get_metadata_files_list_news(folder_of_files_renames):
         # CONTENIDO DEL ARCHIVO
         path = get_folder() + folder_of_files_renames + files_news[x]
         print('Encriptado: ' + str(is_locked(path)))
-
+        # TODO: revisar tipos de archivos diferentes a pdf para crear logica (Si no se puede acceder a ellos que orden llevan dentro del ordenamiento por fechas)
+        # TODO: Logica y condicional (Se puede hacer con un switch y con el metodo endwiths())
+        # TODO: text: pdf
+        # TODO: imagen: jpg, jpeg, jpeg2000, tiff
+        # TODO: audio: mp3, wave
+        # TODO: video: mpeg-1, mpeg-2, mpeg-3, mpg, mp1, mp2, mp3, m1v, m1a, m2a, mpa, mpv, mp4, mpeg, m4v
         print()
 
         if(is_locked(path)):
@@ -254,6 +260,10 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
         file_name = list_metadata_dates[x][2]
         print()
 
+        # TODO: Identifica si el nombre del archivo es de solo numeros, si su formato es pdf poner nombre por defecto Revisar y si es mp4 Audiencia
+        # TODO: nombre de carpetas C01CuadernoPrincipal, C02CuadernoMedidas
+        # TODO: nombre del indice electronico 00IndiceElectronicoC01 00IndiceElectronicoC02
+
         # NOMBRE DEL ARCHIVO
         print('Nombre real: ', file_name)
         file = remove_extension(file_name) # Elimina la extension
@@ -268,8 +278,6 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
         file = indetify_file_name(file) # Identificador de capital case para los archivos que viene bien
         if (identify_date_file_name(file) != ''): # Identificador de fecha para los archivos que viene bien
             date = identify_date_file_name(file)
-        # TODO: Identificar la fecha cuando el archivo viene bien porque al final es eliminada
-        # TODO: Identificar si un proceso ya esta bien renombrado y no aplicar programa a menos de que tenga un archivo nuevo
         
         count_character_file = count_character(file) # Cantidad de caracteres
         print('Valido: ' + str(count_character_file) + ', Caracteres: ' + str(len(file)))
@@ -434,7 +442,7 @@ def get_date(file):
 # Metodo que cuenta la cantidad de caracteres del nombre del archivo y determina si es valido
 def count_character(file):
     characters = len(file)
-    # FIXME: Que pasa con los archivos que son superior a 40 caracteres?
+    # FIXME: Que pasa con los archivos que son superior a 40 caracteres?, entrar a revisar manual
     if(characters <= 40):
         return True
     else:
@@ -558,29 +566,6 @@ if __name__ == '__main__':
     start_time = time() # Timpo inicial
 
     process_files_all()
-
-    # text = '12_Auto_Osa_Hipotecario_Decreto_Fls' # True
-    # text = '12 Auto Osa Hipotecario Decreto Fls' # True
-    # text = '12AutoOsaHipotecarioDecretoFls' # False
-    # text = '008_2020-566_CONSTANCIA_DE_ENTREGA_(17_DE_FEBRERO)' # False
-    # text = '008_2020-566_constancia_de_entrega_(17_de_febrero)' # False
-    # text = '008_2020-566_Constancia_De_Entrega_(17_De_Febrero)' # True
-    # text = '01 eSCRITO dEMANDA fLS' # False # TODO: Evaluar caso atonito por ser poco comun
-    # text = '01_eSCRITO_dEMANDA_fLS' # False
-    # text = '01eSCRITOdEMANDAfLS' # False
-    # text = '01 Escrito Demanda Fls' # True
-    # text = '01Escritodemandafls' # True
-    # text = '01EscritoDemandaFls' # False
-    # print(text.istitle())
-    # print(''.join(x for x in text.title() if not x.isspace()))
-
-    # text = '06Notificacion19042021Demandado'
-    # text = '05Constancia21032021'
-    # file = '05ConstanciaPrueba'
-    # file = '07MemorialNoAceptaDesignacion19042021PruebaHoy'
-
-
-    
 
     calculate_time(start_time)
     
