@@ -2,9 +2,9 @@ import os
 from os import remove
 import copy
 import re
-import unicodedata
 from datetime import datetime
 import shutil
+import unicodedata
 from unicodedata import normalize
 from time import time, ctime
 
@@ -17,6 +17,7 @@ import dateparser
 from dateparser.search import search_dates
 import pdfplumber
 import pikepdf
+import subprocess
 
 # Metodo que permite obtener la informacion de metadatos del archivo
 def get_metadata(path):
@@ -240,13 +241,29 @@ def get_metadata_files_list_news(folder_of_files_renames):
             print()
         elif (path.endswith('.mp4')):
             print('Es un archivo multimedia de video')
-            print('FECHA:  {}'.format(ctime(os.path.getmtime(path))))
-            print()
+            # print('FECHA:  {}'.format(ctime(os.path.getmtime(path))))
+
+            # os.system(f'hachoir-metadata {path}')
+
+            input_file = path
+            exe = 'hachoir-metadata'
+            process = subprocess.Popen([exe, input_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+            metadata = {}
+            for output in process.stdout:
+                print(output.strip())
+
+                line = output.strip().split(':', 1)
+                metadata.setdefault(line[0].strip(), line[1].strip())
+            print(metadata)
+            print(metadata['- Creation date'])
+
         elif (path.endswith('.mp3')):
             print('Es un archivo multimedia de audio')
+
             print()
         elif (path.endswith('.jpeg')):
             print('Es un archivo multimedia de imagen')
+
             print()
         else:
             print('No se ha identificado el archivo')
