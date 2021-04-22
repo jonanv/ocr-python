@@ -228,27 +228,44 @@ def files_list(folder):
 
 # Metodo que obtiene la metadata de un archivo multimedia
 def get_metadata_media_file(path):
-    # print('FECHA:  {}'.format(ctime(os.path.getmtime(path))))
+    date = format(ctime(os.path.getmtime(path)))
 
-    # os.system(f'hachoir-metadata {path}')
+    # input_file = path
+    # exe = 'hachoir-metadata'
+    # # exe = 'exiftool' # Mac OS
+    # # exe = 'exiftool(-k).exe' # Windows
+    # process = subprocess.Popen([exe, input_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+    # metadata_dict = dict()
+    # for output in process.stdout:
+    #     line = output.strip().split(':', 1)
+    #     if (line[0] != 'Metadata' and line[0] != 'Common'):
+    #         key = line[0].strip()
+    #         key = key.split('-')[1].strip()
+    #         value = line[1].strip()
+    #         if (key == 'Creation date'):
+    #             metadata_dict.setdefault('/CreationDate', value)
+    #         else:
+    #             metadata_dict.setdefault(key, value)
 
-    input_file = path
-    exe = 'hachoir-metadata'
-    # exe = 'exiftool' # Mac OS
-    # exe = 'exiftool(-k).exe' # Windows
-    process = subprocess.Popen([exe, input_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
-    metadata = {}
-    for output in process.stdout:
-        line = output.strip().split(':', 1)
+    parser = createParser(path)
+    metadata = extractMetadata(parser)
+    metadata_dict = dict()
+
+    for line in metadata.exportPlaintext():
+        line = line.strip().split(':', 1)
         if (line[0] != 'Metadata' and line[0] != 'Common'):
             key = line[0].strip()
             key = key.split('-')[1].strip()
             value = line[1].strip()
             if (key == 'Creation date'):
-                metadata.setdefault('/CreationDate', value)
+                metadata_dict.setdefault('/CreationDate', value)
             else:
-                metadata.setdefault(key, value)
-    return metadata
+                metadata_dict.setdefault(key, value)
+
+    if (metadata_dict.get('/CreationDate') == None):
+        metadata_dict.setdefault('/CreationDate', date)
+        
+    return metadata_dict
 
 # Metodo que obtiene la metadata completa de archivos multimedia (arreglo), recibe el path, nombre de archivo, toda la metadata y lista de metadata
 def get_metadata_media_files_list(path, list_metadata, list_metadata_dates, file):
@@ -285,11 +302,11 @@ def get_metadata_files_list_news(folder_of_files_renames):
             print()
         elif (path.lower().endswith('.mp3') or path.lower().endswith('.wav')):
             print('Es un archivo multimedia de audio')
-            get_metadata_media_file(path)
+            (list_metadata, list_metadata_dates) = get_metadata_media_files_list(path, list_metadata, list_metadata_dates, files_news[x])
             print()
         elif (path.lower().endswith('.jpeg') or path.lower().endswith('.jpg')):
             print('Es un archivo multimedia de imagen')
-            get_metadata_media_file(path)
+            (list_metadata, list_metadata_dates) = get_metadata_media_files_list(path, list_metadata, list_metadata_dates, files_news[x])
             print()
         else:
             print('No se ha identificado el archivo')
