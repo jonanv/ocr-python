@@ -21,8 +21,6 @@ import subprocess
 
 from hachoir.parser import createParser
 from hachoir.metadata import extractMetadata
-from PIL import Image
-from PIL.ExifTags import TAGS
 
 # Metodo que permite obtener la informacion de metadatos del archivo
 def get_metadata(path):
@@ -134,7 +132,8 @@ def get_metadata_files_list(path, list_metadata, list_metadata_dates, file):
 
     list_metadata += str(metadata_normalized) + '\n'
 
-    list_metadata_dates.append([convert_string_to_datatime(metadata_normalized['creationDate']), metadata_normalized['pages'], file])
+    creation_date_datetime = convert_string_to_datatime(metadata_normalized['creationDate'])
+    list_metadata_dates.append([creation_date_datetime, metadata_normalized['pages'], file])
 
     return (list_metadata, list_metadata_dates)
 
@@ -242,29 +241,26 @@ def get_metadata_media_file(path):
     for output in process.stdout:
         line = output.strip().split(':', 1)
         if (line[0] != 'Metadata' and line[0] != 'Common'):
-            print(line)
             key = line[0].strip()
             key = key.split('-')[1].strip()
             value = line[1].strip()
-            metadata.setdefault(key, value)
-    print(metadata)
-    # print(metadata['Creation date'])
-    print()
+            if (key == 'Creation date'):
+                metadata.setdefault('/CreationDate', value)
+            else:
+                metadata.setdefault(key, value)
+    return metadata
 
-    # # hachoir
-    # print('hachoir')
-    # parser = createParser(path)
-    # metadata = extractMetadata(parser)
-    # metadata_dict = dict()
-    # for line in metadata.exportPlaintext():
-    #     line = line.strip().split(':', 1)
-    #     if (line[0] != 'Metadata'):
-    #         key = line[0].strip()
-    #         key = key.split('-')[1].strip()
-    #         value = line[1].strip()
-    #         metadata_dict.setdefault(key, value)
-    # print(metadata_dict)
-    # print()
+# Metodo que obtiene la metadata completa de archivos multimedia (arreglo), recibe el path, nombre de archivo, toda la metadata y lista de metadata
+def get_metadata_media_files_list(path, list_metadata, list_metadata_dates, file):
+    metadata_original = get_metadata_media_file(path)
+    metadata_normalized = normalize_metadata(metadata_original, 0)
+
+    list_metadata += str(metadata_normalized) + '\n'
+    
+    date_datetime = dateparser.parse(str(metadata_normalized['creationDate'])) # datetime.datetime(2020, 4, 28, 18, 22, 32)
+    list_metadata_dates.append([date_datetime, metadata_normalized['pages'], file])
+
+    return (list_metadata, list_metadata_dates)
 
 # Metodo que obtiene los metadatos de la lista nueva de archivos
 def get_metadata_files_list_news(folder_of_files_renames):
@@ -285,7 +281,7 @@ def get_metadata_files_list_news(folder_of_files_renames):
             print()
         elif (path.lower().endswith('.mp4')):
             print('Es un archivo multimedia de video')
-            get_metadata_media_file(path)
+            (list_metadata, list_metadata_dates) = get_metadata_media_files_list(path, list_metadata, list_metadata_dates, files_news[x])
             print()
         elif (path.lower().endswith('.mp3') or path.lower().endswith('.wav')):
             print('Es un archivo multimedia de audio')
@@ -321,6 +317,9 @@ def get_metadata_files_list_news(folder_of_files_renames):
         # print('--------------------------------------------')
         # print()
     # return (list_metadata, list_metadata_dates)
+    print(list_metadata)
+    print()
+    print(list_metadata_dates)
 
 # Metodo que hace el renombramiento final a la lista de datos ordenada por fecha
 def final_name_renaming(list_metadata_dates, folder_of_files_renames):
