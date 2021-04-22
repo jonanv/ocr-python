@@ -230,23 +230,6 @@ def files_list(folder):
 def get_metadata_media_file(path):
     date = format(ctime(os.path.getmtime(path)))
 
-    # input_file = path
-    # exe = 'hachoir-metadata'
-    # # exe = 'exiftool' # Mac OS
-    # # exe = 'exiftool(-k).exe' # Windows
-    # process = subprocess.Popen([exe, input_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
-    # metadata_dict = dict()
-    # for output in process.stdout:
-    #     line = output.strip().split(':', 1)
-    #     if (line[0] != 'Metadata' and line[0] != 'Common'):
-    #         key = line[0].strip()
-    #         key = key.split('-')[1].strip()
-    #         value = line[1].strip()
-    #         if (key == 'Creation date'):
-    #             metadata_dict.setdefault('/CreationDate', value)
-    #         else:
-    #             metadata_dict.setdefault(key, value)
-
     parser = createParser(path)
     metadata = extractMetadata(parser)
     metadata_dict = dict()
