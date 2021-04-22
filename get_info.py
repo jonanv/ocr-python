@@ -19,6 +19,11 @@ import pdfplumber
 import pikepdf
 import subprocess
 
+from hachoir.parser import createParser
+from hachoir.metadata import extractMetadata
+from PIL import Image
+from PIL.ExifTags import TAGS
+
 # Metodo que permite obtener la informacion de metadatos del archivo
 def get_metadata(path):
     with open(path, 'rb') as f:
@@ -235,11 +240,11 @@ def get_metadata_files_list_news(folder_of_files_renames):
         # CONTENIDO DEL ARCHIVO
         path = get_folder() + folder_of_files_renames + files_news[x]
 
-        is_pdf = path.endswith('.pdf')
+        is_pdf = path.lower().endswith('.pdf')
         if (is_pdf):
             print('Es un archivo de texto')
             print()
-        elif (path.endswith('.mp4')):
+        elif (path.lower().endswith('.mp4')):
             print('Es un archivo multimedia de video')
             # print('FECHA:  {}'.format(ctime(os.path.getmtime(path))))
 
@@ -247,24 +252,79 @@ def get_metadata_files_list_news(folder_of_files_renames):
 
             input_file = path
             exe = 'hachoir-metadata'
+            # exe = 'exiftool' # Mac OS
+            # exe = 'exiftool(-k).exe' # Windows
             process = subprocess.Popen([exe, input_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
             metadata = {}
             for output in process.stdout:
                 print(output.strip())
+            #     line = output.strip().split(':', 1)
+            #     metadata.setdefault(line[0].strip(), line[1].strip())
+            # print(metadata)
+            # print(metadata['- Creation date'])
+            print()
 
-                line = output.strip().split(':', 1)
-                metadata.setdefault(line[0].strip(), line[1].strip())
-            print(metadata)
-            print(metadata['- Creation date'])
-
-        elif (path.endswith('.mp3')):
+        elif (path.lower().endswith('.mp3') or path.lower().endswith('.wav')):
             print('Es un archivo multimedia de audio')
 
-            print()
-        elif (path.endswith('.jpeg')):
-            print('Es un archivo multimedia de imagen')
+            print('hachoir')
+            parser = createParser(path)
+            metadata = extractMetadata(parser)
+            for line in metadata.exportPlaintext():
+                print(line)
 
             print()
+            print('exiftool')
+            input_file = path
+            # exe = 'hachoir-metadata'
+            exe = 'exiftool' # Mac OS
+            # exe = 'exiftool(-k).exe' # Windows
+            process = subprocess.Popen([exe, input_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+            metadata = {}
+            for output in process.stdout:
+                print(output.strip())
+            #     line = output.strip().split(':', 1)
+            #     metadata.setdefault(line[0].strip(), line[1].strip())
+            # print(metadata)
+
+            print()
+        elif (path.lower().endswith('.jpeg') or path.lower().endswith('.jpg')):
+            print('Es un archivo multimedia de imagen')
+
+            # hachoir
+            print('hachoir')
+            parser = createParser(path)
+            metadata = extractMetadata(parser)
+            for line in metadata.exportPlaintext():
+                print(line)
+            print()
+
+            # PIL
+            print('PIL')
+            image = Image.open(path)
+            exifdata = image.getexif()
+            
+            for tagid in exifdata:
+                tagname = TAGS.get(tagid, tagid)
+                value = exifdata.get(tagid)
+                print(f"{tagname:25}: {value}")
+            print()
+
+            # exiftool
+            print('exiftool')
+            input_file = path
+            # exe = 'hachoir-metadata'
+            exe = 'exiftool' # Mac OS
+            # exe = 'exiftool(-k).exe' # Windows
+            process = subprocess.Popen([exe, input_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+            metadata = {}
+            for output in process.stdout:
+                print(output.strip())
+            #     line = output.strip().split(':', 1)
+            #     metadata.setdefault(line[0].strip(), line[1].strip())
+            # print(metadata)
+            print()
+
         else:
             print('No se ha identificado el archivo')
             print()
@@ -273,8 +333,8 @@ def get_metadata_files_list_news(folder_of_files_renames):
         # TODO: revisar tipos de archivos diferentes a pdf para crear logica (Si no se puede acceder a ellos que orden llevan dentro del ordenamiento por fechas)
         # TODO: Logica y condicional (Se puede hacer con un switch y con el metodo endwiths())
         # TODO: text: pdf
-        # TODO: imagen: jpg, jpeg, jpeg2000, tiff
-        # TODO: audio: mp3, wave
+        # TODO: imagen: jpeg, jpg, jpe, jpg2, tiff
+        # TODO: audio: mp3, wav
         # TODO: video: mpeg-1, mpeg-2, mpeg-3, mpg, mp1, mp2, mp3, m1v, m1a, m2a, mpa, mpv, mp4, mpeg, m4v
         # print('Encriptado: ' + str(is_locked(path)))
         # print()
