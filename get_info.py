@@ -210,8 +210,8 @@ def get_folder():
 	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_JUAN/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
-	# carpeta = 'HERRAMIENTAS_EXCEL/PROCESO_MULTIMEDIA/'
-	carpeta = 'HERRAMIENTAS_EXCEL/C01Principal/'
+	carpeta = 'HERRAMIENTAS_EXCEL/PROCESO_MULTIMEDIA/'
+	# carpeta = 'HERRAMIENTAS_EXCEL/C01Principal/'
 	return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
@@ -237,8 +237,6 @@ def get_metadata_media_file(path):
 
     input_file = path
     exe = 'hachoir-metadata'
-    # exe = 'exiftool' # Mac OS
-    # exe = 'exiftool(-k).exe' # Windows
     process = subprocess.Popen([exe, input_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
     metadata_dict = dict()
 
@@ -276,15 +274,17 @@ def get_metadata_files_list_news(folder_of_files_renames):
     list_metadata = ''
     list_metadata_dates = list()
 
+    extension_media_list = ['.mpg', '.mp1', '.mp2', '.mp3', '.m1v', '.m1a', '.m2a', '.mpa', '.mpv', '.mp4', '.mpeg', '.m4v', '.mp3', '.wav', '.jpeg', '.jpg', '.jpe', '.jpg2', '.tiff']
+
     for x in range(len(files_news)):
         print(str(x+1) + ". " + files_news[x])
 
         # ------------------------------------------------------------
         # CONTENIDO DEL ARCHIVO
         path = get_folder() + folder_of_files_renames + files_news[x]
+        extension = get_file_extension(path)
 
-        is_pdf = path.lower().endswith('.pdf')
-        if (is_pdf):
+        if (extension == '.pdf'):
             # Es un archivo de texto
             print('Encriptado: ' + str(is_locked(path)))
             print()
@@ -298,32 +298,8 @@ def get_metadata_files_list_news(folder_of_files_renames):
                 # Archivos que son pdf sin proteccion con texto o con imagen
                 (list_metadata, list_metadata_dates) = get_metadata_files_list(path, list_metadata, list_metadata_dates, files_news[x])
             print()
-        elif (  path.lower().endswith('.mpg') or
-                path.lower().endswith('.mp1') or
-                path.lower().endswith('.mp2') or
-                path.lower().endswith('.mp3') or
-                path.lower().endswith('.m1v') or
-                path.lower().endswith('.m1a') or
-                path.lower().endswith('.m2a') or
-                path.lower().endswith('.mpa') or
-                path.lower().endswith('.mpv') or
-                path.lower().endswith('.mp4') or
-                path.lower().endswith('.mpeg') or
-                path.lower().endswith('.m4v')):
-            # Es un archivo multimedia de video
-            (list_metadata, list_metadata_dates) = get_metadata_media_files_list(path, list_metadata, list_metadata_dates, files_news[x])
-            print()
-        elif (  path.lower().endswith('.mp3') or 
-                path.lower().endswith('.wav')):
-            # Es un archivo multimedia de audio
-            (list_metadata, list_metadata_dates) = get_metadata_media_files_list(path, list_metadata, list_metadata_dates, files_news[x])
-            print()
-        elif (  path.lower().endswith('.jpeg') or 
-                path.lower().endswith('.jpg') or
-                path.lower().endswith('.jpe') or
-                path.lower().endswith('.jpg2') or
-                path.lower().endswith('.tiff')):
-            # Es un archivo multimedia de imagen
+        elif (extension in extension_media_list):
+            # Es un archivo multimedia (video, audio, imagen)
             (list_metadata, list_metadata_dates) = get_metadata_media_files_list(path, list_metadata, list_metadata_dates, files_news[x])
             print()
         else:
@@ -333,14 +309,16 @@ def get_metadata_files_list_news(folder_of_files_renames):
 
 # Metodo que hace el renombramiento final a la lista de datos ordenada por fecha
 def final_name_renaming(list_metadata_dates, folder_of_files_renames):
+    extension_media_video_list = ['.mpg', '.mp1', '.mp2', '.mp3', '.m1v', '.m1a', '.m2a', '.mpa', '.mpv', '.mp4', '.mpeg', '.m4v']
+
     for x in range(len(list_metadata_dates)):
         file_name = list_metadata_dates[x][2]
         print()
 
-        # TODO: Identifica si el nombre del archivo es de solo numeros, si su formato es pdf poner nombre por defecto Revisar y si es mp4 Audiencia
         # TODO: nombre de carpetas C01CuadernoPrincipal, C02CuadernoMedidas
         # TODO: nombre del indice electronico 00IndiceElectronicoC01 00IndiceElectronicoC02
 
+        # ------------------------------------------------------------
         # NOMBRE DEL ARCHIVO
         print('Nombre real: ', file_name)
         (file, extension) = split_file_extension(file_name) # Separa el nombre y la extension
@@ -363,6 +341,10 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
 
         file = remove_special_characters(file.title()) # Elimina caracteres especiales
         file = remove_numbers(file) # Elimina numeros de la cadena
+        if ((file == '') and (extension == '.pdf')):
+            file = 'REVISAR'
+        if ((file == '') and (extension in extension_media_video_list)):
+            file = 'Audiencia'
         file = file + date
 
         file_out = assign_index(x, file, extension)
@@ -391,6 +373,12 @@ def split_file_extension(file_name):
     name = new_file_name[0]
     extension = new_file_name[1].lower()
     return (name, extension)
+
+# Metodo que retorna la extension del archivo
+def get_file_extension(file_name):
+    new_file_name = os.path.splitext(file_name)
+    extension = new_file_name[1].lower()
+    return extension
 
 # Metodo que elimina los acentos y remplaza las letras sin acentos
 def normalize_accents(file_name):
