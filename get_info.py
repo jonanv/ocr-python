@@ -19,9 +19,6 @@ import pdfplumber
 import pikepdf
 import subprocess
 
-from hachoir.parser import createParser
-from hachoir.metadata import extractMetadata
-
 # Metodo que permite obtener la informacion de metadatos del archivo
 def get_metadata(path):
     with open(path, 'rb') as f:
@@ -233,12 +230,15 @@ def files_list(folder):
 def get_metadata_media_file(path):
     date = format(ctime(os.path.getmtime(path)))
 
-    parser = createParser(path)
-    metadata = extractMetadata(parser)
+    input_file = path
+    exe = 'hachoir-metadata'
+    # exe = 'exiftool' # Mac OS
+    # exe = 'exiftool(-k).exe' # Windows
+    process = subprocess.Popen([exe, input_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
     metadata_dict = dict()
 
-    for line in metadata.exportPlaintext():
-        line = line.strip().split(':', 1)
+    for output in process.stdout:
+        line = output.strip().split(':', 1)
         if (line[0] != 'Metadata' and line[0] != 'Common'):
             key = line[0].strip()
             key = key.split('-')[1].strip()
@@ -640,9 +640,6 @@ if __name__ == '__main__':
     start_time = time() # Timpo inicial
 
     process_files_all()
-    # path = get_folder() + '03SolicitaNotificacionElectronica2.pdf'
-    # (info, number_of_pages) = get_metadata(path)
-    # print(info)
 
     calculate_time(start_time)
     
