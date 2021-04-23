@@ -95,7 +95,7 @@ def get_recover_date(text):
     matches = search_dates(text, languages=['es'])
     new_matches = list()
     for match in matches:
-        if(len(match[0]) > 7): # Mayor que 7(25/1/19) para eliminar la fechas basura que trae en matches
+        if((len(match[0]) > 7) and (not match[0].isdigit())): # Mayor que 7(25/1/19) para eliminar la fechas basura que trae en matches
             new_matches.append(match[1])
             print(match)
     # print(new_matches)
@@ -119,7 +119,7 @@ def read_and_recover_information(metadata_normalized, path):
             text = str(text).replace('  ', ' ')
             print(text)
             metadata_normalized['creationDate'] = get_recover_date(text)
-            # TODO: Revisar el archivo 003_ESCRITO_DEMANDA_FLS._1-73.pdf el cual no esta recuperando la fecha correcta (Los archivos que son demanda deben de llevar la fecha de )
+            # TODO: Revisar el archivo 003_ESCRITO_DEMANDA_FLS._1-73.pdf el cual no esta recuperando la fecha correcta (Los archivos que son demanda deben de llevar la fecha del acta de reparto)
     return metadata_normalized
 
 # Metodo que obtiene la metadata completa (arreglo), recibe el path, nombre de archivo, toda la metadata y lista de metadata
@@ -209,10 +209,10 @@ def temporality_rename_all_files(folder_of_files_renames):
 def get_folder():
     # carpeta = sys.argv[1]
 	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1_correcto/CUADERNO_PRINCIPAL/'
-	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
+	carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_JUAN/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
-	carpeta = 'HERRAMIENTAS_EXCEL/PROCESO_MULTIMEDIA/'
+	# carpeta = 'HERRAMIENTAS_EXCEL/PROCESO_MULTIMEDIA/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/C01Principal/'
 	return carpeta
 
@@ -483,7 +483,7 @@ def find_date(text):
     matches = datefinder.find_dates(text, strict=False, source=True)
     try:
         for match in matches:
-            if(len(match[1]) > 7): # Mayor que 7(25/1/19) para eliminar la fechas basura que trae en matches
+            if((len(match[1]) > 7) and (not match[1].isdigit())): # Mayor que 7(25/1/19) para eliminar la fechas basura que trae en matches
                 # print(match)
                 return match[0] # 2021-10-22 18:30:00
     except:
