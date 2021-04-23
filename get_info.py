@@ -192,7 +192,11 @@ def temporality_rename_all_files(folder_of_files_renames):
 
     folder_generate_files = get_folder_generate_files().split('/')[0]
     for x in range(len(files)):
-        if ((files[x] != folder_of_files_renames) and (files[x] != '.DS_Store') and (files[x] != folder_generate_files)):
+        if (not os.path.isdir(get_folder() + files[x]) and
+            (files[x] != folder_of_files_renames) and 
+            (files[x] != '.DS_Store') and 
+            (files[x] != folder_generate_files) and
+            (files[x] != '00IndiceElectronico.xlsx')):
             print(str(count+1) + ". " + files[x])
 
             path_original = get_folder() + files[x]
@@ -206,7 +210,8 @@ def get_folder():
 	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_JUAN/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
-	carpeta = 'HERRAMIENTAS_EXCEL/PROCESO_MULTIMEDIA/'
+	# carpeta = 'HERRAMIENTAS_EXCEL/PROCESO_MULTIMEDIA/'
+	carpeta = 'HERRAMIENTAS_EXCEL/C01Principal/'
 	return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
@@ -598,6 +603,7 @@ def unify_list_with_sublist(file_name_list):
             file_name_list_final.append(file_name_list[x])
     return file_name_list_final
 
+# Metodo que se encarga de unir las palabras de la lista con guion bajo (_)
 def camel_case_join(file_name_list_final):
     # text = ''.join(x for x in text_list)
     # return text
