@@ -91,16 +91,19 @@ def get_content_file_scanned(path):
 
 # Metodo que recupera la primera fecha de un texto en espaniol y discrimina las fechas basura
 def get_recover_date(text):
-    # matches = datefinder.find_dates(text, source=False)
-    matches = search_dates(text, languages=['es'])
-    new_matches = list()
-    for match in matches:
-        if((len(match[0]) > 7) and (not match[0].isdigit())): # Mayor que 7(25/1/19) para eliminar la fechas basura que trae en matches
-            new_matches.append(match[1])
-            print(match)
-    # print(new_matches)
-    date = get_creation_date_format(new_matches[0]) # D:20201113165700 formato de la fecha de los metadatos
-    return date
+    try:
+        # matches = datefinder.find_dates(text, source=False)
+        matches = search_dates(text, languages=['es'])
+        new_matches = list()
+        for match in matches:
+            if((len(match[0]) > 8) and (not match[0].isdigit())): # Mayor que 8(25/01/19) para eliminar la fechas basura que trae en matches
+                new_matches.append(match[1])
+                print(match)
+        # print(new_matches)
+        date = get_creation_date_format(new_matches[0]) # D:20201113165700 formato de la fecha de los metadatos
+        return date
+    except:
+        return 'D:00000000000000'
         
 # Metodo que lee y recupera la informacion de los metadatos con ayuda del metodo (get content file)
 def read_and_recover_information(metadata_normalized, path):
@@ -134,6 +137,9 @@ def get_metadata_files_list(path, list_metadata, list_metadata_dates, file):
     list_metadata += str(metadata_normalized) + '\n'
 
     creation_date_datetime = convert_string_to_datatime(metadata_normalized['creationDate'])
+    # TODO: Se aplica logica provicional para archivos pdf sin fecha (no es la mejor opcion) Es posible que la fecha del sistema no sea la de creacion y el orden cronologico de los archivos del proceso se pierda
+    # if (creation_date_datetime == ''):
+    #     creation_date_datetime = dateparser.parse(str(format(ctime(os.path.getmtime(path)))))
     list_metadata_dates.append([creation_date_datetime, metadata_normalized['pages'], file])
 
     return (list_metadata, list_metadata_dates)
@@ -209,11 +215,14 @@ def temporality_rename_all_files(folder_of_files_renames):
 def get_folder():
     # carpeta = sys.argv[1]
 	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1_correcto/CUADERNO_PRINCIPAL/'
-	carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
+	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_JUAN/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/PROCESO_MULTIMEDIA/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/C01Principal/'
+	# carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300320190031400/' # Archivo NaT
+	# carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300920200031500/CUADERNO_PRINCIPAL/'
+	carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400301020180075700/C01Principal/' # Archivo NaT
 	return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
@@ -453,37 +462,40 @@ def generate_xlsx(list_metadata_dates):
     writer.save()
 
 def convert_string_to_datatime(text_date):
-    # D:20200821205457Z00'00' --> D:2020 08 21 20 54 57 Z00'00'
-    # D:20201111143014-05'00' --> D:2020 11 11 14 30 14 -05'00'
-    # D:20201216122209+00'00' --> D:2020 12 16 12 22 09 +00'00'
-    # D:20201113165700 --> D:2020 11 13 16 57 00
-    text_list = text_date.split(':') # 'Z', '-', '+'
+    try:
+        # D:20200821205457Z00'00' --> D:2020 08 21 20 54 57 Z00'00'
+        # D:20201111143014-05'00' --> D:2020 11 11 14 30 14 -05'00'
+        # D:20201216122209+00'00' --> D:2020 12 16 12 22 09 +00'00'
+        # D:20201113165700 --> D:2020 11 13 16 57 00
+        text_list = text_date.split(':') # 'Z', '-', '+'
 
-    date_with_z = text_list[1].find('Z')
-    date_with_underscore = text_list[1].find('-')
-    date_with_plus = text_list[1].find('+')
+        date_with_z = text_list[1].find('Z')
+        date_with_underscore = text_list[1].find('-')
+        date_with_plus = text_list[1].find('+')
 
-    if(date_with_z != -1):
-        text_list = text_list[1].split('Z')
-        string_date = text_list[0]
-    elif(date_with_underscore != -1):
-        text_list = text_list[1].split('-')
-        string_date = text_list[0]
-    elif(date_with_plus != -1):
-        text_list = text_list[1].split('+')
-        string_date = text_list[0]
-    else:
-        string_date = text_list[1]
+        if(date_with_z != -1):
+            text_list = text_list[1].split('Z')
+            string_date = text_list[0]
+        elif(date_with_underscore != -1):
+            text_list = text_list[1].split('-')
+            string_date = text_list[0]
+        elif(date_with_plus != -1):
+            text_list = text_list[1].split('+')
+            string_date = text_list[0]
+        else:
+            string_date = text_list[1]
 
-    date = datetime.strptime(str(string_date), '%Y%m%d%H%M%S')
-    return date
+        date = datetime.strptime(str(string_date), '%Y%m%d%H%M%S')
+        return date
+    except:
+        return ''
 
 # Metodo que busca una fecha (en cualquier formato) en una cadena o texto
 def find_date(text):
     matches = datefinder.find_dates(text, strict=False, source=True)
     try:
         for match in matches:
-            if((len(match[1]) > 7) and (not match[1].isdigit())): # Mayor que 7(25/1/19) para eliminar la fechas basura que trae en matches
+            if((len(match[1]) > 8) and (not match[1].isdigit())): # Mayor que 8(25/01/19) para eliminar la fechas basura que trae en matches
                 # print(match)
                 return match[0] # 2021-10-22 18:30:00
     except:
