@@ -63,9 +63,12 @@ def normalize_metadata(metadata, number_of_pages):
 
 # Metodo que determina si la llave existe en el diccionario, retorna vacio en caso de no existir
 def exist_prop(metadata, key):
-    if(metadata.get(key)):
-        return metadata[key]
-    else:
+    try:
+        if (key in metadata):
+            return metadata[key]
+        else:
+            return ''
+    except:
         return ''
 
 # Metodo que obtiene el contenido de la primera pagina del archivo
@@ -245,7 +248,7 @@ def get_metadata_media_file(path):
             else:
                 metadata_dict.setdefault(key, value)
 
-    if (metadata_dict.get('/CreationDate') == None):
+    if (not '/CreationDate' in metadata_dict):
         metadata_dict.setdefault('/CreationDate', date)
         
     return metadata_dict
@@ -277,49 +280,51 @@ def get_metadata_files_list_news(folder_of_files_renames):
 
         is_pdf = path.lower().endswith('.pdf')
         if (is_pdf):
-            print('Es un archivo de texto')
+            # Es un archivo de texto
+            print('Encriptado: ' + str(is_locked(path)))
             print()
-        elif (path.lower().endswith('.mp4')):
-            print('Es un archivo multimedia de video')
+
+            if(is_locked(path)):
+                # Archivos que son pdf y tiene proteccion con texto o con imagen
+                path_file_decrypted = decrypted_file(files_news[x], path) # Desencripta y retorna la ruta del archivo desencriptado
+                (list_metadata, list_metadata_dates) = get_metadata_files_list(path_file_decrypted, list_metadata, list_metadata_dates, files_news[x])
+                remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
+            else:
+                # Archivos que son pdf sin proteccion con texto o con imagen
+                (list_metadata, list_metadata_dates) = get_metadata_files_list(path, list_metadata, list_metadata_dates, files_news[x])
+            print()
+        elif (  path.lower().endswith('.mpg') or
+                path.lower().endswith('.mp1') or
+                path.lower().endswith('.mp2') or
+                path.lower().endswith('.mp3') or
+                path.lower().endswith('.m1v') or
+                path.lower().endswith('.m1a') or
+                path.lower().endswith('.m2a') or
+                path.lower().endswith('.mpa') or
+                path.lower().endswith('.mpv') or
+                path.lower().endswith('.mp4') or
+                path.lower().endswith('.mpeg') or
+                path.lower().endswith('.m4v')):
+            # Es un archivo multimedia de video
             (list_metadata, list_metadata_dates) = get_metadata_media_files_list(path, list_metadata, list_metadata_dates, files_news[x])
             print()
-        elif (path.lower().endswith('.mp3') or path.lower().endswith('.wav')):
-            print('Es un archivo multimedia de audio')
+        elif (  path.lower().endswith('.mp3') or 
+                path.lower().endswith('.wav')):
+            # Es un archivo multimedia de audio
             (list_metadata, list_metadata_dates) = get_metadata_media_files_list(path, list_metadata, list_metadata_dates, files_news[x])
             print()
-        elif (path.lower().endswith('.jpeg') or path.lower().endswith('.jpg')):
-            print('Es un archivo multimedia de imagen')
+        elif (  path.lower().endswith('.jpeg') or 
+                path.lower().endswith('.jpg') or
+                path.lower().endswith('.jpe') or
+                path.lower().endswith('.jpg2') or
+                path.lower().endswith('.tiff')):
+            # Es un archivo multimedia de imagen
             (list_metadata, list_metadata_dates) = get_metadata_media_files_list(path, list_metadata, list_metadata_dates, files_news[x])
             print()
         else:
-            print('No se ha identificado el archivo')
+            print('NO SE HA IDENTIFICADO EL ARCHIVO')
             print()
-
-
-        # TODO: revisar tipos de archivos diferentes a pdf para crear logica (Si no se puede acceder a ellos que orden llevan dentro del ordenamiento por fechas)
-        # TODO: Logica y condicional (Se puede hacer con un switch y con el metodo endwiths())
-        # TODO: text: pdf
-        # TODO: imagen: jpeg, jpg, jpe, jpg2, tiff
-        # TODO: audio: mp3, wav
-        # TODO: video: mpeg-1, mpeg-2, mpeg-3, mpg, mp1, mp2, mp3, m1v, m1a, m2a, mpa, mpv, mp4, mpeg, m4v
-        # print('Encriptado: ' + str(is_locked(path)))
-        # print()
-
-        # if(is_locked(path)):
-        #     # Archivos que son pdf y tiene proteccion con texto o con imagen
-        #     path_file_decrypted = decrypted_file(files_news[x], path) # Desencripta y retorna la ruta del archivo desencriptado
-        #     (list_metadata, list_metadata_dates) = get_metadata_files_list(path_file_decrypted, list_metadata, list_metadata_dates, files_news[x])
-        #     remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
-        # else:
-        #     # Archivos que son pdf sin proteccion con texto o con imagen
-        #     (list_metadata, list_metadata_dates) = get_metadata_files_list(path, list_metadata, list_metadata_dates, files_news[x])
-        # print()
-        # print('--------------------------------------------')
-        # print()
-    # return (list_metadata, list_metadata_dates)
-    print(list_metadata)
-    print()
-    print(list_metadata_dates)
+    return (list_metadata, list_metadata_dates)
 
 # Metodo que hace el renombramiento final a la lista de datos ordenada por fecha
 def final_name_renaming(list_metadata_dates, folder_of_files_renames):
@@ -333,7 +338,7 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
 
         # NOMBRE DEL ARCHIVO
         print('Nombre real: ', file_name)
-        file = remove_extension(file_name) # Elimina la extension
+        (file, extension) = split_file_extension(file_name) # Separa el nombre y la extension
 
         date = get_date(file.lower()) # Retorna la fecha del archivo formateada si tiene
         file = normalize_accents(file) # Elimina acentos
@@ -355,19 +360,19 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
         file = remove_numbers(file) # Elimina numeros de la cadena
         file = file + date
 
-        file_out = assign_index(x, file)
+        file_out = assign_index(x, file, extension)
         print('SALIDA: ' + file_out)
 
         list_metadata_dates[x][2] = file_out
         os.rename((get_folder() + str(folder_of_files_renames) + file_name), (get_folder() + str(folder_of_files_renames) + file_out)) # Renombrar el archivo ubicado en la nueva carpeta
 
 # Metodo que retorna el index inicial de cada archivo
-def assign_index(x, file):
+def assign_index(x, file, extension):
     index = x + 1
     if (index < 10):
-        file_out = '0' + str(index) + file + '.pdf'
+        file_out = '0' + str(index) + file + extension
     else:
-        file_out = str(index) + file + '.pdf'
+        file_out = str(index) + file + extension
     return file_out
 
 # Metodo que elimina los caracteres especiales de la cadena
@@ -375,10 +380,12 @@ def remove_special_characters(file_name):
     new_file_name = ''.join(filter(str.isalnum, file_name)) 
     return new_file_name
 
-# Metodo que retorna el nombre del archivo sin la extension
-def remove_extension(file_name):
-    new_file_name = file_name.split('.pdf')
-    return new_file_name[0]
+# Metodo que retorna el nombre del archivo y la extension por separado
+def split_file_extension(file_name):
+    new_file_name = os.path.splitext(file_name)
+    name = new_file_name[0]
+    extension = new_file_name[1].lower()
+    return (name, extension)
 
 # Metodo que elimina los acentos y remplaza las letras sin acentos
 def normalize_accents(file_name):
@@ -533,19 +540,18 @@ def process_files_all():
     print()
     print('LECTURA DEL ARCHIVO PARA OBTENER METADATOS DESDE LA NUEVA UBICACION')
     print('---------------------------------------------------------------------------')
-    # (list_metadata, list_metadata_dates) = get_metadata_files_list_news(folder_of_files_renames)
-    get_metadata_files_list_news(folder_of_files_renames)
+    (list_metadata, list_metadata_dates) = get_metadata_files_list_news(folder_of_files_renames)
 
-    # print()
-    # print('ORDENAMIENTO DE LOS DATOS DE ACUERDO A LA FECHA Y ESCRITURA DE NOMBRE FINAL')
-    # print('---------------------------------------------------------------------------')
-    # list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
-    # final_name_renaming(list_metadata_dates, folder_of_files_renames)
+    print()
+    print('ORDENAMIENTO DE LOS DATOS DE ACUERDO A LA FECHA Y ESCRITURA DE NOMBRE FINAL')
+    print('---------------------------------------------------------------------------')
+    list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
+    final_name_renaming(list_metadata_dates, folder_of_files_renames)
     
-    # print()
-    # print('GENERADOR DE ARCHIVOS TXT, CSV Y XLSX')
-    # print('---------------------------------------------------------------------------')
-    # generate_files(list_metadata, list_metadata_dates)
+    print()
+    print('GENERADOR DE ARCHIVOS TXT, CSV Y XLSX')
+    print('---------------------------------------------------------------------------')
+    generate_files(list_metadata, list_metadata_dates)
 
 # Metodo que calcula el tiempo de ejecucion
 def calculate_time(start_time):
@@ -634,6 +640,9 @@ if __name__ == '__main__':
     start_time = time() # Timpo inicial
 
     process_files_all()
+    # path = get_folder() + '03SolicitaNotificacionElectronica2.pdf'
+    # (info, number_of_pages) = get_metadata(path)
+    # print(info)
 
     calculate_time(start_time)
     
