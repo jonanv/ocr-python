@@ -84,9 +84,8 @@ def get_content_file_scanned(path):
     with pdfplumber.open('output.pdf') as pdf:
         page = pdf.pages[0]
         text = page.extract_text(x_tolerance=2)
-        remove('output.pdf') # Elimina el archivo que es generado porque no es necesario
-        # TODO: Revisar la eliminacion del archivo en Windows (Revisar permisos de archivo)
-        print()
+    remove('output.pdf') # Elimina el archivo que es generado porque no es necesario
+    print()
     return text
 
 # Metodo que recupera la primera fecha de un texto en espaniol y discrimina las fechas basura
@@ -217,12 +216,12 @@ def get_folder():
 	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1_correcto/CUADERNO_PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_JUAN/'
-	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
+	carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/PROCESO_MULTIMEDIA/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/C01Principal/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300320190031400/' # Archivo NaT
 	# carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300920200031500/CUADERNO_PRINCIPAL/'
-	carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400301020180075700/C01Principal/' # Archivo NaT
+	# carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400301020180075700/C01Principal/' # Archivo NaT
 	return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
