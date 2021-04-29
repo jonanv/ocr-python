@@ -11,7 +11,7 @@
 
 ## Note:
 - For Mac OS use: ```pip3```
-- For Windows use ```pip```
+- For Windows use: ```pip```
 
 # Create virtual environment (Mac OS)
 ## 1. Install virtualenv
@@ -78,6 +78,7 @@ pip3 install -r requirements.txt
 - pdfplumber==0.5.27
 - pikepdf==2.11.0
 - ocrmypdf==11.7.3 (Optional for Mac OS)
+- hachoir==3.1.2
 
 # Optical Character Recognition: [ocrmypdf][ocrmypdf-url]
 

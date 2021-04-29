@@ -136,9 +136,13 @@ def get_metadata_files_list(path, list_metadata, list_metadata_dates, file):
     list_metadata += str(metadata_normalized) + '\n'
 
     creation_date_datetime = convert_string_to_datatime(metadata_normalized['creationDate'])
+
     # TODO: Se aplica logica provicional para archivos pdf sin fecha (no es la mejor opcion) Es posible que la fecha del sistema no sea la de creacion y el orden cronologico de los archivos del proceso se pierda
     # if (creation_date_datetime == ''):
     #     creation_date_datetime = dateparser.parse(str(format(ctime(os.path.getmtime(path)))))
+    if (creation_date_datetime == ''):
+        creation_date_datetime = convert_string_to_datatime(metadata_normalized['modificationDate'])
+
     list_metadata_dates.append([creation_date_datetime, metadata_normalized['pages'], file])
 
     return (list_metadata, list_metadata_dates)
@@ -219,9 +223,9 @@ def get_folder():
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/PROCESO_MULTIMEDIA/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/C01Principal/'
-	# carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300320190031400/' # Archivo NaT
+	carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300320190031400/' # Archivo NaT
 	# carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300920200031500/CUADERNO_PRINCIPAL/'
-	carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400301020180075700/C01Principal/' # Archivo NaT
+	# carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400301020180075700/C01Principal/' # Archivo NaT
 	return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
@@ -269,7 +273,7 @@ def get_metadata_media_file(path):
 # Metodo que obtiene la metadata completa de archivos multimedia (arreglo), recibe el path, nombre de archivo, toda la metadata y lista de metadata
 def get_metadata_media_files_list(path, list_metadata, list_metadata_dates, file):
     metadata_original = get_metadata_media_file(path)
-    metadata_normalized = normalize_metadata(metadata_original, 0)
+    metadata_normalized = normalize_metadata(metadata_original, 1) # Se envia 1 para indicar que tiene un folio para los archivos multimedia
 
     list_metadata += str(metadata_normalized) + '\n'
     
@@ -353,6 +357,8 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
         file = remove_numbers(file) # Elimina numeros de la cadena
         if ((file == '') and (extension == '.pdf')):
             file = 'REVISAR'
+        if (list_metadata_dates[x][0] is pd.NaT):
+            file = file + '_REVISAR_FECHA'
         if ((file == '') and (extension in extension_media_video_list)):
             file = 'Audiencia'
         file = file + date
