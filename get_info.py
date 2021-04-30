@@ -254,8 +254,8 @@ def get_metadata_media_file(path):
 
     input_file = path
     if (extension == '.doc' or extension == '.docx'):
-        exe = 'exiftool' # Mac OS
-        # exe = 'exiftool(-k).exe' # Windows
+        # exe = 'exiftool' # Mac OS
+        exe = 'exiftool(-k).exe' # Windows
     else:
         exe = 'hachoir-metadata'
     process = subprocess.Popen([exe, input_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
@@ -263,7 +263,8 @@ def get_metadata_media_file(path):
 
     for output in process.stdout:
         line = output.strip().split(':', 1)
-        if (line[0] != 'Metadata' and line[0] != 'Common'):
+        print(line)
+        if (line[0] != 'Metadata' and line[0] != 'Common' and line[0] != '-- press ENTER --'):
             key = line[0].strip()
 
             if (extension != '.doc' and extension != '.docx'):
