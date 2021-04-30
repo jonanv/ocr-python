@@ -8,6 +8,8 @@ import unicodedata
 from unicodedata import normalize
 from time import time, ctime
 import sys
+import subprocess
+import platform
 
 # Dependences
 from PyPDF2 import PdfFileReader
@@ -18,7 +20,6 @@ import dateparser
 from dateparser.search import search_dates
 import pdfplumber
 import pikepdf
-import subprocess
 import docx
 
 # Metodo que permite obtener la informacion de metadatos del archivo
@@ -254,8 +255,10 @@ def get_metadata_media_file(path):
 
     input_file = path
     if (extension == '.doc' or extension == '.docx'):
-        # exe = 'exiftool' # Mac OS
-        exe = 'exiftool(-k).exe' # Windows
+        if (platform.system() == 'Darwin'):
+            exe = 'exiftool' # Mac OS
+        elif (platform.system() == 'Windows'):
+            exe = 'exiftool(-k).exe' # Windows
     else:
         exe = 'hachoir-metadata'
     process = subprocess.Popen([exe, input_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
@@ -263,7 +266,6 @@ def get_metadata_media_file(path):
 
     for output in process.stdout:
         line = output.strip().split(':', 1)
-        print(line)
         if (line[0] != 'Metadata' and line[0] != 'Common' and line[0] != '-- press ENTER --'):
             key = line[0].strip()
 
