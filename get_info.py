@@ -19,6 +19,7 @@ from dateparser.search import search_dates
 import pdfplumber
 import pikepdf
 import subprocess
+import docx
 
 # Metodo que permite obtener la informacion de metadatos del archivo
 def get_metadata(path):
@@ -223,9 +224,9 @@ def get_folder():
 	# carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/PROCESO_MULTIMEDIA/'
 	# carpeta = 'HERRAMIENTAS_EXCEL/C01Principal/'
-	carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300320190031400/' # Archivo NaT
+	# carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300320190031400/' # Archivo NaT
 	# carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300920200031500/CUADERNO_PRINCIPAL/'
-	# carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400301020180075700/C01Principal/' # Archivo NaT
+	carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400301020180075700/C01Principal/' # Archivo NaT
 	return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
@@ -247,33 +248,57 @@ def files_list(folder):
 
 # Metodo que obtiene la metadata de un archivo multimedia
 def get_metadata_media_file(path):
-    date = format(ctime(os.path.getmtime(path)))
+    extension = get_file_extension(path)
 
-    input_file = path
-    exe = 'hachoir-metadata'
-    process = subprocess.Popen([exe, input_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
-    metadata_dict = dict()
+    if (extension == '.doc' or extension == '.docx'):
+        input_file = path
 
-    for output in process.stdout:
-        line = output.strip().split(':', 1)
-        if (line[0] != 'Metadata' and line[0] != 'Common'):
-            key = line[0].strip()
-            key = key.split('-')[1].strip()
-            value = line[1].strip()
-            if (key == 'Creation date'):
-                metadata_dict.setdefault('/CreationDate', value)
-            else:
-                metadata_dict.setdefault(key, value)
+        exe = 'exiftool' # Mac OS
+        # exe = 'exiftool(-k).exe' # Windows
+        process = subprocess.Popen([exe, input_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+        metadata_dict = dict()
 
-    if (not '/CreationDate' in metadata_dict):
-        metadata_dict.setdefault('/CreationDate', date)
+        for output in process.stdout:
+            line = output.strip().split(':', 1)
+            if (line[0] != 'Metadata' and line[0] != 'Common'):
+                key = line[0].strip()
+                value = line[1].strip()
+                if (key == 'Create Date'):
+                    document = docx.Document(docx = input_file)
+                    core_properties = document.core_properties
+                    metadata_dict.setdefault('/CreationDate', core_properties.created)
+                else:
+                    metadata_dict.setdefault(key, value)
+
+        return (metadata_dict, int(metadata_dict['Pages'])) # Se envia numero de paginas para documentos .doc y docx
+    else:
+        date = format(ctime(os.path.getmtime(path)))
+
+        input_file = path
+        exe = 'hachoir-metadata'
+        process = subprocess.Popen([exe, input_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+        metadata_dict = dict()
+
+        for output in process.stdout:
+            line = output.strip().split(':', 1)
+            if (line[0] != 'Metadata' and line[0] != 'Common'):
+                key = line[0].strip()
+                key = key.split('-')[1].strip()
+                value = line[1].strip()
+                if (key == 'Creation date'):
+                    metadata_dict.setdefault('/CreationDate', value)
+                else:
+                    metadata_dict.setdefault(key, value)
+
+        if (not '/CreationDate' in metadata_dict):
+            metadata_dict.setdefault('/CreationDate', date)
         
-    return metadata_dict
+        return (metadata_dict, 1) # Se envia 1 para indicar que tiene un folio para los archivos multimedia
 
 # Metodo que obtiene la metadata completa de archivos multimedia (arreglo), recibe el path, nombre de archivo, toda la metadata y lista de metadata
 def get_metadata_media_files_list(path, list_metadata, list_metadata_dates, file):
-    metadata_original = get_metadata_media_file(path)
-    metadata_normalized = normalize_metadata(metadata_original, 1) # Se envia 1 para indicar que tiene un folio para los archivos multimedia
+    (metadata_original, number_of_pages) = get_metadata_media_file(path)
+    metadata_normalized = normalize_metadata(metadata_original, number_of_pages)
 
     list_metadata += str(metadata_normalized) + '\n'
     
@@ -288,7 +313,7 @@ def get_metadata_files_list_news(folder_of_files_renames):
     list_metadata = ''
     list_metadata_dates = list()
 
-    extension_media_list = ['.mpg', '.mp1', '.mp2', '.mp3', '.m1v', '.m1a', '.m2a', '.mpa', '.mpv', '.mp4', '.mpeg', '.m4v', '.mp3', '.wav', '.jpeg', '.jpg', '.jpe', '.jpg2', '.tiff']
+    extension_media_list = ['.mpg', '.mp1', '.mp2', '.mp3', '.m1v', '.m1a', '.m2a', '.mpa', '.mpv', '.mp4', '.mpeg', '.m4v', '.mp3', '.wav', '.jpeg', '.jpg', '.jpe', '.jpg2', '.tiff', '.doc', '.docx']
 
     for x in range(len(files_news)):
         print(str(x+1) + ". " + files_news[x])
@@ -653,6 +678,51 @@ if __name__ == '__main__':
     start_time = time() # Timpo inicial
 
     process_files_all()
+
+
+    # file_name = 'files/Prueba_Java.docx'
+
+    # document = docx.Document(docx = file_name)
+    # core_properties = document.core_properties
+    # print('author: ', core_properties.author)
+    # print('created: ', core_properties.created)
+
+    # print('last_modified_by: ', core_properties.last_modified_by)
+    # print('last_printed: ', core_properties.last_printed)
+    # print('modified: ', core_properties.modified)
+    # print('revision: ', core_properties.revision)
+    # print('title: ', core_properties.title)
+    # print('category: ', core_properties.category)
+    # print('comments: ', core_properties.comments)
+    # print('identifier: ', core_properties.identifier)
+    # print('keywords: ', core_properties.keywords)
+    # print('language: ', core_properties.language)
+    # print('subject: ', core_properties.subject)
+    # print('version: ', core_properties.version)
+    # print('keywords: ', core_properties.keywords)
+    # print('content_status: ', core_properties.content_status)
+
+
+    # input_file = 'files/Prueba_Java.docx'
+    # # exe = 'hachoir-metadata'
+    # exe = 'exiftool' # Mac OS
+    # # exe = 'exiftool(-k).exe' # Windows
+    # process = subprocess.Popen([exe, input_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
+    # metadata_dict = dict()
+
+    # for output in process.stdout:
+    #     line = output.strip().split(':', 1)
+    #     if (line[0] != 'Metadata' and line[0] != 'Common'):
+    #         key = line[0].strip()
+    #         value = line[1].strip()
+    #         if (key == 'Create Date'):
+    #             document = docx.Document(docx = input_file)
+    #             core_properties = document.core_properties
+    #             metadata_dict.setdefault('/CreationDate', core_properties.created)
+    #         else:
+    #             metadata_dict.setdefault(key, value)
+
+    # print(metadata_dict, int(metadata_dict['Pages']))
 
     calculate_time(start_time)
     
