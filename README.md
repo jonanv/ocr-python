@@ -79,6 +79,7 @@ pip3 install -r requirements.txt
 - pikepdf==2.11.0
 - ocrmypdf==11.7.3 (Optional for Mac OS)
 - hachoir==3.1.2
+- python-docx==0.8.10
 
 # Optical Character Recognition: [ocrmypdf][ocrmypdf-url]
 
@@ -105,6 +106,8 @@ Using the [Chocolatey][chocolatey-url] package manager, install the following wh
 4. pip install ocrmypdf
 ```
 
+# Install ExifTool [exiftool][exiftool-url]
+
 # Run
 ```python
 python3 get_info.py
@@ -115,9 +118,14 @@ python3 get_info.py
 pip3 freeze > requeriments.txt
 ```
 
-## Install requirements.txt (Mac OS or Windows)
+## Install requirements.txt (Mac OS)
 ```python
-pip3 install -r requirements.txt
+pip3 install -r requirements.macos.txt
+```
+
+## Install requirements.txt (Windows)
+```python
+pip install -r requirements.windows.txt
 ```
 
 [python-badge]: https://img.shields.io/badge/python-v3.6.5-brightgreen
@@ -130,3 +138,4 @@ pip3 install -r requirements.txt
 [license-url]: https://opensource.org/licenses/MIT
 [ocrmypdf-url]: https://ocrmypdf.readthedocs.io/en/latest/installation.html
 [chocolatey-url]: https://chocolatey.org/install
+[exiftool-url]: https://exiftool.org/
