@@ -379,7 +379,7 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
         file = remove_special_characters(file.title()) # Elimina caracteres especiales
         file = remove_numbers(file) # Elimina numeros de la cadena
         if ((file == '') and (extension == '.pdf')):
-            file = 'REVISAR'
+            file = 'REVISAR_NOMBRE'
         if (list_metadata_dates[x][0] is pd.NaT):
             file = file + '_REVISAR_FECHA'
         if ((file == '') and (extension in extension_media_video_list)):
