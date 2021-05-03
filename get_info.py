@@ -265,22 +265,25 @@ def get_metadata_media_file(path):
 
     for output in process.stdout:
         line = output.strip().split(':', 1)
-        if (line[0] != 'Metadata' and line[0] != 'Common' and line[0] != '-- press ENTER --'):
-            key = line[0].strip()
-
-            if (extension != '.doc' and extension != '.docx'):
-                key = key.split('-')[1].strip()
-
-            value = line[1].strip()
-            if (key == 'Creation date'): # Atributo de hachoir
-                metadata_dict.setdefault('/CreationDate', value)
-            elif (key == 'Create Date'): # Atributo de exiftool
-                    value = str(value).replace(':', '-', 2)
-                    match = re.search(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}', str(value))
-                    date = datetime.strptime(match.group(), '%Y-%m-%d %H:%M:%S')
-                    metadata_dict.setdefault('/CreationDate', date)
+        if (line[0] != 'Metadata' and line[0] != 'Common'):
+            if (line[0] == '-- press ENTER --'):
+                print(line[0])
             else:
-                metadata_dict.setdefault(key, value)
+                key = line[0].strip()
+
+                if (extension != '.doc' and extension != '.docx'):
+                    key = key.split('-')[1].strip()
+
+                value = line[1].strip()
+                if (key == 'Creation date'): # Atributo de hachoir
+                    metadata_dict.setdefault('/CreationDate', value)
+                elif (key == 'Create Date'): # Atributo de exiftool
+                        value = str(value).replace(':', '-', 2)
+                        match = re.search(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}', str(value))
+                        date = datetime.strptime(match.group(), '%Y-%m-%d %H:%M:%S')
+                        metadata_dict.setdefault('/CreationDate', date)
+                else:
+                    metadata_dict.setdefault(key, value)
 
     if (not '/CreationDate' in metadata_dict):
         metadata_dict.setdefault('/CreationDate', date)
