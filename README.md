@@ -76,7 +76,7 @@ pip3 install -r requirements.txt
 - datefinder==0.7.1
 - dateparser==1.0.0
 - pdfplumber==0.5.27
-- pikepdf==2.11.0
+- pikepdf==2.11.1
 - ocrmypdf==11.7.3 (Optional for Mac OS)
 - hachoir==3.1.2
 
