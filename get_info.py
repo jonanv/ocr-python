@@ -20,7 +20,6 @@ import dateparser
 from dateparser.search import search_dates
 import pdfplumber
 import pikepdf
-import docx
 
 # Metodo que permite obtener la informacion de metadatos del archivo
 def get_metadata(path):
@@ -276,9 +275,10 @@ def get_metadata_media_file(path):
             if (key == 'Creation date'): # Atributo de hachoir
                 metadata_dict.setdefault('/CreationDate', value)
             elif (key == 'Create Date'): # Atributo de exiftool
-                    document = docx.Document(docx = input_file)
-                    core_properties = document.core_properties
-                    metadata_dict.setdefault('/CreationDate', core_properties.created)
+                    value = str(value).replace(':', '-', 2)
+                    match = re.search(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}', str(value))
+                    date = datetime.strptime(match.group(), '%Y-%m-%d %H:%M:%S')
+                    metadata_dict.setdefault('/CreationDate', date)
             else:
                 metadata_dict.setdefault(key, value)
 

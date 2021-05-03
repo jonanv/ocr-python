@@ -79,7 +79,6 @@ pip3 install -r requirements.txt
 - pikepdf==2.11.0
 - ocrmypdf==11.7.3 (Optional for Mac OS)
 - hachoir==3.1.2
-- python-docx==0.8.10
 
 # Optical Character Recognition: [ocrmypdf][ocrmypdf-url]
 
