@@ -9,32 +9,30 @@
 
 # ocr-python
 
-## Note:
-- For Mac OS use: ```pip3```
-- For Windows use: ```pip```
+# Dependences:
 
-# Create virtual environment (Mac OS)
-## 1. Install virtualenv
-```python
-pip3 install virtualenv
-```
-
-## 2. Create virtual environment (`cd name_project`)
-```python
-virtualenv name_project
-```
-
-## 3. Activate virtual environment
-```python
-source name_project/bin/activate
-```
-
-## 4. Desactivate virtual environment
-```python
-deactivate
-```
+- pip==21.1.1
+- PyPDF2==1.26.0
+- numpy==1.14.4
+- pandas==0.23.0
+- datefinder==0.7.1
+- dateparser==1.0.0
+- pdfplumber==0.5.27
+- pikepdf==2.11.1
+- ocrmypdf==11.7.3 (Optional for Mac OS)
+- hachoir==3.1.2
 
 ---
+---
+
+# WINDOWS
+## Note:
+- For Windows use: ```pip```
+
+## Update pip
+```python
+python -m pip install --upgrade pip
+```
 
 # Create virtual environment (Windows)
 ## 1. Install virtualenv
@@ -63,29 +61,7 @@ source name_project/Scripts/activate
 deactivate
 ```
 
-## Install dependences
-```python
-pip3 install -r requirements.txt
-```
-
-# Dependences:
-
-- PyPDF2==1.26.0
-- numpy==1.14.4
-- pandas==0.23.0
-- datefinder==0.7.1
-- dateparser==1.0.0
-- pdfplumber==0.5.27
-- pikepdf==2.11.1
-- ocrmypdf==11.7.3 (Optional for Mac OS)
-- hachoir==3.1.2
-
 # Optical Character Recognition: [ocrmypdf][ocrmypdf-url]
-
-### Mac OS
-```
-brew install ocrmypdf
-```
 
 ### Windows
 Using the [Chocolatey][chocolatey-url] package manager, install the following when running in an Administrator command prompt:
@@ -105,16 +81,56 @@ Using the [Chocolatey][chocolatey-url] package manager, install the following wh
 4. pip install ocrmypdf
 ```
 
-# Install ExifTool [exiftool][exiftool-url]
-
-# Run
+## Install dependences (Windows)
 ```python
-python3 get_info.py
+pip install -r requirements.windows.txt
 ```
 
-## Generete requirements.txt
+## Run
 ```python
-pip3 freeze > requeriments.txt
+python get_info.py
+```
+
+---
+---
+
+# MAC OS
+## Note:
+- For Mac OS use: ```pip3```
+
+## Update pip
+```python
+sudo pip3 install -U pip
+```
+
+# Create virtual environment (Mac OS)
+## 1. Install virtualenv
+```python
+pip3 install virtualenv
+```
+
+## 2. Create virtual environment (`cd name_project`)
+```python
+virtualenv name_project
+```
+
+## 3. Activate virtual environment
+```python
+source name_project/bin/activate
+```
+
+## 4. Desactivate virtual environment
+```python
+deactivate
+```
+
+---
+
+# Optical Character Recognition: [ocrmypdf][ocrmypdf-url]
+
+### Mac OS
+```
+brew install ocrmypdf
 ```
 
 ## Install requirements.txt (Mac OS)
@@ -122,9 +138,19 @@ pip3 freeze > requeriments.txt
 pip3 install -r requirements.macos.txt
 ```
 
-## Install requirements.txt (Windows)
+# Install ExifTool [exiftool][exiftool-url]
+
+## Run
 ```python
-pip install -r requirements.windows.txt
+python3 get_info.py
+```
+
+---
+---
+
+## Generete requirements.txt
+```python
+pip3 freeze > requeriments.txt
 ```
 
 [python-badge]: https://img.shields.io/badge/python-v3.6.5-brightgreen
