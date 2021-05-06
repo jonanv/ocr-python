@@ -395,6 +395,7 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
             file = file + '_NOMBRE_REPETIDO'
             except_name_renaming(x, file, extension, list_metadata_dates, folder_of_files_renames, file_name)
 
+# Metodo que hae el proceso de renombrar el archivo final y es llamado en la excepcion en caso de que el nombre del archivo exista pone _NOMBRE_REPETIDO
 def except_name_renaming(x, file, extension, list_metadata_dates, folder_of_files_renames, file_name):
     file_out = assign_index(x, file, extension)
     print('SALIDA: ' + file_out)
