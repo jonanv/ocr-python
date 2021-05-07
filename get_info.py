@@ -227,8 +227,8 @@ def get_folder():
     # carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300320190031400/' # Archivo NaT
     # carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300920200031500/CUADERNO_PRINCIPAL/'
     # carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400301020180075700/C01Principal/' # Archivo NaT
-    # carpeta = 'HERRAMIENTAS_EXCEL/SEXTO/17001400300620190033500/C01Principal/'
-    carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL/'
+    carpeta = 'HERRAMIENTAS_EXCEL/SEXTO/17001400300620190033500/C01Principal/'
+    # carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL/'
     return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
