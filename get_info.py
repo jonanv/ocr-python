@@ -222,13 +222,13 @@ def get_folder():
     # carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
     # carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_JUAN/'
     # carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
-    carpeta = 'HERRAMIENTAS_EXCEL/PROCESO_MULTIMEDIA/'
+    # carpeta = 'HERRAMIENTAS_EXCEL/PROCESO_MULTIMEDIA/'
     # carpeta = 'HERRAMIENTAS_EXCEL/C01Principal/'
     # carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300320190031400/' # Archivo NaT
     # carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300920200031500/CUADERNO_PRINCIPAL/'
     # carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400301020180075700/C01Principal/' # Archivo NaT
     # carpeta = 'HERRAMIENTAS_EXCEL/SEXTO/17001400300620190033500/C01Principal/'
-    # carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL/'
+    carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL/'
     return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
@@ -437,12 +437,12 @@ def remove_numbers(file_name):
 # Metodo que retorna la lista en formato DataFrame de pandas
 def get_dataframe_of_list_metadata_dates(list_metadata_dates):
     data_set = pd.DataFrame(np.array(list_metadata_dates)) # Matriz de nuevo conjunto de datos con pandas
-    data_set = data_set.sort_values(by=0) # Ordena la columna 0 que contiene las fechas
     return data_set
 
 # Metodo que ordena la lista de metadatos de fechas
 def sort_list_metadata_dates(list_metadata_dates):
-    data_set = get_dataframe_of_list_metadata_dates(list_metadata_dates)
+    data_set = pd.DataFrame(np.array(list_metadata_dates)) # Matriz de nuevo conjunto de datos con pandas
+    data_set = data_set.sort_values(by=0) # Ordena la columna 0 que contiene las fechas
     return data_set.values.tolist() # Devuelve la lista ordenada en formato list() de python
 
 # Metodo que comprueba si la carpeta existe, si no exite la crea, si exite no la crea
@@ -573,7 +573,7 @@ def process_files_all():
     print()
     print('ORDENAMIENTO DE LOS DATOS DE ACUERDO A LA FECHA Y ESCRITURA DE NOMBRE FINAL')
     print('---------------------------------------------------------------------------')
-    list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
+    # list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
     final_name_renaming(list_metadata_dates, folder_of_files_renames)
     
     print()
