@@ -222,13 +222,13 @@ def get_folder():
     # carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
     # carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_JUAN/'
     # carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
-    # carpeta = 'HERRAMIENTAS_EXCEL/PROCESO_MULTIMEDIA/'
+    carpeta = 'HERRAMIENTAS_EXCEL/PROCESO_MULTIMEDIA/'
     # carpeta = 'HERRAMIENTAS_EXCEL/C01Principal/'
     # carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300320190031400/' # Archivo NaT
     # carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300920200031500/CUADERNO_PRINCIPAL/'
     # carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400301020180075700/C01Principal/' # Archivo NaT
     # carpeta = 'HERRAMIENTAS_EXCEL/SEXTO/17001400300620190033500/C01Principal/'
-    carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL/'
+    # carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL/'
     return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
@@ -250,50 +250,27 @@ def files_list(folder):
 
 # Metodo que obtiene la metadata de un archivo multimedia
 def get_metadata_media_file(path):
-    extension = get_file_extension(path)
-
     date = format(ctime(os.path.getmtime(path)))
 
     input_file = path
-    if (extension == '.doc' or extension == '.docx'):
-        if (platform.system() == 'Darwin'):
-            exe = 'exiftool' # Mac OS
-        elif (platform.system() == 'Windows'):
-            exe = 'exiftool(-k).exe' # Windows
-    else:
-        exe = 'hachoir-metadata'
+    exe = 'hachoir-metadata'
     process = subprocess.Popen([exe, input_file], stdout=subprocess.PIPE, stderr=subprocess.STDOUT, universal_newlines=True)
     metadata_dict = dict()
 
     for output in process.stdout:
         line = output.strip().split(':', 1)
         if (line[0] != 'Metadata' and line[0] != 'Common'):
-            if (line[0] == '-- press ENTER --'):
-                print(line[0])
+            key = line[0].strip()
+            value = line[1].strip()
+            if (key == 'Creation date'): # Atributo de hachoir
+                metadata_dict.setdefault('/CreationDate', value)
             else:
-                key = line[0].strip()
-
-                if (extension != '.doc' and extension != '.docx'):
-                    key = key.split('-')[1].strip()
-
-                value = line[1].strip()
-                if (key == 'Creation date'): # Atributo de hachoir
-                    metadata_dict.setdefault('/CreationDate', value)
-                elif (key == 'Create Date'): # Atributo de exiftool
-                        value = str(value).replace(':', '-', 2)
-                        match = re.search(r'\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}', str(value))
-                        date = datetime.strptime(match.group(), '%Y-%m-%d %H:%M:%S')
-                        metadata_dict.setdefault('/CreationDate', date)
-                else:
-                    metadata_dict.setdefault(key, value)
+                metadata_dict.setdefault(key, value)
 
     if (not '/CreationDate' in metadata_dict):
         metadata_dict.setdefault('/CreationDate', date)
     
-    if (extension == '.doc' or extension == '.docx'):
-        return (metadata_dict, int(metadata_dict['Pages'])) # Se envia numero de paginas para documentos .doc y docx
-    else:
-        return (metadata_dict, 1) # Se envia 1 para indicar que tiene un folio para los archivos multimedia
+    return (metadata_dict, 1) # Se envia 1 para indicar que tiene un folio para los archivos multimedia
 
 # Metodo que obtiene la metadata completa de archivos multimedia (arreglo), recibe el path, nombre de archivo, toda la metadata y lista de metadata
 def get_metadata_media_files_list(path, list_metadata, list_metadata_dates, file):
@@ -313,7 +290,7 @@ def get_metadata_files_list_news(folder_of_files_renames):
     list_metadata = ''
     list_metadata_dates = list()
 
-    extension_media_list = ['.mpg', '.mp1', '.mp2', '.mp3', '.m1v', '.m1a', '.m2a', '.mpa', '.mpv', '.mp4', '.mpeg', '.m4v', '.mp3', '.wav', '.jpeg', '.jpg', '.jpe', '.jpg2', '.tiff', '.doc', '.docx']
+    extension_media_list = ['.mpg', '.mp1', '.mp2', '.mp3', '.m1v', '.m1a', '.m2a', '.mpa', '.mpv', '.mp4', '.mpeg', '.m4v', '.mp3', '.wav', '.jpeg', '.jpg', '.jpe', '.jpg2', '.tiff']
 
     for x in range(len(files_news)):
         print(str(x+1) + ". " + files_news[x])
@@ -379,7 +356,12 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
         # TODO: Regla de las preposiciones en el nombre (Diccionario)
 
         file = remove_special_characters(file.title()) # Elimina caracteres especiales
+
+        file_number = ''.join(i for i in file_name if i.isdigit()) # Guarda todos los numeros que hay en el nombre
+        file_index_number = file_number[0] + file_number[1]
+
         file = remove_numbers(file) # Elimina numeros de la cadena
+
         if ((file == '') and (extension == '.pdf')):
             file = 'REVISAR_NOMBRE'
         if (list_metadata_dates[x][0] is pd.NaT):
@@ -388,29 +370,29 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
             file = 'Audiencia'
         file = file + date
 
-        
         try:
-            except_name_renaming(x, file, extension, list_metadata_dates, folder_of_files_renames, file_name)
+            except_name_renaming(x, file_index_number + file, extension, list_metadata_dates, folder_of_files_renames, file_name)
         except:
-            file = file + '_NOMBRE_REPETIDO'
+            file = file_index_number + file + '_NOMBRE_REPETIDO'
             except_name_renaming(x, file, extension, list_metadata_dates, folder_of_files_renames, file_name)
 
 # Metodo que hae el proceso de renombrar el archivo final y es llamado en la excepcion en caso de que el nombre del archivo exista pone _NOMBRE_REPETIDO
 def except_name_renaming(x, file, extension, list_metadata_dates, folder_of_files_renames, file_name):
-    file_out = assign_index(x, file, extension)
+    # file_out = assign_index(x, file, extension)
+    file_out = file + extension
     print('SALIDA: ' + file_out)
 
     list_metadata_dates[x][2] = file_out
     os.rename((get_folder() + str(folder_of_files_renames) + file_name), (get_folder() + str(folder_of_files_renames) + file_out)) # Renombrar el archivo ubicado en la nueva carpeta
 
 # Metodo que retorna el index inicial de cada archivo
-def assign_index(x, file, extension):
-    index = x + 1
-    if (index < 10):
-        file_out = '0' + str(index) + file + extension
-    else:
-        file_out = str(index) + file + extension
-    return file_out
+# def assign_index(x, file, extension):
+#     index = x + 1
+#     if (index < 10):
+#         file_out = '0' + str(index) + file + extension
+#     else:
+#         file_out = str(index) + file + extension
+#     return file_out
 
 # Metodo que elimina los caracteres especiales de la cadena
 def remove_special_characters(file_name):
@@ -593,71 +575,11 @@ def process_files_all():
     print('---------------------------------------------------------------------------')
     list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
     final_name_renaming(list_metadata_dates, folder_of_files_renames)
+    
     print()
-    generate_csv(list_metadata_dates)
-
-    print()
-    print('ORDENAMIENTO DE LOS DATOS DE ACUERDO AL NOMBRE (Demanda, ActaReparto, Caratula) Y REESCRITURA DE NOMBRE FINAL')
+    print('GENERADOR DE ARCHIVOS TXT, CSV Y XLSX')
     print('---------------------------------------------------------------------------')
-    ################################################
-    print()
-
-    list_new = list()
-    # for x in range(len(list_metadata_dates)):
-    #     file_name = list_metadata_dates[x][2]
-    #     if (file_name.find('Demanda') != -1
-    #         and not list_metadata_dates[x] in list_new):
-    #         list_new.append(list_metadata_dates[x])
-    #         print(list_metadata_dates[x])
-    
-    # for x in range(len(list_metadata_dates)):
-    #     file_name = list_metadata_dates[x][2]
-    #     if (file_name.find('ActaReparto') != -1
-    #         and not list_metadata_dates[x] in list_new):
-    #         list_new.append(list_metadata_dates[x])
-    #         print(list_metadata_dates[x])
-
-    # for x in range(len(list_metadata_dates)):
-    #     file_name = list_metadata_dates[x][2]
-    #     if (file_name.find('Caratula') != -1
-    #         and not list_metadata_dates[x] in list_new):
-    #         list_new.append(list_metadata_dates[x])
-    #         print(list_metadata_dates[x])
-
-    for x in range(len(list_metadata_dates)):
-        file_name = list_metadata_dates[x][2]
-        if (file_name.find('Demanda') != -1 
-            or file_name.find('ActaReparto') != -1
-            or file_name.find('Caratula') != -1):
-            if (not list_metadata_dates[x] in list_new):
-                list_new.append(list_metadata_dates[x])
-                print(list_metadata_dates[x])
-
-    print()
-
-    for x in range(len(list_metadata_dates)):
-        file_name = list_metadata_dates[x][2]
-
-        if (file_name.find('Demanda') == -1
-            and file_name.find('ActaReparto') == -1
-            and file_name.find('Caratula') == -1):
-            list_new.append(list_metadata_dates[x])
-
-    print(list_new)
-
-    final_name_renaming(list_new, folder_of_files_renames)
-    print()
-    print(list_new)
-
-    print()
-    data_set = pd.DataFrame(np.array(list_new))
-    print(data_set)
-    ################################################
-    
-    # print()
-    # print('GENERADOR DE ARCHIVOS TXT, CSV Y XLSX')
-    # print('---------------------------------------------------------------------------')
-    # generate_files(list_metadata, list_metadata_dates)
+    generate_files(list_metadata, list_metadata_dates)
 
 # Metodo que calcula el tiempo de ejecucion
 def calculate_time(start_time):
