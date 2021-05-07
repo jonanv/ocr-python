@@ -593,11 +593,71 @@ def process_files_all():
     print('---------------------------------------------------------------------------')
     list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
     final_name_renaming(list_metadata_dates, folder_of_files_renames)
-    
     print()
-    print('GENERADOR DE ARCHIVOS TXT, CSV Y XLSX')
+    generate_csv(list_metadata_dates)
+
+    print()
+    print('ORDENAMIENTO DE LOS DATOS DE ACUERDO AL NOMBRE (Demanda, ActaReparto, Caratula) Y REESCRITURA DE NOMBRE FINAL')
     print('---------------------------------------------------------------------------')
-    generate_files(list_metadata, list_metadata_dates)
+    ################################################
+    print()
+
+    list_new = list()
+    # for x in range(len(list_metadata_dates)):
+    #     file_name = list_metadata_dates[x][2]
+    #     if (file_name.find('Demanda') != -1
+    #         and not list_metadata_dates[x] in list_new):
+    #         list_new.append(list_metadata_dates[x])
+    #         print(list_metadata_dates[x])
+    
+    # for x in range(len(list_metadata_dates)):
+    #     file_name = list_metadata_dates[x][2]
+    #     if (file_name.find('ActaReparto') != -1
+    #         and not list_metadata_dates[x] in list_new):
+    #         list_new.append(list_metadata_dates[x])
+    #         print(list_metadata_dates[x])
+
+    # for x in range(len(list_metadata_dates)):
+    #     file_name = list_metadata_dates[x][2]
+    #     if (file_name.find('Caratula') != -1
+    #         and not list_metadata_dates[x] in list_new):
+    #         list_new.append(list_metadata_dates[x])
+    #         print(list_metadata_dates[x])
+
+    for x in range(len(list_metadata_dates)):
+        file_name = list_metadata_dates[x][2]
+        if (file_name.find('Demanda') != -1 
+            or file_name.find('ActaReparto') != -1
+            or file_name.find('Caratula') != -1):
+            if (not list_metadata_dates[x] in list_new):
+                list_new.append(list_metadata_dates[x])
+                print(list_metadata_dates[x])
+
+    print()
+
+    for x in range(len(list_metadata_dates)):
+        file_name = list_metadata_dates[x][2]
+
+        if (file_name.find('Demanda') == -1
+            and file_name.find('ActaReparto') == -1
+            and file_name.find('Caratula') == -1):
+            list_new.append(list_metadata_dates[x])
+
+    print(list_new)
+
+    final_name_renaming(list_new, folder_of_files_renames)
+    print()
+    print(list_new)
+
+    print()
+    data_set = pd.DataFrame(np.array(list_new))
+    print(data_set)
+    ################################################
+    
+    # print()
+    # print('GENERADOR DE ARCHIVOS TXT, CSV Y XLSX')
+    # print('---------------------------------------------------------------------------')
+    # generate_files(list_metadata, list_metadata_dates)
 
 # Metodo que calcula el tiempo de ejecucion
 def calculate_time(start_time):
