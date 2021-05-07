@@ -455,12 +455,12 @@ def remove_numbers(file_name):
 # Metodo que retorna la lista en formato DataFrame de pandas
 def get_dataframe_of_list_metadata_dates(list_metadata_dates):
     data_set = pd.DataFrame(np.array(list_metadata_dates)) # Matriz de nuevo conjunto de datos con pandas
-    data_set = data_set.sort_values(by=0) # Ordena la columna 0 que contiene las fechas
     return data_set
 
 # Metodo que ordena la lista de metadatos de fechas
 def sort_list_metadata_dates(list_metadata_dates):
-    data_set = get_dataframe_of_list_metadata_dates(list_metadata_dates)
+    data_set = pd.DataFrame(np.array(list_metadata_dates)) # Matriz de nuevo conjunto de datos con pandas
+    data_set = data_set.sort_values(by=0) # Ordena la columna 0 que contiene las fechas
     return data_set.values.tolist() # Devuelve la lista ordenada en formato list() de python
 
 # Metodo que comprueba si la carpeta existe, si no exite la crea, si exite no la crea
