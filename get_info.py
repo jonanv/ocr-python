@@ -92,12 +92,17 @@ def get_content_file_scanned(path):
 # Metodo que recupera la primera fecha de un texto en espaniol y discrimina las fechas basura
 def get_recover_date(text):
     try:
+        # date_formats = ['%d/%m/%Y', '%d-%m-%Y', '%d.%m.%Y', '%d-%b-%Y', '%d/%b/%Y', '%a, %d.%m.%Y']
         # matches = datefinder.find_dates(text, source=False)
         matches = search_dates(text, languages=['es'])
         new_matches = list()
         for match in matches:
             if((len(match[0]) > 8) and (not match[0].isdigit())): # Mayor que 8(25/01/19) para eliminar la fechas basura que trae en matches
-                new_matches.append(match[1])
+                try:
+                    date = datetime.strptime(str(match[0]), '%d/%m/%Y')
+                    new_matches.append(date)
+                except:
+                    new_matches.append(match[1])
                 print(match)
         # print(new_matches)
         date = get_creation_date_format(new_matches[0]) # D:20201113165700 formato de la fecha de los metadatos
@@ -136,13 +141,13 @@ def get_metadata_files_list(path, list_metadata, list_metadata_dates, file):
 
     list_metadata += str(metadata_normalized) + '\n'
 
-    creation_date_datetime = convert_string_to_datatime(metadata_normalized['creationDate'])
+    creation_date_datetime = convert_string_to_datetime(metadata_normalized['creationDate'])
 
     # TODO: Se aplica logica provicional para archivos pdf sin fecha (no es la mejor opcion) Es posible que la fecha del sistema no sea la de creacion y el orden cronologico de los archivos del proceso se pierda
     # if (creation_date_datetime == ''):
     #     creation_date_datetime = dateparser.parse(str(format(ctime(os.path.getmtime(path)))))
     if (creation_date_datetime == ''):
-        creation_date_datetime = convert_string_to_datatime(metadata_normalized['modificationDate'])
+        creation_date_datetime = convert_string_to_datetime(metadata_normalized['modificationDate'])
 
     list_metadata_dates.append([creation_date_datetime, metadata_normalized['pages'], file])
 
@@ -483,7 +488,7 @@ def generate_xlsx(list_metadata_dates):
     data_set.to_excel(writer, header=False, index=False)
     writer.save()
 
-def convert_string_to_datatime(text_date):
+def convert_string_to_datetime(text_date):
     try:
         # D:20200821205457Z00'00' --> D:2020 08 21 20 54 57 Z00'00'
         # D:20201111143014-05'00' --> D:2020 11 11 14 30 14 -05'00'
