@@ -24,7 +24,7 @@ import pikepdf
 # Metodo que permite obtener la informacion de metadatos del archivo
 def get_metadata(path):
     with open(path, 'rb') as f:
-        pdf = PdfFileReader(f)
+        pdf = PdfFileReader(f, strict=False)
         info = pdf.getDocumentInfo()
         number_of_pages = pdf.getNumPages()
     
@@ -160,7 +160,7 @@ def decrypted_file(file, path):
 # Metodo que determina si el archivo esta protegido
 def is_locked(file):
     with open(file, 'rb') as f:
-        pdf = PdfFileReader(f)
+        pdf = PdfFileReader(f, strict=False)
 
     if(pdf.isEncrypted):
         return True
@@ -228,7 +228,8 @@ def get_folder():
     # carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400300920200031500/CUADERNO_PRINCIPAL/'
     # carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400301020180075700/C01Principal/' # Archivo NaT
     # carpeta = 'HERRAMIENTAS_EXCEL/SEXTO/17001400300620190033500/C01Principal/'
-    carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL/'
+    # carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL/'
+    carpeta = 'HERRAMIENTAS_EXCEL/REVISAR/'
     return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
