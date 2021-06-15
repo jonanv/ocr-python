@@ -222,7 +222,7 @@ def temporality_rename_all_files(folder_of_files_renames):
 
 # Metodo que retorna la variable con el nombre de la carpeta
 def get_folder():
-    # carpeta = sys.argv[1]
+    carpeta = sys.argv[1]
     # carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1_correcto/CUADERNO_PRINCIPAL/'
     # carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
     # carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_JUAN/'
@@ -234,7 +234,7 @@ def get_folder():
     # carpeta = 'HERRAMIENTAS_EXCEL/Procesos_con_Imagenes/17001400301020180075700/C01Principal/' # Archivo NaT
     # carpeta = 'HERRAMIENTAS_EXCEL/SEXTO/17001400300620190033500/C01Principal/'
     # carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL/'
-    carpeta = 'HERRAMIENTAS_EXCEL/REVISAR/'
+    # carpeta = 'HERRAMIENTAS_EXCEL/REVISAR/'
     return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
