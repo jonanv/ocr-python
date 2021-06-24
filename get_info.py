@@ -198,7 +198,7 @@ def temporality_rename_file_and_place_folder(path, file, folder_of_files_renames
     is_exist_file_trash()
     is_exist_folder_created(folder_of_files_renames)
     
-    shutil.copy2(path, (get_folder() + str(folder_of_files_renames) + file)) # Copia el archivo a la nueva carpeta
+    # shutil.copy2(path, (get_folder() + str(folder_of_files_renames) + file)) # Copia el archivo a la nueva carpeta
     os.rename((get_folder() + str(folder_of_files_renames) + file), (get_folder() + str(folder_of_files_renames) + file_rename)) # Renombrar el archivo ubicado en la nueva carpeta
 
 # Metodo que recorre el folder actual y renombra todos los archivos en el
@@ -564,8 +564,9 @@ def get_creation_date_format(date):
 # Metodo que se encarga de hacer todo el prosamiento de archivos llamando a otros metodos para tareas especificas
 def process_files_all():
     # Elimina de entrada los archivos renombrados si existen
-    folder_of_files_renames = get_folder_of_files_renames()
-    is_exist_folder_files_renames_remove(folder_of_files_renames)
+    # folder_of_files_renames = get_folder_of_files_renames()
+    # is_exist_folder_files_renames_remove(folder_of_files_renames)
+    folder_of_files_renames = ''
     
     print('RENONBRAMIENTO TEMPORAL DEL ARCHIVO Y COPIA A LA NUEVA UBICACION')
     print('---------------------------------------------------------------------------')
