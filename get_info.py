@@ -223,7 +223,9 @@ def temporality_rename_all_files(folder_of_files_renames):
 # Metodo que retorna la variable con el nombre de la carpeta
 def get_folder():
     carpeta = sys.argv[1]
-    carpeta = file.replace('&&', ' ')
+    carpeta = carpeta.replace('&&', '   ')
+    carpeta = carpeta.replace('%%', '  ')
+    carpeta = carpeta.replace('$$', ' ')
 
     # carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1_correcto/CUADERNO_PRINCIPAL/'
     # carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
