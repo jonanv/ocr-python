@@ -85,7 +85,7 @@ def get_content_file_scanned(path):
     with pdfplumber.open('output.pdf') as pdf:
         page = pdf.pages[0]
         text = page.extract_text(x_tolerance=2)
-    # remove('output.pdf') # Elimina el archivo que es generado porque no es necesario
+    remove('output.pdf') # Elimina el archivo que es generado porque no es necesario
     print()
     return text
 
