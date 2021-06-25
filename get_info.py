@@ -79,13 +79,21 @@ def get_content_file(path):
 
 # Metodo que obtiene la informacion de la primera pagina del pdf escaneado, recibe el path
 def get_content_file_scanned(path):
+    # Copia el archivo en la raiz para evitar espacios cuando es enviado al ocr
+    folders = path.split('/')
+    count_folders = len(folders)
+    file = folders[count_folders - 1]
+
+    shutil.copy2(path, file) # Copia el archivo a la raiz
+
     # Convierte la imagen a texto con ocrmypdf
-    os.system(f'ocrmypdf --pages 1 {path} output.pdf') # --pages 1-2
+    os.system(f'ocrmypdf --pages 1 {file} output.pdf') # --pages 1-2
 
     with pdfplumber.open('output.pdf') as pdf:
         page = pdf.pages[0]
         text = page.extract_text(x_tolerance=2)
     remove('output.pdf') # Elimina el archivo que es generado porque no es necesario
+    remove(file) # Elimina el archivo copia que es generado porque no es necesario
     print()
     return text
 
@@ -222,12 +230,12 @@ def temporality_rename_all_files(folder_of_files_renames):
 
 # Metodo que retorna la variable con el nombre de la carpeta
 def get_folder():
-    carpeta = sys.argv[1]
-    carpeta = carpeta.replace('&&', '   ')
-    carpeta = carpeta.replace('%%', '  ')
-    carpeta = carpeta.replace('$$', ' ')
+    # carpeta = sys.argv[1]
+    # carpeta = carpeta.replace('&&', '   ')
+    # carpeta = carpeta.replace('%%', '  ')
+    # carpeta = carpeta.replace('$$', ' ')
 
-    # carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1_correcto/CUADERNO_PRINCIPAL/'
+    carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1_correcto/CUADERNO_PRINCIPAL/'
     # carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_2_incorrecto/CUADERNO_PRINCIPAL/'
     # carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_JUAN/'
     # carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL_SEBAS/'
