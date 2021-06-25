@@ -467,7 +467,7 @@ def generate_files(list_metadata, list_metadata_dates):
 def generate_txt(list_metadata):
     folder_generate_files = get_folder_generate_files()
     is_exist_folder_generate_files(folder_generate_files)
-    destination_folder_generate_files = 'C:/Sites/ocr-python/'
+    destination_folder_generate_files = 'C/Sites/ocr-python/'
     # destination_folder_generate_files = get_folder()
     file = open(destination_folder_generate_files + folder_generate_files + 'metadata.txt', 'w', encoding='utf-8')
     file.write(str(list_metadata) + os.linesep)
@@ -479,7 +479,7 @@ def generate_csv(list_metadata_dates):
     is_exist_folder_generate_files(folder_generate_files)
     data_set = get_dataframe_of_list_metadata_dates(list_metadata_dates)
     print(data_set)
-    destination_folder_generate_files = 'C:/Sites/ocr-python/'
+    destination_folder_generate_files = 'C/Sites/ocr-python/'
     # destination_folder_generate_files = get_folder()
     data_set.to_csv(str(destination_folder_generate_files + folder_generate_files + 'metadata') + '.csv', header=True, sep=',', index=False)
 
@@ -488,7 +488,7 @@ def generate_xlsx(list_metadata_dates):
     folder_generate_files = get_folder_generate_files()
     is_exist_folder_generate_files(folder_generate_files)
     data_set = get_dataframe_of_list_metadata_dates(list_metadata_dates)
-    destination_folder_generate_files = 'C:/Sites/ocr-python/'
+    destination_folder_generate_files = 'C/Sites/ocr-python/'
     # destination_folder_generate_files = get_folder()
     writer = pd.ExcelWriter(str(destination_folder_generate_files + folder_generate_files + '0_0ReadData') + '.xlsx', engine='xlsxwriter')
     data_set.to_excel(writer, header=False, index=False)
