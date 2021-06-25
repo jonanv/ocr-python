@@ -27,7 +27,7 @@ def get_metadata(path):
         pdf = PdfFileReader(f, strict=False)
         info = pdf.getDocumentInfo()
         number_of_pages = pdf.getNumPages()
-    
+
     if (info != None):
         author = info.author
         creator = info.creator
@@ -38,7 +38,7 @@ def get_metadata(path):
         # print('Metadata: None')
         info = {}
         info.setdefault('/Author', '')
-        
+
     # for key in info:
     #     print (key, ":", info[key])
 
@@ -85,7 +85,7 @@ def get_content_file_scanned(path):
     with pdfplumber.open('output.pdf') as pdf:
         page = pdf.pages[0]
         text = page.extract_text(x_tolerance=2)
-    remove('output.pdf') # Elimina el archivo que es generado porque no es necesario
+    # remove('output.pdf') # Elimina el archivo que es generado porque no es necesario
     print()
     return text
 
@@ -109,7 +109,7 @@ def get_recover_date(text):
         return date
     except:
         return 'D:00000000000000'
-        
+
 # Metodo que lee y recupera la informacion de los metadatos con ayuda del metodo (get content file)
 def read_and_recover_information(metadata_normalized, path):
     # NO TIENE FECHA DE CREACION
@@ -197,7 +197,7 @@ def temporality_rename_file_and_place_folder(path, file, folder_of_files_renames
 
     is_exist_file_trash()
     is_exist_folder_created(folder_of_files_renames)
-    
+
     # shutil.copy2(path, (get_folder() + str(folder_of_files_renames) + file)) # Copia el archivo a la nueva carpeta
     os.rename((get_folder() + str(folder_of_files_renames) + file), (get_folder() + str(folder_of_files_renames) + file_rename)) # Renombrar el archivo ubicado en la nueva carpeta
 
@@ -209,8 +209,8 @@ def temporality_rename_all_files(folder_of_files_renames):
     folder_generate_files = get_folder_generate_files().split('/')[0]
     for x in range(len(files)):
         if (not os.path.isdir(get_folder() + files[x]) and
-            (files[x] != folder_of_files_renames) and 
-            (files[x] != '.DS_Store') and 
+            (files[x] != folder_of_files_renames) and
+            (files[x] != '.DS_Store') and
             (files[x] != folder_generate_files) and
             (files[x] != '00IndiceElectronico.xlsx')):
             print(str(count+1) + ". " + files[x])
@@ -279,7 +279,7 @@ def get_metadata_media_file(path):
 
     if (not '/CreationDate' in metadata_dict):
         metadata_dict.setdefault('/CreationDate', date)
-    
+
     return (metadata_dict, 1) # Se envia 1 para indicar que tiene un folio para los archivos multimedia
 
 # Metodo que obtiene la metadata completa de archivos multimedia (arreglo), recibe el path, nombre de archivo, toda la metadata y lista de metadata
@@ -288,7 +288,7 @@ def get_metadata_media_files_list(path, list_metadata, list_metadata_dates, file
     metadata_normalized = normalize_metadata(metadata_original, number_of_pages)
 
     list_metadata += str(metadata_normalized) + '\n'
-    
+
     date_datetime = dateparser.parse(str(metadata_normalized['creationDate'])) # datetime.datetime(2020, 4, 28, 18, 22, 32)
     list_metadata_dates.append([date_datetime, metadata_normalized['pages'], file])
 
@@ -359,7 +359,7 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
         file = indetify_file_name(file) # Identificador de capital case para los archivos que viene bien
         if (identify_date_file_name(file) != ''): # Identificador de fecha para los archivos que viene bien
             date = identify_date_file_name(file)
-        
+
         count_character_file = count_character(file) # Cantidad de caracteres
         print('Valido: ' + str(count_character_file) + ', Caracteres: ' + str(len(file)))
 
@@ -406,7 +406,7 @@ def except_name_renaming(x, file, extension, list_metadata_dates, folder_of_file
 
 # Metodo que elimina los caracteres especiales de la cadena
 def remove_special_characters(file_name):
-    new_file_name = ''.join(filter(str.isalnum, file_name)) 
+    new_file_name = ''.join(filter(str.isalnum, file_name))
     return new_file_name
 
 # Metodo que retorna el nombre del archivo y la extension por separado
@@ -427,12 +427,12 @@ def normalize_accents(file_name):
     # s = "Pingüino: Málãgà ês uñ̺ã cíudãd fantástica y èn Logroño me pica el... moñǫ̝̘̦̞̟̩̐̏̋͌́ͬ̚͡õ̪͓͍̦̓ơ̤̺̬̯͂̌͐͐͟o͎͈̳̠̼̫͂̊"
     # -> NFD y eliminar diacríticos sin la ñ
     # s = re.sub(
-    #         r"([^n\u0300-\u036f]|n(?!\u0303(?![\u0300-\u036f])))[\u0300-\u036f]+", r"\1", 
+    #         r"([^n\u0300-\u036f]|n(?!\u0303(?![\u0300-\u036f])))[\u0300-\u036f]+", r"\1",
     #         normalize( "NFD", s), 0, re.I
     #     )
     # -> NFD y eliminar diacríticos
     file_name = re.sub(
-            r"([^\u0300-\u036f]|(?![\u0300-\u036f]))[\u0300-\u036f]+", r"\1", 
+            r"([^\u0300-\u036f]|(?![\u0300-\u036f]))[\u0300-\u036f]+", r"\1",
             normalize("NFD", file_name), 0, re.I
         )
     # -> NFC
@@ -579,11 +579,11 @@ def process_files_all():
     # folder_of_files_renames = get_folder_of_files_renames()
     # is_exist_folder_files_renames_remove(folder_of_files_renames)
     folder_of_files_renames = ''
-    
+
     print('RENONBRAMIENTO TEMPORAL DEL ARCHIVO Y COPIA A LA NUEVA UBICACION')
     print('---------------------------------------------------------------------------')
     temporality_rename_all_files(folder_of_files_renames)
-    
+
     print()
     print('LECTURA DEL ARCHIVO PARA OBTENER METADATOS DESDE LA NUEVA UBICACION')
     print('---------------------------------------------------------------------------')
@@ -594,7 +594,7 @@ def process_files_all():
     print('---------------------------------------------------------------------------')
     # list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
     final_name_renaming(list_metadata_dates, folder_of_files_renames)
-    
+
     print()
     print('GENERADOR DE ARCHIVOS TXT, CSV Y XLSX')
     print('---------------------------------------------------------------------------')
@@ -617,7 +617,7 @@ def camel_case_split(file_name):
             words.append(list(x))
         else:
             words[-1].append(x)
-  
+
     return [''.join(word) for word in words]
 
 # Metodo que divide la cadena entre letras y numeros
@@ -690,7 +690,7 @@ if __name__ == '__main__':
     process_files_all()
 
     calculate_time(start_time)
-    
+
 
 # TODO: Cargar archivos de pdf en web (Django and Drag and Drop)
 # TODO: Capturar la fecha de modificacion del folder del proceso para ser procesada (Si la fecha de modificacion coincide con la fecha actual debe ser procesada)
