@@ -382,7 +382,7 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
 
         if ((file == '') and (extension == '.pdf')):
             file = 'REVISAR_NOMBRE'
-        if (list_metadata_dates[x][0] is pd.NaT):
+        if ((list_metadata_dates[x][0] is pd.NaT) or (list_metadata_dates[x][0]) == ''):
             file = file + '_REVISAR_FECHA'
         if ((file == '') and (extension in extension_media_video_list)):
             file = 'Audiencia'
@@ -508,6 +508,19 @@ def generate_xlsx(list_metadata_dates):
     data_set.to_excel(writer, header=False, index=False)
     writer.save()
 
+# Metodo que discrimina del año actual hacia adelante y retorna vacio ''
+def get_year_file(string_date):
+    match = re.search(r'\d{4}', str(string_date))
+    year_file = int(datetime.strptime(match.group(), '%Y').strftime('%Y'))
+    return year_file
+
+# Metodo para obtener el año actual
+def get_year_current():
+    current_datetime = datetime.now()
+    date_current = current_datetime.date()
+    year_current = date_current.strftime('%Y')
+    return year_current
+
 def convert_string_to_datetime(text_date):
     try:
         # D:20200821205457Z00'00' --> D:2020 08 21 20 54 57 Z00'00'
@@ -532,7 +545,13 @@ def convert_string_to_datetime(text_date):
         else:
             string_date = text_list[1]
 
-        date = datetime.strptime(str(string_date), '%Y%m%d%H%M%S')
+        year_current = int(get_year_current())
+        year_file = int(get_year_file(string_date))
+        
+        if(year_current >= year_file):
+            date = datetime.strptime(str(string_date), '%Y%m%d%H%M%S')
+        else:
+            date = ''
         return date
     except:
         return ''
