@@ -248,6 +248,7 @@ def get_folder():
     # carpeta = 'HERRAMIENTAS_EXCEL/CUADERNO_PRINCIPAL/'
     # carpeta = 'HERRAMIENTAS_EXCEL/REVISAR/'
     # carpeta = 'HERRAMIENTAS_EXCEL/ARCHIVOS_RAROS/'
+    # carpeta = 'HERRAMIENTAS_EXCEL/SIEPRO/'
     return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
@@ -361,6 +362,11 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
         date = get_date(file.lower()) # Retorna la fecha del archivo formateada si tiene
         file = normalize_accents(file) # Elimina acentos
 
+        # Condicion para eliminar indicador del expediente digital de SIEPRO
+        if (file.find('-') != -1):
+            file = file.split('-')[1]
+            print('Elimina indicador SIEPRO: ' + file)
+
         if (file.find('_') != -1):
             file = str(file.title()) # Capitalizacion
         print('Capitalizacion: ' + file)
@@ -376,7 +382,7 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
 
         file = remove_special_characters(file.title()) # Elimina caracteres especiales
 
-        file_number = ''.join(i for i in file_name if i.isdigit()) # Guarda todos los numeros que hay en el nombre
+        file_number = ''.join(i for i in file if i.isdigit()) # Guarda todos los numeros que hay en el nombre
         file_index_number = file_number[0] + file_number[1]
 
         file = remove_numbers(file) # Elimina numeros de la cadena
@@ -626,6 +632,83 @@ def process_files_all():
     # list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
     final_name_renaming(list_metadata_dates, folder_of_files_renames)
     
+    # print()
+    # print('ORDENAMIENTO DE LOS DATOS DE ACUERDO AL NOMBRE (Demanda, ActaReparto, Caratula) Y REESCRITURA DE NOMBRE FINAL')
+    # print('---------------------------------------------------------------------------')
+    # ################################################
+    # print()
+
+    # list_new = list()
+    # # for x in range(len(list_metadata_dates)):
+    # #     file_name = list_metadata_dates[x][2]
+    # #     if (file_name.find('Demanda') != -1
+    # #         and not list_metadata_dates[x] in list_new):
+    # #         list_new.append(list_metadata_dates[x])
+    # #         print(list_metadata_dates[x])
+    
+    # # for x in range(len(list_metadata_dates)):
+    # #     file_name = list_metadata_dates[x][2]
+    # #     if (file_name.find('ActaReparto') != -1
+    # #         and not list_metadata_dates[x] in list_new):
+    # #         list_new.append(list_metadata_dates[x])
+    # #         print(list_metadata_dates[x])
+
+    # # for x in range(len(list_metadata_dates)):
+    # #     file_name = list_metadata_dates[x][2]
+    # #     if (file_name.find('Caratula') != -1
+    # #         and not list_metadata_dates[x] in list_new):
+    # #         list_new.append(list_metadata_dates[x])
+    # #         print(list_metadata_dates[x])
+
+    # for x in range(len(list_metadata_dates)):
+    #     file_name = list_metadata_dates[x][2]
+    #     if (file_name.find('Demanda') != -1 
+    #         or file_name.find('ActaReparto') != -1
+    #         or file_name.find('Caratula') != -1):
+    #         if (not list_metadata_dates[x] in list_new):
+    #             list_new.append(list_metadata_dates[x])
+    #             print(list_metadata_dates[x])
+
+    # print()
+
+    # for x in range(len(list_metadata_dates)):
+    #     file_name = list_metadata_dates[x][2]
+
+    #     if (file_name.find('Demanda') == -1
+    #         and file_name.find('ActaReparto') == -1
+    #         and file_name.find('Caratula') == -1):
+    #         list_new.append(list_metadata_dates[x])
+
+    # print(list_new)
+
+    # final_name_renaming(list_new, folder_of_files_renames)
+    # print()
+    # print(list_new)
+
+    # print()
+    # data_set = pd.DataFrame(np.array(list_new))
+    # print(data_set)
+    # ################################################
+
+    # Metodo para identificar si las fecha de los documentos esta antes del acta de reparto, en caso de estarlo se pone la fecha del acta de reparto
+    # date_acta_reparto = ''
+    # for x in range(len(list_metadata_dates)):
+    #     file_name = list_metadata_dates[x][2]
+    #     if (file_name.find('ActaReparto') != -1):
+    #         date_acta_reparto = list_metadata_dates[x][0]
+    #         print(date_acta_reparto)
+
+    # if (date_acta_reparto != ''):
+    #     for x in range(len(list_metadata_dates)):
+    #         file_date = list_metadata_dates[x][0]
+    #         if (file_date < date_acta_reparto):
+    #             list_metadata_dates[x][0] = date_acta_reparto
+
+    # ################################################
+
+    # TODO: Todo lo que haya antes del primer archivo con la palabra AUTO, validar si la fecha es anterior a la del acta de reparto y si encuentra una, ponerle la del acta de reparto
+    # TODO: Poener la fehca de los archivos que tenga memomerial la fecha de descarga, a los que sean descargados y tengan memorialp se pone la fecha de descarga con un dia atras
+
     print()
     print('GENERADOR DE ARCHIVOS TXT, CSV Y XLSX')
     print('---------------------------------------------------------------------------')
