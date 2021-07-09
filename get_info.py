@@ -2,7 +2,7 @@ import os
 from os import remove
 import copy
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 import shutil
 import unicodedata
 from unicodedata import normalize
@@ -249,6 +249,7 @@ def get_folder():
     # carpeta = 'HERRAMIENTAS_EXCEL/REVISAR/'
     # carpeta = 'HERRAMIENTAS_EXCEL/ARCHIVOS_RAROS/'
     # carpeta = 'HERRAMIENTAS_EXCEL/SIEPRO/'
+    # carpeta = 'HERRAMIENTAS_EXCEL/1020090065900/'
     return carpeta
 
 # Metodo que obtiene el nombre de la carpera de los nuevos archivos renombrados
@@ -364,8 +365,10 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
 
         # Condicion para eliminar indicador del expediente digital de SIEPRO
         if (file.find('-') != -1):
-            file = file.split('-')[1]
-            print('Elimina indicador SIEPRO: ' + file)
+            file_indicador = file.split('-')[0] # 210610023539-06MemorialOtrasDespacho.pdf
+            if (file_indicador.isdigit()):
+                file = file.split('-')[1]
+                print('Elimina indicador SIEPRO: ' + file)
 
         if (file.find('_') != -1):
             file = str(file.title()) # Capitalizacion
@@ -394,6 +397,15 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
         if ((file == '') and (extension in extension_media_video_list)):
             file = 'Audiencia'
         file = file + date
+
+        # Si encuentra la palabra memorial en el nombre del archivo le pone la fecha de creacion de windows
+        if (file.find('Memorial') != -1):
+            path = get_folder() + folder_of_files_renames + file_name
+            if (file.find('Memorialp') != -1):
+                list_metadata_dates[x][0] = dateparser.parse(str(format(ctime(os.path.getmtime(path)))))
+                list_metadata_dates[x][0] = list_metadata_dates[x][0] - timedelta(days=1)
+            else:
+                list_metadata_dates[x][0] = dateparser.parse(str(format(ctime(os.path.getmtime(path)))))
 
         try:
             except_name_renaming(x, file_index_number + file, extension, list_metadata_dates, folder_of_files_renames, file_name)
@@ -691,18 +703,19 @@ def process_files_all():
     # ################################################
 
     # Metodo para identificar si las fecha de los documentos esta antes del acta de reparto, en caso de estarlo se pone la fecha del acta de reparto
-    # date_acta_reparto = ''
-    # for x in range(len(list_metadata_dates)):
-    #     file_name = list_metadata_dates[x][2]
-    #     if (file_name.find('ActaReparto') != -1):
-    #         date_acta_reparto = list_metadata_dates[x][0]
-    #         print(date_acta_reparto)
+    date_acta_reparto = ''
+    for x in range(len(list_metadata_dates)):
+        file_name = list_metadata_dates[x][2]
+        if (file_name.find('ActaReparto') != -1 or
+            file_name.find('ActaDeReparto') != -1):
+            date_acta_reparto = list_metadata_dates[x][0]
+            print(date_acta_reparto)
 
-    # if (date_acta_reparto != ''):
-    #     for x in range(len(list_metadata_dates)):
-    #         file_date = list_metadata_dates[x][0]
-    #         if (file_date < date_acta_reparto):
-    #             list_metadata_dates[x][0] = date_acta_reparto
+    if (date_acta_reparto != ''):
+        for x in range(len(list_metadata_dates)):
+            file_date = list_metadata_dates[x][0]
+            if (file_date < date_acta_reparto):
+                list_metadata_dates[x][0] = date_acta_reparto
 
     # ################################################
 
