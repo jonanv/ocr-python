@@ -105,7 +105,7 @@ def get_recover_date(text):
         matches = search_dates(text, languages=['es'])
         new_matches = list()
         for match in matches:
-            if((len(match[0]) > 8) and (not match[0].isdigit())): # Mayor que 8(25/01/19) para eliminar la fechas basura que trae en matches
+            if((len(match[0]) > 8) and (not match[0].isdigit()) and len(match[0].split('-')) < 3): # Mayor que 8(25/01/19) para eliminar la fechas basura que trae en matches
                 try:
                     date = datetime.strptime(str(match[0]), '%d/%m/%Y')
                     new_matches.append(date)
