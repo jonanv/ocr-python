@@ -704,23 +704,29 @@ def process_files_all():
 
     # Metodo para identificar si las fecha de los documentos esta antes del acta de reparto, en caso de estarlo se pone la fecha del acta de reparto
     date_acta_reparto = ''
+    date_auto = ''
     for x in range(len(list_metadata_dates)):
         file_name = list_metadata_dates[x][2]
-        if (file_name.find('ActaReparto') != -1 or
-            file_name.find('ActaDeReparto') != -1):
+        if ((file_name.find('ActaReparto') != -1 or
+            file_name.find('ActaDeReparto') != -1 or
+            file_name.find('ActaIndividualReparto') != -1) and date_acta_reparto == ''):
             date_acta_reparto = list_metadata_dates[x][0]
-            print(date_acta_reparto)
+            # print('ACTA DE REPARTO: ', date_acta_reparto)
+        if (file_name.find('Auto') != -1 and date_auto == ''):
+            date_auto = list_metadata_dates[x][0]
+            # print('AUTO: ', date_auto)
 
     if (date_acta_reparto != ''):
         for x in range(len(list_metadata_dates)):
             file_date = list_metadata_dates[x][0]
             if (file_date < date_acta_reparto):
                 list_metadata_dates[x][0] = date_acta_reparto
+            file_date = list_metadata_dates[x][0]
+            if (file_date < date_auto):
+                list_metadata_dates[x][0] = date_acta_reparto
+            
 
     # ################################################
-
-    # TODO: Todo lo que haya antes del primer archivo con la palabra AUTO, validar si la fecha es anterior a la del acta de reparto y si encuentra una, ponerle la del acta de reparto
-    # TODO: Poener la fehca de los archivos que tenga memomerial la fecha de descarga, a los que sean descargados y tengan memorialp se pone la fecha de descarga con un dia atras
 
     print()
     print('GENERADOR DE ARCHIVOS TXT, CSV Y XLSX')
