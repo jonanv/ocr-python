@@ -113,7 +113,11 @@ def get_recover_date(text):
                     new_matches.append(match[1])
                 print(match)
         # print(new_matches)
-        date = get_creation_date_format(new_matches[0]) # D:20201113165700 formato de la fecha de los metadatos
+        # Solo para el acta de adjudicación
+        if (text.find('REPARTO FECHA NUEVA PRESENTACION') != -1):
+            date = get_creation_date_format(new_matches[1]) # D:20201113165700 formato de la fecha de los metadatos
+        else:
+            date = get_creation_date_format(new_matches[0]) # D:20201113165700 formato de la fecha de los metadatos
         return date
     except:
         return 'D:00000000000000'
@@ -622,6 +626,32 @@ def get_creation_date_format(date):
     date_format = 'D:' + set_format_date(date) + '000000'
     return date_format
 
+def get_search_date_of_date(list_metadata_dates):
+    # Metodo que captura todos las fechas de los documentos con la palabra 'Acta' y crea una nueva lista que despues utilizara la fecha mas antigua
+    list_metadata_actas = list()
+    for x in range(len(list_metadata_dates)):
+        file_name = list_metadata_dates[x][2]
+        if (file_name.find('Acta') != -1):
+            list_metadata_actas.append(list_metadata_dates[x])
+            print('ACTA: ', list_metadata_dates[x][0])
+
+    if (len(list_metadata_actas) > 0):
+        list_metadata_actas = sort_list_metadata_dates(list_metadata_actas)
+        oldest_acta = list_metadata_actas[0]
+        date_acta_reparto = dateparser.parse(str(oldest_acta[0]))
+    else:
+        date_acta_reparto = ''
+
+    # Metodo para identificar si las fecha de los documentos esta antes del acta de reparto, en caso de estarlo se pone la fecha del acta de reparto
+    if (date_acta_reparto != ''):
+        for x in range(len(list_metadata_dates)):
+            file_date = list_metadata_dates[x][0]
+            try:
+                if (datetime.strptime(str(file_date), '%Y-%m-%d %H:%M:%S') < date_acta_reparto):
+                    list_metadata_dates[x][0] = date_acta_reparto
+            except:
+                list_metadata_dates[x][0] = date_acta_reparto
+
 # Metodo que se encarga de hacer todo el prosamiento de archivos llamando a otros metodos para tareas especificas
 def process_files_all():
     # Elimina de entrada los archivos renombrados si existen
@@ -643,84 +673,7 @@ def process_files_all():
     print('---------------------------------------------------------------------------')
     # list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
     final_name_renaming(list_metadata_dates, folder_of_files_renames)
-    
-    # print()
-    # print('ORDENAMIENTO DE LOS DATOS DE ACUERDO AL NOMBRE (Demanda, ActaReparto, Caratula) Y REESCRITURA DE NOMBRE FINAL')
-    # print('---------------------------------------------------------------------------')
-    # ################################################
-    # print()
-
-    # list_new = list()
-    # # for x in range(len(list_metadata_dates)):
-    # #     file_name = list_metadata_dates[x][2]
-    # #     if (file_name.find('Demanda') != -1
-    # #         and not list_metadata_dates[x] in list_new):
-    # #         list_new.append(list_metadata_dates[x])
-    # #         print(list_metadata_dates[x])
-    
-    # # for x in range(len(list_metadata_dates)):
-    # #     file_name = list_metadata_dates[x][2]
-    # #     if (file_name.find('ActaReparto') != -1
-    # #         and not list_metadata_dates[x] in list_new):
-    # #         list_new.append(list_metadata_dates[x])
-    # #         print(list_metadata_dates[x])
-
-    # # for x in range(len(list_metadata_dates)):
-    # #     file_name = list_metadata_dates[x][2]
-    # #     if (file_name.find('Caratula') != -1
-    # #         and not list_metadata_dates[x] in list_new):
-    # #         list_new.append(list_metadata_dates[x])
-    # #         print(list_metadata_dates[x])
-
-    # for x in range(len(list_metadata_dates)):
-    #     file_name = list_metadata_dates[x][2]
-    #     if (file_name.find('Demanda') != -1 
-    #         or file_name.find('ActaReparto') != -1
-    #         or file_name.find('Caratula') != -1):
-    #         if (not list_metadata_dates[x] in list_new):
-    #             list_new.append(list_metadata_dates[x])
-    #             print(list_metadata_dates[x])
-
-    # print()
-
-    # for x in range(len(list_metadata_dates)):
-    #     file_name = list_metadata_dates[x][2]
-
-    #     if (file_name.find('Demanda') == -1
-    #         and file_name.find('ActaReparto') == -1
-    #         and file_name.find('Caratula') == -1):
-    #         list_new.append(list_metadata_dates[x])
-
-    # print(list_new)
-
-    # final_name_renaming(list_new, folder_of_files_renames)
-    # print()
-    # print(list_new)
-
-    # print()
-    # data_set = pd.DataFrame(np.array(list_new))
-    # print(data_set)
-    # ################################################
-
-    # Metodo para identificar si las fecha de los documentos esta antes del acta de reparto, en caso de estarlo se pone la fecha del acta de reparto
-    date_acta_reparto = ''
-    date_auto = ''
-    for x in range(len(list_metadata_dates)):
-        file_name = list_metadata_dates[x][2]
-        if ((file_name.find('ActaReparto') != -1 or
-            file_name.find('ActaDeReparto') != -1 or
-            file_name.find('ActaIndividualReparto') != -1) and date_acta_reparto == ''):
-            date_acta_reparto = list_metadata_dates[x][0]
-            # print('ACTA DE REPARTO: ', date_acta_reparto)
-
-    if (date_acta_reparto != ''):
-        for x in range(len(list_metadata_dates)):
-            file_date = list_metadata_dates[x][0]
-            if (file_date < date_acta_reparto):
-                list_metadata_dates[x][0] = date_acta_reparto
-            
-
-    # ################################################
+    get_search_date_of_date(list_metadata_dates)
 
     print()
     print('GENERADOR DE ARCHIVOS TXT, CSV Y XLSX')
