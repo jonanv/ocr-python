@@ -650,7 +650,7 @@ def get_search_date_of_date(list_metadata_dates):
                 if (datetime.strptime(str(file_date), '%Y-%m-%d %H:%M:%S') < date_acta_reparto):
                     list_metadata_dates[x][0] = date_acta_reparto
             except:
-                list_metadata_dates[x][0] = date_acta_reparto
+                list_metadata_dates[x][0] = ''
 
 # Metodo que se encarga de hacer todo el prosamiento de archivos llamando a otros metodos para tareas especificas
 def process_files_all():
