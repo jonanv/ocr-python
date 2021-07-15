@@ -139,7 +139,6 @@ def read_and_recover_information(metadata_normalized, path):
             text = str(text).replace('  ', ' ')
             print(text)
             metadata_normalized['creationDate'] = get_recover_date(text)
-            # TODO: Revisar el archivo 003_ESCRITO_DEMANDA_FLS._1-73.pdf el cual no esta recuperando la fecha correcta (Los archivos que son demanda deben de llevar la fecha del acta de reparto)
     return metadata_normalized
 
 # Metodo que obtiene la metadata completa (arreglo), recibe el path, nombre de archivo, toda la metadata y lista de metadata
@@ -155,7 +154,7 @@ def get_metadata_files_list(path, list_metadata, list_metadata_dates, file):
 
     creation_date_datetime = convert_string_to_datetime(metadata_normalized['creationDate'])
 
-    # TODO: Se aplica logica provicional para archivos pdf sin fecha (no es la mejor opcion) Es posible que la fecha del sistema no sea la de creacion y el orden cronologico de los archivos del proceso se pierda
+    # FIXME: Se aplica logica provicional para archivos pdf sin fecha (no es la mejor opcion) Es posible que la fecha del sistema no sea la de creacion y el orden cronologico de los archivos del proceso se pierda
     # if (creation_date_datetime == ''):
     #     creation_date_datetime = dateparser.parse(str(format(ctime(os.path.getmtime(path)))))
     if (creation_date_datetime == ''):
