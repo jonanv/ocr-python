@@ -23,27 +23,32 @@ import pikepdf
 
 # Metodo que permite obtener la informacion de metadatos del archivo
 def get_metadata(path):
-    with open(path, 'rb') as f:
-        pdf = PdfFileReader(f, strict=False)
-        info = pdf.getDocumentInfo()
-        number_of_pages = pdf.getNumPages()
-    
-    if (info != None):
-        author = info.author
-        creator = info.creator
-        producer = info.producer
-        subject = info.subject
-        title = info.title
-    else:
-        # print('Metadata: None')
+    try:
+        with open(path, 'rb') as f:
+            pdf = PdfFileReader(f, strict=False)
+            info = pdf.getDocumentInfo()
+            number_of_pages = pdf.getNumPages()
+        
+        if (info != None):
+            author = info.author
+            creator = info.creator
+            producer = info.producer
+            subject = info.subject
+            title = info.title
+        else:
+            # print('Metadata: None')
+            info = {}
+            info.setdefault('/Author', '')
+            
+        # for key in info:
+        #     print (key, ":", info[key])
+
+        # print(info)
+        return (info, number_of_pages)
+    except:
         info = {}
         info.setdefault('/Author', '')
-        
-    # for key in info:
-    #     print (key, ":", info[key])
-
-    # print(info)
-    return (info, number_of_pages)
+        return (info, 0)
 
 # Metodo que normaliza los medatatos de los pdfs para que todos los archivos tengan las mismas propiedades
 def normalize_metadata(metadata, number_of_pages):
