@@ -633,7 +633,7 @@ def get_search_date_of_date(list_metadata_dates):
         file_name = list_metadata_dates[x][2]
         if (file_name.find('Acta') != -1):
             list_metadata_actas.append(list_metadata_dates[x])
-            print('ACTA: ', list_metadata_dates[x][0])
+            # print('ACTA: ', list_metadata_dates[x][0])
 
     if (len(list_metadata_actas) > 0):
         list_metadata_actas = sort_list_metadata_dates(list_metadata_actas)
