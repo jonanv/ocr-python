@@ -122,23 +122,24 @@ def get_recover_date(text):
     except:
         return 'D:00000000000000'
         
-# Metodo que lee y recupera la informacion de los metadatos con ayuda del metodo (get content file)
+# Metodo que lee y recupera la informacion del contenido del archivo con ayuda del metodo (get recover date)
 def read_and_recover_information(metadata_normalized, path):
     # NO TIENE FECHA DE CREACION
     if(metadata_normalized['creationDate'] == ''):
-        text = get_content_file(path) # Llama al metodo para que recupere la info
-        text = str(text).replace('  ', ' ')
-        # print(text)
-        # TODO: Revisar archivo 06. notificación 19.04.2021 DEMANDADO.pdf que sale con contenido extranio
-
-        # Recupera la informacion si es un pdf escrito y es diferente de None
-        if(str(text) != 'None'):
-            metadata_normalized['creationDate'] = get_recover_date(text)
-        else:
-            text = get_content_file_scanned(path) # Llama al metodo para que recupere la info pdf imagen
+        if(metadata_normalized['modificationDate'] == ''):
+            text = get_content_file(path) # Llama al metodo para que recupere la info
             text = str(text).replace('  ', ' ')
-            print(text)
-            metadata_normalized['creationDate'] = get_recover_date(text)
+            # print(text)
+            # TODO: Revisar archivo 06. notificación 19.04.2021 DEMANDADO.pdf que sale con contenido extranio
+
+            # Recupera la informacion si es un pdf escrito y es diferente de None
+            if(str(text) != 'None'):
+                metadata_normalized['creationDate'] = get_recover_date(text)
+            else:
+                text = get_content_file_scanned(path) # Llama al metodo para que recupere la info pdf imagen
+                text = str(text).replace('  ', ' ')
+                print(text)
+                metadata_normalized['creationDate'] = get_recover_date(text)
     return metadata_normalized
 
 # Metodo que obtiene la metadata completa (arreglo), recibe el path, nombre de archivo, toda la metadata y lista de metadata
@@ -639,10 +640,10 @@ def get_search_date_of_date(list_metadata_dates):
         oldest_acta = list_metadata_actas[0]
         date_acta_reparto = dateparser.parse(str(oldest_acta[0]))
     else:
-        date_acta_reparto = ''
+        date_acta_reparto = None
 
     # Metodo para identificar si las fecha de los documentos esta antes del acta de reparto, en caso de estarlo se pone la fecha del acta de reparto
-    if (date_acta_reparto != ''):
+    if (date_acta_reparto != None):
         for x in range(len(list_metadata_dates)):
             file_date = list_metadata_dates[x][0]
             try:
