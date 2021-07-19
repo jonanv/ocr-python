@@ -48,7 +48,7 @@ def get_metadata(path):
     except:
         info = {}
         info.setdefault('/Author', '')
-        return (info, 0)
+        return (info, 1)
 
 # Metodo que normaliza los medatatos de los pdfs para que todos los archivos tengan las mismas propiedades
 def normalize_metadata(metadata, number_of_pages):
@@ -394,8 +394,13 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
 
         file = remove_special_characters(file.title()) # Elimina caracteres especiales
 
-        file_number = ''.join(i for i in file if i.isdigit()) # Guarda todos los numeros que hay en el nombre
-        file_index_number = file_number[0] + file_number[1]
+        # file_number = ''.join(i for i in file if i.isdigit()) # Guarda todos los numeros que hay en el nombre
+        # file_index_number = file_number[0] + file_number[1]
+        file_number = ''
+        for x in range(3): # Guarda todos los numeros que hay en el nombre rango de 3 caracteres
+            if (file[x].isdigit()):
+                file_number += str(file[x])
+        file_index_number = file_number
 
         file = remove_numbers(file) # Elimina numeros de la cadena
 
