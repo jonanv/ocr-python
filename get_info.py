@@ -397,9 +397,9 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
         # file_number = ''.join(i for i in file if i.isdigit()) # Guarda todos los numeros que hay en el nombre
         # file_index_number = file_number[0] + file_number[1]
         file_number = ''
-        for x in range(3): # Guarda todos los numeros que hay en el nombre rango de 3 caracteres
-            if (file[x].isdigit()):
-                file_number += str(file[x])
+        for i in range(3): # Guarda todos los numeros que hay en el nombre rango de 3 caracteres
+            if (file[i].isdigit()):
+                file_number += str(file[i])
         file_index_number = file_number
 
         file = remove_numbers(file) # Elimina numeros de la cadena
