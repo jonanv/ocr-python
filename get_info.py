@@ -181,13 +181,16 @@ def decrypted_file(file, path):
 
 # Metodo que determina si el archivo esta protegido
 def is_locked(file):
-    with open(file, 'rb') as f:
-        pdf = PdfFileReader(f, strict=False)
+    try:
+        with open(file, 'rb') as f:
+            pdf = PdfFileReader(f, strict=False)
 
-    if(pdf.isEncrypted):
+        if(pdf.isEncrypted):
+            return True
+        else:
+            return False
+    except:
         return True
-    else:
-        return False
 
 # Metodo que comprueba si el archivo basura existe, si exite lo elimina
 def is_exist_file_trash():
