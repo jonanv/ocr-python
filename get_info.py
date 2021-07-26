@@ -92,7 +92,7 @@ def get_content_file_scanned(path):
     shutil.copy2(path, file) # Copia el archivo a la raiz
 
     # Convierte la imagen a texto con ocrmypdf
-    os.system(f'ocrmypdf --pages 1 {file} output.pdf') # --pages 1-2
+    os.system(f'ocrmypdf --force-ocr --pages 1 {file} output.pdf') # --pages 1-2
 
     with pdfplumber.open('output.pdf') as pdf:
         page = pdf.pages[0]
