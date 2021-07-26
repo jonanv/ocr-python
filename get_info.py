@@ -243,6 +243,19 @@ def temporality_rename_all_files(folder_of_files_renames):
 # Metodo que retorna la variable con el nombre de la carpeta
 def get_folder():
     carpeta = sys.argv[1]
+    carpeta = carpeta.replace('ß', 'á')
+    carpeta = carpeta.replace('Ú', 'é')
+    carpeta = carpeta.replace('Ý', 'í')
+    carpeta = carpeta.replace('¾', 'ó')
+    carpeta = carpeta.replace('·', 'ú')
+    carpeta = carpeta.replace('±', 'ñ')
+    carpeta = carpeta.replace('┴', 'Á')
+    carpeta = carpeta.replace('╔', 'É')
+    carpeta = carpeta.replace('═', 'Í')
+    carpeta = carpeta.replace('Ë', 'Ó')
+    carpeta = carpeta.replace('┌', 'Ú')
+    carpeta = carpeta.replace('Ð', 'Ñ')
+    carpeta = carpeta.replace('░', '°')
     carpeta = carpeta.replace('&&', '   ')
     carpeta = carpeta.replace('%%', '  ')
     carpeta = carpeta.replace('$$', ' ')
