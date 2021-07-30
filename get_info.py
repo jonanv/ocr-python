@@ -89,7 +89,10 @@ def get_content_file_scanned(path):
     count_folders = len(folders)
     file = folders[count_folders - 1]
 
-    shutil.copy2(path, file) # Copia el archivo a la raiz
+    # Compruba que no exista para lso archivos que viene encriptados y luego necesitan ser leidos por OCR, evita que sean compiados en la raiz dos veces
+    is_exist_file = os.path.isfile(file) # Comprueba si el archivo existe
+    if (not is_exist_file):
+        shutil.copy2(path, file) # Copia el archivo a la raiz
 
     # Convierte la imagen a texto con ocrmypdf
     os.system(f'ocrmypdf --force-ocr --pages 1 {file} output.pdf') # --pages 1-2
@@ -355,7 +358,10 @@ def get_metadata_files_list_news(folder_of_files_renames):
                 # Archivos que son pdf y tiene proteccion con texto o con imagen
                 path_file_decrypted = decrypted_file(files_news[x], path) # Desencripta y retorna la ruta del archivo desencriptado
                 (list_metadata, list_metadata_dates) = get_metadata_files_list(path_file_decrypted, list_metadata, list_metadata_dates, files_news[x])
-                remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
+                
+                is_exist_file = os.path.isfile(path_file_decrypted) # Comprueba si el archivo existe
+                if (is_exist_file):
+                    remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
             else:
                 # Archivos que son pdf sin proteccion con texto o con imagen
                 (list_metadata, list_metadata_dates) = get_metadata_files_list(path, list_metadata, list_metadata_dates, files_news[x])
