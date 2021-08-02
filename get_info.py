@@ -414,8 +414,6 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
 
         # TODO: Regla de las preposiciones en el nombre (Diccionario)
 
-        file = remove_special_characters(file.title()) # Elimina caracteres especiales
-
         # file_number = ''.join(i for i in file if i.isdigit()) # Guarda todos los numeros que hay en el nombre
         # file_index_number = file_number[0] + file_number[1]
         file_number = ''
@@ -423,6 +421,8 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
             if (file[i].isdigit()):
                 file_number += str(file[i])
         file_index_number = file_number
+
+        file = remove_special_characters(file.title()) # Elimina caracteres especiales
 
         file = remove_numbers(file) # Elimina numeros de la cadena
 
