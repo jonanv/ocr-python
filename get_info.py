@@ -662,8 +662,13 @@ def get_search_date_of_date(list_metadata_dates):
     # Metodo que captura todos las fechas de los documentos con la palabra 'Acta' y crea una nueva lista que despues utilizara la fecha mas antigua
     list_metadata_actas = list()
     for x in range(len(list_metadata_dates)):
-        file_name = list_metadata_dates[x][2]
-        if (file_name.find('Acta') != -1):
+        file_name = list_metadata_dates[x][2].lower() # Se deja miniscula para el caso de que el archivo venga con el nombre en mayuscula, ej: AUTOAdmite, la toma como si fuera una sola palabra despues de que es convertida y queda Autoadmite
+        if (file_name.find('actareparto') != -1 or
+            file_name.find('actadereparto') != -1 or
+            file_name.find('actaadjudicacion') != -1 or
+            file_name.find('actadeadjudicacion') != -1 or
+            file_name.find('actaindividualreparto') != -1 or
+            file_name.find('actaindividualdereparto') != -1):
             list_metadata_actas.append(list_metadata_dates[x])
             # print('ACTA: ', list_metadata_dates[x][0])
 
