@@ -259,6 +259,7 @@ def get_folder():
     carpeta = carpeta.replace('┌', 'Ú')
     carpeta = carpeta.replace('Ð', 'Ñ')
     carpeta = carpeta.replace('░', '°')
+    carpeta = carpeta.replace('║', 'º')
     carpeta = carpeta.replace('&&', '   ')
     carpeta = carpeta.replace('%%', '  ')
     carpeta = carpeta.replace('$$', ' ')
