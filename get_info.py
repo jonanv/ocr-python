@@ -235,7 +235,8 @@ def temporality_rename_all_files(folder_of_files_renames):
             (files[x] != folder_of_files_renames) and 
             (files[x] != '.DS_Store') and 
             (files[x] != folder_generate_files) and
-            (files[x] != '00IndiceElectronico.xlsx')):
+            (get_file_extension(files[x]) != '.xlsx') and
+            (get_file_extension(files[x]) != '.xlsm')):
             print(str(count+1) + ". " + files[x])
 
             path_original = get_folder() + files[x]
@@ -450,7 +451,7 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
             file = file_index_number + file + '_NOMBRE_REPETIDO'
             except_name_renaming(x, file, extension, list_metadata_dates, folder_of_files_renames, file_name)
 
-# Metodo que hae el proceso de renombrar el archivo final y es llamado en la excepcion en caso de que el nombre del archivo exista pone _NOMBRE_REPETIDO
+# Metodo que hace el proceso de renombrar el archivo final y es llamado en la excepcion en caso de que el nombre del archivo exista pone _NOMBRE_REPETIDO
 def except_name_renaming(x, file, extension, list_metadata_dates, folder_of_files_renames, file_name):
     # file_out = assign_index(x, file, extension)
     file_out = file + extension
