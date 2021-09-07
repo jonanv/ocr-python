@@ -169,7 +169,7 @@ def get_metadata_files_list(path, list_metadata, list_metadata_dates, file):
     if (creation_date_datetime == ''):
         creation_date_datetime = convert_string_to_datetime(metadata_normalized['modificationDate'])
 
-    list_metadata_dates.append([creation_date_datetime, metadata_normalized['pages'], file])
+    list_metadata_dates.append([creation_date_datetime, metadata_normalized['pages'], file, 0, ''])
 
     return (list_metadata, list_metadata_dates)
 
@@ -231,18 +231,22 @@ def temporality_rename_all_files(folder_of_files_renames):
 
     folder_generate_files = get_folder_generate_files().split('/')[0]
     for x in range(len(files)):
-        if (not os.path.isdir(get_folder() + files[x]) and
-            (files[x] != folder_of_files_renames) and 
-            (files[x] != '.DS_Store') and 
-            (files[x] != folder_generate_files) and
-            (get_file_extension(files[x]) != '.xlsx') and
-            (get_file_extension(files[x]) != '.xlsm')):
-            print(str(count+1) + ". " + files[x])
+        try:
+            if (not os.path.isdir(get_folder() + files[x]) and
+                (files[x] != folder_of_files_renames) and 
+                (files[x] != '.DS_Store') and 
+                (files[x] != folder_generate_files) and
+                (get_file_extension(files[x]) != '.xlsx') and
+                (get_file_extension(files[x]) != '.xlsm')):
+                print(str(count+1) + ". " + files[x])
 
-            path_original = get_folder() + files[x]
-            temporality_rename_file_and_place_folder(path_original, files[x], folder_of_files_renames)
-            print()
+                path_original = get_folder() + files[x]
+                temporality_rename_file_and_place_folder(path_original, files[x], folder_of_files_renames)
+                print()
+                count += 1
+        except:
             count += 1
+
 
 # Metodo que retorna la variable con el nombre de la carpeta
 def get_folder():
@@ -331,7 +335,7 @@ def get_metadata_media_files_list(path, list_metadata, list_metadata_dates, file
     list_metadata += str(metadata_normalized) + '\n'
     
     date_datetime = dateparser.parse(str(metadata_normalized['creationDate'])) # datetime.datetime(2020, 4, 28, 18, 22, 32)
-    list_metadata_dates.append([date_datetime, metadata_normalized['pages'], file])
+    list_metadata_dates.append([date_datetime, metadata_normalized['pages'], file, 0, ''])
 
     return (list_metadata, list_metadata_dates)
 
@@ -357,13 +361,17 @@ def get_metadata_files_list_news(folder_of_files_renames):
             print()
 
             if(is_locked(path)):
-                # Archivos que son pdf y tiene proteccion con texto o con imagen
-                path_file_decrypted = decrypted_file(files_news[x], path) # Desencripta y retorna la ruta del archivo desencriptado
-                (list_metadata, list_metadata_dates) = get_metadata_files_list(path_file_decrypted, list_metadata, list_metadata_dates, files_news[x])
-                
-                is_exist_file = os.path.isfile(path_file_decrypted) # Comprueba si el archivo existe
-                if (is_exist_file):
-                    remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
+                try:
+                    # Archivos que son pdf y tiene proteccion con texto o con imagen
+                    path_file_decrypted = decrypted_file(files_news[x], path) # Desencripta y retorna la ruta del archivo desencriptado
+                    (list_metadata, list_metadata_dates) = get_metadata_files_list(path_file_decrypted, list_metadata, list_metadata_dates, files_news[x])
+
+                    is_exist_file = os.path.isfile(path_file_decrypted) # Comprueba si el archivo existe
+                    if (is_exist_file):
+                        remove(path_file_decrypted) # Elimina el archivo que es generado porque no es necesario
+                except:
+                    # Archivo encriptado con contraseña o dañado (que no se pueda abrir)
+                    list_metadata_dates.append(['0000-00-00 00:00:00', 1, files_news[x], 0, 'ENCRIPTADO O DANIADO'])
             else:
                 # Archivos que son pdf sin proteccion con texto o con imagen
                 (list_metadata, list_metadata_dates) = get_metadata_files_list(path, list_metadata, list_metadata_dates, files_news[x])
@@ -423,6 +431,8 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
             if (file[i].isdigit()):
                 file_number += str(file[i])
         file_index_number = file_number
+        # Agrega el indice de cada numero a la lista de cada archivo
+        list_metadata_dates[x][3]= int(file_index_number)
 
         file = remove_special_characters(file.title()) # Elimina caracteres especiales
 
@@ -431,6 +441,7 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
         if ((file == '') and (extension == '.pdf')):
             file = 'REVISAR_NOMBRE'
         if ((list_metadata_dates[x][0] is pd.NaT) or (list_metadata_dates[x][0]) == ''):
+            # list_metadata_dates[x][0] = 'ILEGIBLE'
             file = file + '_REVISAR_FECHA'
         if ((file == '') and (extension in extension_media_video_list)):
             file = 'Audiencia'
@@ -438,12 +449,15 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
 
         # Si encuentra la palabra memorial en el nombre del archivo le pone la fecha de creacion de windows
         if (file.find('Memorial') != -1):
-            path = get_folder() + folder_of_files_renames + file_name
-            if (file.find('Memorialp') != -1):
-                list_metadata_dates[x][0] = dateparser.parse(str(format(ctime(os.path.getmtime(path)))))
-                list_metadata_dates[x][0] = list_metadata_dates[x][0] - timedelta(days=1)
-            else:
-                list_metadata_dates[x][0] = dateparser.parse(str(format(ctime(os.path.getmtime(path)))))
+            try:
+                path = get_folder() + folder_of_files_renames + file_name
+                if (file.find('Memorialp') != -1):
+                    list_metadata_dates[x][0] = dateparser.parse(str(format(ctime(os.path.getmtime(path)))))
+                    list_metadata_dates[x][0] = list_metadata_dates[x][0] - timedelta(days=1)
+                else:
+                    list_metadata_dates[x][0] = dateparser.parse(str(format(ctime(os.path.getmtime(path)))))
+            except:
+                list_metadata_dates[x][0] = ''
 
         try:
             except_name_renaming(x, file_index_number + file, extension, list_metadata_dates, folder_of_files_renames, file_name)
@@ -458,7 +472,12 @@ def except_name_renaming(x, file, extension, list_metadata_dates, folder_of_file
     print('SALIDA: ' + file_out)
 
     list_metadata_dates[x][2] = file_out
-    os.rename((get_folder() + str(folder_of_files_renames) + file_name), (get_folder() + str(folder_of_files_renames) + file_out)) # Renombrar el archivo ubicado en la nueva carpeta
+    old_name = (get_folder() + str(folder_of_files_renames) + file_name)
+    new_name = (get_folder() + str(folder_of_files_renames) + file_out)
+    try:
+        os.rename(old_name, new_name) # Renombrar el archivo ubicado en la nueva carpeta
+    except:
+        print('NO ES POSIBLE RENOMBRAR ARCHIVO')
 
 # Metodo que retorna el index inicial de cada archivo
 # def assign_index(x, file, extension):
@@ -515,9 +534,9 @@ def get_dataframe_of_list_metadata_dates(list_metadata_dates):
     return data_set
 
 # Metodo que ordena la lista de metadatos de fechas
-def sort_list_metadata_dates(list_metadata_dates):
+def sort_list_metadata_dates(list_metadata_dates, order_column):
     data_set = pd.DataFrame(np.array(list_metadata_dates)) # Matriz de nuevo conjunto de datos con pandas
-    data_set = data_set.sort_values(by=0) # Ordena la columna 0 que contiene las fechas
+    data_set = data_set.sort_values(by=order_column) # Ordena la columna 0 que contiene las fechas
     return data_set.values.tolist() # Devuelve la lista ordenada en formato list() de python
 
 # Metodo que comprueba si la carpeta existe, si no exite la crea, si exite no la crea
@@ -660,8 +679,8 @@ def get_creation_date_format(date):
     date_format = 'D:' + set_format_date(date) + '000000'
     return date_format
 
+# Metodo que captura todos las fechas de los documentos con la palabra 'Acta' y crea una nueva lista que despues utilizara la fecha mas antigua
 def get_search_date_of_date(list_metadata_dates):
-    # Metodo que captura todos las fechas de los documentos con la palabra 'Acta' y crea una nueva lista que despues utilizara la fecha mas antigua
     list_metadata_actas = list()
     for x in range(len(list_metadata_dates)):
         file_name = list_metadata_dates[x][2].lower() # Se deja miniscula para el caso de que el archivo venga con el nombre en mayuscula, ej: AUTOAdmite, la toma como si fuera una sola palabra despues de que es convertida y queda Autoadmite
@@ -675,7 +694,7 @@ def get_search_date_of_date(list_metadata_dates):
             # print('ACTA: ', list_metadata_dates[x][0])
 
     if (len(list_metadata_actas) > 0):
-        list_metadata_actas = sort_list_metadata_dates(list_metadata_actas)
+        list_metadata_actas = sort_list_metadata_dates(list_metadata_actas, 0)
         oldest_acta = list_metadata_actas[0]
         date_acta_reparto = dateparser.parse(str(oldest_acta[0]))
     else:
@@ -710,9 +729,11 @@ def process_files_all():
     print()
     print('ORDENAMIENTO DE LOS DATOS DE ACUERDO A LA FECHA Y ESCRITURA DE NOMBRE FINAL')
     print('---------------------------------------------------------------------------')
-    # list_metadata_dates = sort_list_metadata_dates(list_metadata_dates)
+    # list_metadata_dates = sort_list_metadata_dates(list_metadata_dates, 0)
     final_name_renaming(list_metadata_dates, folder_of_files_renames)
     get_search_date_of_date(list_metadata_dates)
+    # Ordenamiento por la columna 3 del indice original del archivo
+    list_metadata_dates = sort_list_metadata_dates(list_metadata_dates, 3)
 
     print()
     print('GENERADOR DE ARCHIVOS TXT, CSV Y XLSX')
