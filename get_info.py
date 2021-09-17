@@ -265,8 +265,8 @@ def get_folder():
     carpeta = carpeta.replace('Ð', 'Ñ')
     carpeta = carpeta.replace('░', '°')
     carpeta = carpeta.replace('║', 'º')
-    carpeta = carpeta.replace('&&', '   ')
-    carpeta = carpeta.replace('%%', '  ')
+    carpeta = carpeta.replace('##', '   ')
+    carpeta = carpeta.replace('!!', '  ')
     carpeta = carpeta.replace('$$', ' ')
 
     # carpeta = 'HERRAMIENTAS_EXCEL/1220190007900_Prueba_1_correcto/CUADERNO_PRINCIPAL/'
