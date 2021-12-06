@@ -401,15 +401,15 @@ def final_name_renaming(list_metadata_dates, folder_of_files_renames):
         print('Nombre real: ', file_name)
         (file, extension) = split_file_extension(file_name) # Separa el nombre y la extension
 
-        date = get_date(file.lower()) # Retorna la fecha del archivo formateada si tiene
-        file = normalize_accents(file) # Elimina acentos
-
         # Condicion para eliminar indicador del expediente digital de SIEPRO
         if (file.find('-') != -1):
             file_indicador = file.split('-')[0] # 210610023539-06MemorialOtrasDespacho.pdf
             if (file_indicador.isdigit()):
                 file = file.split('-')[1]
                 print('Elimina indicador SIEPRO: ' + file)
+
+        date = get_date(file.lower()) # Retorna la fecha del archivo formateada si tiene
+        file = normalize_accents(file) # Elimina acentos
 
         if (file.find('_') != -1):
             file = str(file.title()) # Capitalizacion
